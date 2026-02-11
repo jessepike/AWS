@@ -19,8 +19,8 @@ All major MVPs have been delivered. The system is entering integration and tunin
 ## Last Session
 
 - **Date:** 2026-02-11
-- **What happened:** Completed B1 — created `docs/communication-protocols.md`. Mapped all 4 MCP servers (87+ tools total), documented 5 data flow patterns, identified 6 integration gaps, established protocol standards.
-- **Key findings:** System has strong hub-and-spoke topology with Krypton as primary orchestrator. KB↔Memory gap is low-priority (Krypton bridges). Work Mgmt→Krypton gap matters when WM becomes autonomous. No event-driven sync between ADF and WM.
+- **What happened:** Created `docs/component-registry.md` — the system's component index. Covers all 7 components with hierarchy diagram, component cards (purpose, owns, does-not-own, maturity, interfaces, artifacts), boundary rules table, and maturity overview. Completes the documentation triad: architecture (model) → components (parts) → protocols (connections).
+- **Previous:** Completed B1 — `docs/communication-protocols.md` mapping all MCP servers, data flows, and integration gaps.
 
 ## Next Steps
 
