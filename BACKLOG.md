@@ -4,7 +4,7 @@
 
 | ID | Item | Type | Pri | Status |
 |----|------|------|-----|--------|
-| B1 | Define inter-component communication protocols — how ADF<>Work Mgmt, Krypton<>Work Mgmt, etc. talk to each other | Architecture | P1 | Pending |
+| B1 | Define inter-component communication protocols — how ADF<>Work Mgmt, Krypton<>Work Mgmt, etc. talk to each other | Architecture | P1 | Done |
 | B2 | Build governance layer — Krypton governance health check (weekly alignment, drift detection, stale work) | Governance | P1 | Pending |
 | B3 | Expand intake/capture beyond Link Triage — route to KB, Memory, backlogs, projects (Krypton `/capture` evolution) | Integration | P1 | Pending |
 | B4 | Cross-project observability — system-level dashboard beyond per-project status.md files | Observability | P2 | Pending |
@@ -17,4 +17,6 @@
 
 ## Completed
 
-_None yet._
+| ID | Item | Date |
+|----|------|------|
+| B1 | Inter-component communication protocols — `docs/communication-protocols.md` | 2026-02-11 |
