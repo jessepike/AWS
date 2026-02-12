@@ -24,6 +24,8 @@
 | B18 | Review model tier mapping in architecture.md — does intent layer truly require Opus minimum? What are we conveying? The gradient (heavier reasoning = higher layers) makes sense but minimum model requirements may be too prescriptive. | Architecture | P2 | Pending |
 | B19 | Clarify brief.md scope — articulate the meta-governing purpose: this project ensures alignment and connectivity across all components. Each component self-governs internally; this project governs the whole. How does it handle self-improvement? How does it handle cross-component alignment? | Architecture | P1 | Pending |
 | B20 | ADF fifth stage — evaluate "Operate & Improve" as potential fifth stage beyond Deliver. What does ongoing operation and improvement look like within ADF? (Route to ADF project backlog.) | Architecture | P2 | Pending |
+| B21 | Architecture diagrams — create visual models at multiple levels: (1) macro system overview, (2) communication protocols / data flows, (3) trust boundaries, (4) component connections. Feed into Gemini or similar for rendering. | Docs | P1 | Pending |
+| B22 | Documentation standard — define a standard documentation structure for every component, with two audiences: (a) user-level docs (layman, end-user) and (b) technical docs (builder, detailed). Design at AWS level, implement at each component level. Cascading item per B12 pattern. | Docs | P1 | Pending |
 
 ## Completed
 
