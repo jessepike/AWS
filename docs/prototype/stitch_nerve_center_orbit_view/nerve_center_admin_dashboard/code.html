@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nerve Center Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0df259",
+                        "background-light": "#f5f8f6",
+                        "background-dark": "#0f172a",
+                        "surface-dark": "#1e293b",
+                        "border-dark": "#334155",
+                        "accent-blue": "#3b82f6",
+                        "accent-purple": "#a855f7",
+                        "accent-amber": "#f59e0b",
+                        "accent-red": "#ef4444"
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            overflow: hidden;
+        }
+        .glow-green { box-shadow: 0 0 15px rgba(13, 242, 89, 0.3); }
+        .pulsate { animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse-opacity {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .dashed-circle { border: 1px dashed rgba(255,255,255,0.1); }
+        .network-line { stroke: rgba(255,255,255,0.05); stroke-width: 1; }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 h-screen flex flex-col">
+<!-- Header Bar -->
+<header class="h-16 border-b border-slate-200 dark:border-border-dark flex items-center justify-between px-6 bg-white/5 backdrop-blur-md z-50">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-icons-round text-background-dark text-xl">psychology</span>
+</div>
+<h1 class="text-xl font-bold tracking-tight">NERVE <span class="text-primary">CENTER</span></h1>
+</div>
+<div class="h-6 w-px bg-slate-700 mx-2"></div>
+<div class="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
+<div class="w-2 h-2 bg-primary rounded-full pulsate"></div>
+<span class="text-xs font-medium text-primary uppercase tracking-widest">System Healthy</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<p class="text-[10px] uppercase tracking-tighter text-slate-500 font-mono">Mission Time</p>
+<p class="font-mono text-sm">2024-05-24 | 14:42:08 UTC</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 hover:bg-white/10 rounded-lg transition-colors">
+<span class="material-icons-round text-slate-400">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent-blue p-0.5">
+<img alt="Admin Profile" class="w-full h-full rounded-full object-cover" data-alt="Close up portrait of a professional male administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtTTU6h3W87H4MwYG_1BCoAEccuO_RqMJjU0fDbRtpfJIWrJbhmfyV37SmijPRv-5F1mXHFpbaDD1OulfeiKeqi8GTVDktuiEMaUeZWw79TE5YDIJJ90jhdgWp6_VmZZwPsY1KeGOsi_93nIPCeOYCOEqz95LfLs-Djq8kih_TAvEIz76DYv6x_uLtLP9u44P1C-hMIysuuW0FKn642xoaoybDr5XCVAigep5yIl_9FjYN7bdrzxeLZCayCYZR7nWjn83hNH-s8Q"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Layout -->
+<main class="flex-1 flex overflow-hidden p-4 gap-4">
+<!-- Left Column: System Metrics -->
+<aside class="w-80 flex flex-col gap-4 overflow-y-auto scrollbar-hide">
+<div class="bg-white/5 border border-slate-200 dark:border-border-dark rounded-xl p-5">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+<span class="material-icons-round text-sm">analytics</span> System Metrics
+                </h2>
+<div class="space-y-6">
+<!-- Metric: Intent -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-accent-blue">Intent Synthesis</span>
+<span>88%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-accent-blue rounded-full" style="width: 88%"></div>
+</div>
+</div>
+<!-- Metric: Governance -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-accent-purple">Governance Guard</span>
+<span>94%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-accent-purple rounded-full" style="width: 94%"></div>
+</div>
+</div>
+<!-- Metric: Management -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium">
+<span class="text-accent-amber">Asset Management</span>
+<span>62%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-accent-amber rounded-full" style="width: 62%"></div>
+</div>
+</div>
+<!-- Metric: Operations -->
+<div class="space-y-2">
+<div class="flex justify-between text-xs font-medium text-primary">
+<span>Operations Core</span>
+<span>99%</span>
+</div>
+<div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full glow-green" style="width: 99%"></div>
+</div>
+</div>
+</div>
+<div class="mt-8 grid grid-cols-2 gap-4">
+<div class="flex flex-col items-center p-3 rounded-lg bg-white/5 border border-white/5">
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="absolute w-full h-full -rotate-90">
+<circle class="text-slate-800" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-primary" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="30" stroke-width="3"></circle>
+</svg>
+<span class="text-[10px] font-bold">82%</span>
+</div>
+<span class="text-[9px] uppercase mt-2 text-slate-500">Node Load</span>
+</div>
+<div class="flex flex-col items-center p-3 rounded-lg bg-white/5 border border-white/5">
+<div class="relative w-12 h-12 flex items-center justify-center">
+<svg class="absolute w-full h-full -rotate-90">
+<circle class="text-slate-800" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-width="3"></circle>
+<circle class="text-accent-blue" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" stroke-dasharray="125.6" stroke-dashoffset="10" stroke-width="3"></circle>
+</svg>
+<span class="text-[10px] font-bold">92%</span>
+</div>
+<span class="text-[9px] uppercase mt-2 text-slate-500">Uptime</span>
+</div>
+</div>
+</div>
+<div class="bg-white/5 border border-slate-200 dark:border-border-dark rounded-xl p-5 flex-1">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">Resource Distribution</h2>
+<div class="space-y-4">
+<div class="p-3 bg-white/5 rounded-lg">
+<div class="flex justify-between mb-1">
+<span class="text-[10px] font-mono">CPU CLUSTER 01</span>
+<span class="text-[10px] font-mono text-primary">STABLE</span>
+</div>
+<div class="flex gap-1 h-3">
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary/20"></div>
+<div class="flex-1 bg-primary/20"></div>
+</div>
+</div>
+<div class="p-3 bg-white/5 rounded-lg">
+<div class="flex justify-between mb-1">
+<span class="text-[10px] font-mono">GPU CLUSTER 04</span>
+<span class="text-[10px] font-mono text-accent-amber">HIGH LOAD</span>
+</div>
+<div class="flex gap-1 h-3">
+<div class="flex-1 bg-accent-amber"></div>
+<div class="flex-1 bg-accent-amber"></div>
+<div class="flex-1 bg-accent-amber"></div>
+<div class="flex-1 bg-accent-amber"></div>
+<div class="flex-1 bg-accent-amber/20"></div>
+</div>
+</div>
+<div class="p-3 bg-white/5 rounded-lg">
+<div class="flex justify-between mb-1">
+<span class="text-[10px] font-mono">NEURAL BUS</span>
+<span class="text-[10px] font-mono text-primary">IDLE</span>
+</div>
+<div class="flex gap-1 h-3">
+<div class="flex-1 bg-primary"></div>
+<div class="flex-1 bg-primary/20"></div>
+<div class="flex-1 bg-primary/20"></div>
+<div class="flex-1 bg-primary/20"></div>
+<div class="flex-1 bg-primary/20"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Center Column: Project Constellation -->
+<section class="flex-1 flex flex-col gap-4">
+<div class="flex-1 bg-white/5 border border-slate-200 dark:border-border-dark rounded-xl relative overflow-hidden flex flex-col">
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;"></div>
+<div class="p-6 relative z-10 flex justify-between items-start">
+<div>
+<h2 class="text-sm font-bold uppercase tracking-widest">Project Constellation</h2>
+<p class="text-xs text-slate-500 font-mono">Visualizing 7 Active Neural Pathways</p>
+</div>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-primary/10 border border-primary/30 text-primary text-[10px] uppercase font-bold rounded">Live Map</button>
+<button class="px-3 py-1 bg-white/5 border border-white/10 text-white text-[10px] uppercase font-bold rounded">Topology</button>
+</div>
+</div>
+<!-- Visualization Area -->
+<div class="flex-1 relative flex items-center justify-center">
+<!-- Network Background Svg -->
+<svg class="absolute inset-0 w-full h-full opacity-20">
+<line class="network-line" x1="20%" x2="50%" y1="30%" y2="50%"></line>
+<line class="network-line" x1="80%" x2="50%" y1="35%" y2="50%"></line>
+<line class="network-line" x1="30%" x2="50%" y1="75%" y2="50%"></line>
+<line class="network-line" x1="70%" x2="50%" y1="70%" y2="50%"></line>
+<line class="network-line" x1="20%" x2="30%" y1="30%" y2="75%"></line>
+<line class="network-line" x1="80%" x2="70%" y1="35%" y2="70%"></line>
+</svg>
+<!-- Nodes -->
+<!-- Central Node -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+<div class="w-32 h-32 rounded-full border border-primary/40 flex items-center justify-center dashed-circle">
+<div class="w-20 h-20 rounded-full bg-primary/10 border border-primary flex items-center justify-center glow-green">
+<div class="text-center">
+<p class="text-[8px] uppercase text-primary/70 font-bold">Master</p>
+<p class="text-xl font-bold font-mono">CORE</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Surrounding Nodes -->
+<div class="absolute left-[20%] top-[30%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-12 h-12 rounded-full bg-accent-blue/20 border border-accent-blue flex items-center justify-center">
+<span class="material-icons-round text-accent-blue text-sm">auto_awesome</span>
+</div>
+<p class="text-[10px] mt-2 font-mono">Alpha-7</p>
+</div>
+<div class="absolute left-[80%] top-[35%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-14 h-14 rounded-full bg-accent-purple/20 border border-accent-purple flex items-center justify-center">
+<span class="material-icons-round text-accent-purple text-lg">security</span>
+</div>
+<p class="text-[10px] mt-2 font-mono">Sentry-X</p>
+</div>
+<div class="absolute left-[30%] top-[75%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-10 h-10 rounded-full bg-accent-amber/20 border border-accent-amber flex items-center justify-center">
+<span class="material-icons-round text-accent-amber text-sm">hub</span>
+</div>
+<p class="text-[10px] mt-2 font-mono">Relay-B</p>
+</div>
+<div class="absolute left-[70%] top-[70%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
+<div class="w-16 h-16 rounded-full bg-primary/20 border border-primary flex items-center justify-center glow-green">
+<span class="material-icons-round text-primary">bolt</span>
+</div>
+<p class="text-[10px] mt-2 font-mono">Gen-Omni</p>
+</div>
+</div>
+<!-- Footer Stats -->
+<div class="p-6 bg-white/5 border-t border-white/5 flex gap-12">
+<div>
+<p class="text-slate-500 text-[10px] uppercase font-bold mb-1 tracking-widest">Global Synapses</p>
+<p class="text-2xl font-mono font-bold">14,802</p>
+</div>
+<div>
+<p class="text-slate-500 text-[10px] uppercase font-bold mb-1 tracking-widest">Active Peers</p>
+<p class="text-2xl font-mono font-bold">2,140</p>
+</div>
+<div>
+<p class="text-slate-500 text-[10px] uppercase font-bold mb-1 tracking-widest">Latency Avg</p>
+<p class="text-2xl font-mono font-bold text-primary">12ms</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Column: Performance & Alerts -->
+<aside class="w-96 flex flex-col gap-4">
+<!-- Sparkline Card -->
+<div class="bg-white/5 border border-slate-200 dark:border-border-dark rounded-xl p-5">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Activity Trend</h2>
+<span class="text-[10px] text-slate-500 font-mono">Last 30 Days</span>
+</div>
+<div class="h-16 flex items-end gap-1">
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[55%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[35%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[65%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[80%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[75%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[90%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[100%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[85%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[70%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[95%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[60%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[40%] rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 hover:bg-primary/40 transition-colors h-[50%] rounded-t-sm"></div>
+</div>
+</div>
+<!-- Alerts List -->
+<div class="flex-1 bg-white/5 border border-slate-200 dark:border-border-dark rounded-xl p-5 flex flex-col overflow-hidden">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4 flex items-center justify-between">
+<span>Active Alerts</span>
+<span class="bg-accent-red text-white text-[9px] px-1.5 py-0.5 rounded">3 CRITICAL</span>
+</h2>
+<div class="space-y-3 mb-6">
+<div class="flex gap-3 p-3 bg-accent-red/10 border border-accent-red/20 rounded-lg">
+<span class="material-icons-round text-accent-red text-sm">warning</span>
+<div class="flex-1">
+<p class="text-xs font-bold">Latency Spike in Cluster 04</p>
+<p class="text-[10px] text-slate-400">Response time &gt; 500ms</p>
+</div>
+<span class="text-[10px] font-mono text-slate-500">2m ago</span>
+</div>
+<div class="flex gap-3 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-lg">
+<span class="material-icons-round text-accent-amber text-sm">report_problem</span>
+<div class="flex-1">
+<p class="text-xs font-bold">Memory Threshold Reach</p>
+<p class="text-[10px] text-slate-400">Instance Alpha-7 at 92% capacity</p>
+</div>
+<span class="text-[10px] font-mono text-slate-500">14m ago</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col">
+<h2 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Live Session Logs</h2>
+<div class="flex-1 bg-black/30 rounded-lg p-3 font-mono text-[10px] text-slate-400 overflow-y-auto space-y-1.5 scrollbar-hide">
+<p><span class="text-slate-600">[14:41:02]</span> AUTH_SUCCESS: user_root</p>
+<p><span class="text-slate-600">[14:40:55]</span> <span class="text-primary">DB_CONNECT: primary_node_established</span></p>
+<p><span class="text-slate-600">[14:40:42]</span> EVENT: cluster_04_migration_started</p>
+<p><span class="text-slate-600">[14:39:18]</span> SYNC: neural_bridge_handshake</p>
+<p><span class="text-slate-600">[14:38:59]</span> <span class="text-accent-amber">WARN: jitter_threshold_exceeded_b2</span></p>
+<p><span class="text-slate-600">[14:37:22]</span> INFO: node_alpha_online</p>
+<p><span class="text-slate-600">[14:36:11]</span> AUTH_SUCCESS: sys_auto_scale</p>
+<p><span class="text-slate-600">[14:35:45]</span> RECOVERY: service_mesh_01</p>
+<p><span class="text-slate-600">[14:34:02]</span> HEARTBEAT: all_systems_nominal</p>
+<p><span class="text-slate-600">[14:33:55]</span> HEARTBEAT: all_systems_nominal</p>
+<p><span class="text-slate-600">[14:33:42]</span> HEARTBEAT: all_systems_nominal</p>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer Stats / Status Bar -->
+<footer class="h-8 border-t border-slate-200 dark:border-border-dark bg-white/5 flex items-center justify-between px-6">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 bg-primary rounded-full"></div>
+<span class="text-[10px] font-mono uppercase text-slate-500">Global Node: 204.1.22.8</span>
+</div>
+<div class="flex items-center gap-1.5">
+<div class="w-1.5 h-1.5 bg-primary rounded-full"></div>
+<span class="text-[10px] font-mono uppercase text-slate-500">Link: Encrypted AES-256</span>
+</div>
+</div>
+<div class="text-[10px] font-mono text-slate-600">
+            NERVE CENTER v4.2.0-STABLE | © 2024 ORBITAL SYSTEMS
+        </div>
+</footer>
+</body></html>

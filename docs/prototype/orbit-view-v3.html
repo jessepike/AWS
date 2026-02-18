@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nerve Center — Orbit View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#06b6d4",
+        "primary-blue": "#3b82f6",
+        "bg-deep": "#030712",
+        "glass": "rgba(15, 23, 42, 0.4)",
+        "glass-border": "rgba(255, 255, 255, 0.08)",
+      },
+      fontFamily: { "display": ["Space Grotesk", "sans-serif"] },
+      animation: {
+        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 8s ease-in-out infinite',
+        'float-delayed': 'float 8s ease-in-out 2s infinite',
+        'glow-pulse': 'glow-pulse 3s ease-in-out infinite alternate',
+      },
+      keyframes: {
+        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } },
+        'glow-pulse': { '0%': { opacity: '0.4' }, '100%': { opacity: '0.8' } },
+      },
+    },
+  },
+}
+</script>
+<style>
+  body {
+    background-color: #020408;
+    background-image:
+      radial-gradient(at 15% 15%, rgba(6, 182, 212, 0.08) 0px, transparent 50%),
+      radial-gradient(at 85% 80%, rgba(124, 58, 237, 0.06) 0px, transparent 50%),
+      linear-gradient(to bottom, #0f172a 0%, #020617 100%);
+    background-attachment: fixed;
+    font-family: 'Space Grotesk', sans-serif;
+    color: #e2e8f0;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.15); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.3); }
+
+  .glass {
+    background: rgba(15, 23, 42, 0.35);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  .glass-heavy {
+    background: linear-gradient(145deg, rgba(30, 41, 59, 0.5) 0%, rgba(15, 23, 42, 0.7) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .constellation-bg {
+    background: radial-gradient(ellipse at center, rgba(6,182,212,0.03) 0%, transparent 70%);
+  }
+
+  .node-group { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  .node-group:hover { filter: brightness(1.3); }
+  .node-group:hover .node-ring { stroke-opacity: 0.8; }
+  .node-group:hover .node-label { fill-opacity: 1; }
+
+  .status-orb {
+    border-radius: 50%;
+    position: relative;
+  }
+  .status-orb::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 4px;
+    border-radius: 50%;
+    filter: blur(3px);
+    opacity: 0.5;
+  }
+  .orb-green { background: radial-gradient(circle at 35% 35%, #6ee7b7, #10b981, #065f46); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+  .orb-green::after { background: #10b981; }
+  .orb-yellow { background: radial-gradient(circle at 35% 35%, #fde68a, #f59e0b, #92400e); box-shadow: 0 0 12px rgba(245,158,11,0.5); }
+  .orb-yellow::after { background: #f59e0b; }
+  .orb-red { background: radial-gradient(circle at 35% 35%, #fca5a5, #ef4444, #991b1b); box-shadow: 0 0 16px rgba(239,68,68,0.6); }
+  .orb-red::after { background: #ef4444; }
+
+  .flag-card { transition: transform 0.2s ease; }
+  .flag-card:hover { transform: translateX(3px); }
+</style>
+</head>
+<body class="min-h-screen flex flex-col overflow-hidden">
+
+<!-- Header -->
+<header class="h-16 border-b border-white/5 bg-slate-900/30 backdrop-blur-md flex items-center justify-between px-8 z-50 flex-shrink-0">
+  <div class="flex items-center gap-4">
+    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/20 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.3)]">
+      <span class="material-icons text-cyan-400 text-xl" style="text-shadow: 0 0 8px rgba(6,182,212,0.8)">hub</span>
+    </div>
+    <div>
+      <h1 class="text-lg font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">NERVE CENTER</h1>
+    </div>
+  </div>
+  <div class="flex items-center gap-3 px-4 py-1.5 rounded-full bg-emerald-900/20 border border-emerald-500/25 backdrop-blur-sm">
+    <div class="relative flex h-2.5 w-2.5">
+      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+    </div>
+    <span class="text-emerald-400 text-xs font-semibold tracking-wider uppercase">System Healthy</span>
+  </div>
+  <div class="text-slate-500 font-mono text-xs">
+    <span class="text-slate-300">FEB 11, 2026</span>
+    <span class="ml-3 text-[10px] px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/15 text-cyan-400">ORBIT VIEW</span>
+  </div>
+</header>
+
+<!-- Main Grid -->
+<main class="flex-1 p-5 grid grid-cols-12 gap-5 h-[calc(100vh-4rem)] overflow-hidden">
+
+  <!-- LEFT COLUMN -->
+  <aside class="col-span-3 flex flex-col gap-4 h-full overflow-y-auto pr-1">
+
+    <!-- Layer Vitals — Circular Gauges -->
+    <div class="glass rounded-2xl p-5 relative overflow-hidden">
+      <div class="absolute -top-12 -right-12 w-28 h-28 bg-cyan-500/10 rounded-full blur-3xl"></div>
+      <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2 mb-5">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Layer Vitals
+      </h2>
+      <div class="grid grid-cols-2 gap-6 place-items-center">
+        <!-- Intent -->
+        <div class="flex flex-col items-center gap-2">
+          <div class="relative w-[72px] h-[72px] flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#3b82f6" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="32" style="filter: drop-shadow(0 0 6px rgba(59,130,246,0.5))"/>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-lg font-bold text-white leading-none">85</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-[11px] font-medium text-blue-400">Intent</div>
+            <div class="text-[9px] text-slate-500 font-mono">H:80 / A:20</div>
+          </div>
+        </div>
+        <!-- Governance -->
+        <div class="flex flex-col items-center gap-2">
+          <div class="relative w-[72px] h-[72px] flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#a855f7" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="107" style="filter: drop-shadow(0 0 6px rgba(168,85,247,0.5))"/>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-lg font-bold text-white leading-none">50</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-[11px] font-medium text-purple-400">Governance</div>
+            <div class="text-[9px] text-slate-500 font-mono">H:50 / A:50</div>
+          </div>
+        </div>
+        <!-- Management -->
+        <div class="flex flex-col items-center gap-2">
+          <div class="relative w-[72px] h-[72px] flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="150" style="filter: drop-shadow(0 0 6px rgba(245,158,11,0.5))"/>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-lg font-bold text-white leading-none">30</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-[11px] font-medium text-amber-400">Management</div>
+            <div class="text-[9px] text-slate-500 font-mono">H:30 / A:70</div>
+          </div>
+        </div>
+        <!-- Operations -->
+        <div class="flex flex-col items-center gap-2">
+          <div class="relative w-[72px] h-[72px] flex items-center justify-center">
+            <svg class="w-full h-full -rotate-90" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="5"/>
+              <circle cx="40" cy="40" r="34" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round"
+                stroke-dasharray="213.6" stroke-dashoffset="21" style="filter: drop-shadow(0 0 6px rgba(16,185,129,0.5))"/>
+            </svg>
+            <div class="absolute flex flex-col items-center">
+              <span class="text-lg font-bold text-white leading-none">90</span>
+            </div>
+          </div>
+          <div class="text-center">
+            <div class="text-[11px] font-medium text-emerald-400">Operations</div>
+            <div class="text-[9px] text-slate-500 font-mono">H:10 / A:90</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ring Status -->
+    <div class="glass rounded-2xl p-5 flex-1 flex flex-col">
+      <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Ring Status
+      </h2>
+      <div class="flex-1 flex flex-col justify-around gap-2">
+        <div class="flex items-center justify-between py-1.5 group">
+          <span class="text-[12px] font-medium text-slate-300 group-hover:text-white transition-colors">Governance</span>
+          <div class="status-orb orb-green w-5 h-5"></div>
+        </div>
+        <div class="flex items-center justify-between py-1.5 group">
+          <span class="text-[12px] font-medium text-slate-300 group-hover:text-white transition-colors">Intelligence</span>
+          <div class="status-orb orb-yellow w-5 h-5"></div>
+        </div>
+        <div class="flex items-center justify-between py-1.5 group">
+          <span class="text-[12px] font-medium text-slate-300 group-hover:text-white transition-colors">Knowledge</span>
+          <div class="status-orb orb-green w-5 h-5"></div>
+        </div>
+        <div class="flex items-center justify-between py-1.5 group">
+          <span class="text-[12px] font-medium text-slate-300 group-hover:text-white transition-colors">Control</span>
+          <div class="status-orb orb-green w-5 h-5"></div>
+        </div>
+        <div class="flex items-center justify-between p-2.5 rounded-lg bg-red-500/8 border border-red-500/15">
+          <span class="text-[12px] font-bold text-red-400">Observability</span>
+          <div class="relative">
+            <div class="animate-ping absolute inset-0 rounded-full bg-red-500 opacity-40"></div>
+            <div class="status-orb orb-red w-5 h-5"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Stats -->
+    <div class="glass rounded-2xl p-5">
+      <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2 mb-4">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> System Metrics
+      </h2>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="text-center p-2 rounded-lg bg-white/[0.02]">
+          <div class="text-xl font-bold text-white">60</div>
+          <div class="text-[9px] text-slate-500 uppercase tracking-wider">Capabilities</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-white/[0.02]">
+          <div class="text-xl font-bold text-white">7</div>
+          <div class="text-[9px] text-slate-500 uppercase tracking-wider">Components</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-white/[0.02]">
+          <div class="text-xl font-bold text-cyan-400">142</div>
+          <div class="text-[9px] text-slate-500 uppercase tracking-wider">KB Entries</div>
+        </div>
+        <div class="text-center p-2 rounded-lg bg-white/[0.02]">
+          <div class="text-xl font-bold text-purple-400">87</div>
+          <div class="text-[9px] text-slate-500 uppercase tracking-wider">Memories</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CENTER — Project Constellation -->
+  <section class="col-span-6 flex flex-col h-full rounded-2xl relative overflow-hidden border border-white/[0.04] bg-[#030712]">
+    <!-- Atmospheric background -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-cyan-600/[0.04] rounded-full blur-[120px] animate-pulse-slow"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-indigo-600/[0.04] rounded-full blur-[100px]"></div>
+    </div>
+    <!-- Grid overlay -->
+    <div class="absolute inset-0 z-0 opacity-[0.08] pointer-events-none" style="background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 48px 48px;"></div>
+
+    <!-- Header -->
+    <div class="absolute top-5 left-6 z-30">
+      <h2 class="text-xs uppercase tracking-[0.2em] text-cyan-300/70 font-bold mb-1" style="text-shadow: 0 0 10px rgba(6,182,212,0.3)">Project Constellation</h2>
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-[9px] text-slate-500 font-mono tracking-widest">LIVE TOPOLOGY</span>
+      </div>
+    </div>
+
+    <!-- Stage Legend -->
+    <div class="absolute top-5 right-6 z-30 flex items-center gap-3">
+      <span class="flex items-center gap-1.5 text-[9px] text-slate-500"><span class="w-2 h-2 rounded-full bg-emerald-500/60"></span>Develop</span>
+      <span class="flex items-center gap-1.5 text-[9px] text-slate-500"><span class="w-2 h-2 rounded-full bg-amber-500/60"></span>Deliver</span>
+      <span class="flex items-center gap-1.5 text-[9px] text-slate-500"><span class="w-2 h-2 rounded-full bg-purple-500/60"></span>Design</span>
+      <span class="flex items-center gap-1.5 text-[9px] text-slate-500"><span class="w-2 h-2 rounded-full bg-slate-500/60"></span>Operate</span>
+    </div>
+
+    <!-- SVG Constellation -->
+    <svg class="absolute inset-0 w-full h-full z-10" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <filter id="glow-line">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-node">
+          <feGaussianBlur stdDeviation="4" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <linearGradient id="line-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="rgba(6,182,212,0)" />
+          <stop offset="50%" stop-color="rgba(6,182,212,0.4)" />
+          <stop offset="100%" stop-color="rgba(6,182,212,0)" />
+        </linearGradient>
+      </defs>
+
+      <!-- Connection Lines -->
+      <g filter="url(#glow-line)" opacity="0.5">
+        <!-- ADF to KB --><line x1="400" y1="270" x2="230" y2="200" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- ADF to Memory --><line x1="400" y1="270" x2="560" y2="380" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- ADF to Krypton --><line x1="400" y1="270" x2="580" y2="180" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- ADF to Registry --><line x1="400" y1="270" x2="300" y2="420" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- ADF to AWS --><line x1="400" y1="270" x2="470" y2="480" stroke="rgba(148,163,184,0.15)" stroke-width="1" stroke-dasharray="4,4"/>
+        <!-- Krypton to KB --><line x1="580" y1="180" x2="230" y2="200" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- Krypton to Memory --><line x1="580" y1="180" x2="560" y2="380" stroke="url(#line-grad)" stroke-width="1"/>
+        <!-- Krypton to WM --><line x1="580" y1="180" x2="650" y2="440" stroke="rgba(168,85,247,0.2)" stroke-width="1"/>
+        <!-- KB to LT --><line x1="230" y1="200" x2="130" y2="350" stroke="url(#line-grad)" stroke-width="1"/>
+      </g>
+
+      <!-- ADF — Central, Largest -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="400" cy="270" r="48" fill="rgba(6,182,212,0.04)" stroke="rgba(6,182,212,0.25)" stroke-width="1.5" filter="url(#glow-node)">
+          <animate attributeName="r" values="48;50;48" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="400" cy="270" r="38" fill="rgba(3,7,18,0.8)" stroke="rgba(6,182,212,0.35)" stroke-width="1.5" class="node-ring"/>
+        <text x="400" y="265" text-anchor="middle" fill="#22d3ee" font-size="14" font-weight="700" style="text-shadow: 0 0 8px rgba(6,182,212,0.6)">ADF</text>
+        <text x="400" y="280" text-anchor="middle" fill="rgba(6,182,212,0.5)" font-size="8" font-weight="500" letter-spacing="2" class="node-label">DEVELOP</text>
+      </g>
+
+      <!-- Knowledge Base -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="230" cy="200" r="32" fill="rgba(3,7,18,0.7)" stroke="rgba(16,185,129,0.3)" stroke-width="1.5"/>
+        <text x="230" y="196" text-anchor="middle" fill="#6ee7b7" font-size="11" font-weight="600">KB</text>
+        <text x="230" y="210" text-anchor="middle" fill="rgba(16,185,129,0.4)" font-size="7" letter-spacing="1.5">DEVELOP</text>
+      </g>
+
+      <!-- Krypton -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="580" cy="180" r="30" fill="rgba(3,7,18,0.7)" stroke="rgba(16,185,129,0.3)" stroke-width="1.5"/>
+        <text x="580" y="176" text-anchor="middle" fill="#6ee7b7" font-size="10" font-weight="600">KRYPTON</text>
+        <text x="580" y="190" text-anchor="middle" fill="rgba(16,185,129,0.4)" font-size="7" letter-spacing="1.5">DEVELOP</text>
+      </g>
+
+      <!-- Memory -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="560" cy="380" r="28" fill="rgba(3,7,18,0.7)" stroke="rgba(245,158,11,0.35)" stroke-width="1.5" style="filter: drop-shadow(0 0 8px rgba(245,158,11,0.15))"/>
+        <text x="560" y="376" text-anchor="middle" fill="#fbbf24" font-size="10" font-weight="600">MEMORY</text>
+        <text x="560" y="390" text-anchor="middle" fill="rgba(245,158,11,0.4)" font-size="7" letter-spacing="1.5">DELIVER</text>
+      </g>
+
+      <!-- Capabilities Registry -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="300" cy="420" r="24" fill="rgba(3,7,18,0.7)" stroke="rgba(16,185,129,0.25)" stroke-width="1"/>
+        <text x="300" y="416" text-anchor="middle" fill="#6ee7b7" font-size="9" font-weight="600">REG</text>
+        <text x="300" y="428" text-anchor="middle" fill="rgba(16,185,129,0.35)" font-size="6" letter-spacing="1.5">DEVELOP</text>
+      </g>
+
+      <!-- Link Triage -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="130" cy="350" r="20" fill="rgba(3,7,18,0.6)" stroke="rgba(16,185,129,0.2)" stroke-width="1"/>
+        <text x="130" y="347" text-anchor="middle" fill="rgba(16,185,129,0.6)" font-size="8" font-weight="600">LT</text>
+        <text x="130" y="358" text-anchor="middle" fill="rgba(16,185,129,0.3)" font-size="6" letter-spacing="1">DEVELOP</text>
+      </g>
+
+      <!-- Work Management -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="650" cy="440" r="22" fill="rgba(3,7,18,0.6)" stroke="rgba(168,85,247,0.3)" stroke-width="1" style="filter: drop-shadow(0 0 6px rgba(168,85,247,0.15))"/>
+        <text x="650" y="437" text-anchor="middle" fill="rgba(168,85,247,0.7)" font-size="8" font-weight="600">WM</text>
+        <text x="650" y="448" text-anchor="middle" fill="rgba(168,85,247,0.35)" font-size="6" letter-spacing="1">DESIGN</text>
+      </g>
+
+      <!-- System Governance (meta, dashed) -->
+      <g class="node-group" style="cursor:pointer">
+        <circle cx="470" cy="480" r="20" fill="rgba(3,7,18,0.4)" stroke="rgba(148,163,184,0.2)" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="470" y="477" text-anchor="middle" fill="rgba(148,163,184,0.5)" font-size="8" font-weight="500">GOV</text>
+        <text x="470" y="488" text-anchor="middle" fill="rgba(148,163,184,0.3)" font-size="6" letter-spacing="1">OPERATE</text>
+      </g>
+    </svg>
+
+    <!-- Zoom Controls -->
+    <div class="absolute bottom-5 right-5 z-30 flex gap-1.5">
+      <button class="glass p-2 rounded-lg hover:bg-white/10 text-slate-400 transition-all"><span class="material-icons text-sm">add</span></button>
+      <button class="glass p-2 rounded-lg hover:bg-white/10 text-slate-400 transition-all"><span class="material-icons text-sm">remove</span></button>
+      <button class="glass p-2 rounded-lg hover:bg-white/10 text-slate-400 transition-all"><span class="material-icons text-sm">center_focus_strong</span></button>
+    </div>
+  </section>
+
+  <!-- RIGHT COLUMN -->
+  <aside class="col-span-3 flex flex-col gap-4 h-full overflow-y-auto pl-1">
+
+    <!-- Activity Pulse -->
+    <div class="glass-heavy rounded-2xl p-5 relative overflow-hidden">
+      <div class="flex items-center justify-between mb-1">
+        <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Activity Pulse
+        </h2>
+        <span class="text-[9px] font-mono text-cyan-300 bg-cyan-900/30 border border-cyan-500/20 px-2 py-0.5 rounded">30D</span>
+      </div>
+      <div class="h-28 w-full relative mt-3">
+        <div class="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-cyan-600/[0.06] to-transparent"></div>
+        <svg class="absolute inset-0 w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="area-fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(6,182,212,0.3)"/>
+              <stop offset="100%" stop-color="rgba(6,182,212,0)"/>
+            </linearGradient>
+            <filter id="line-glow"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          </defs>
+          <path d="M0,80 Q15,75 30,70 T60,65 T90,55 T120,60 T150,45 T180,50 T210,35 T240,25 T270,20 T300,15" fill="url(#area-fill)"/>
+          <path d="M0,80 Q15,75 30,70 T60,65 T90,55 T120,60 T150,45 T180,50 T210,35 T240,25 T270,20 T300,15" fill="none" stroke="#06b6d4" stroke-width="2" filter="url(#line-glow)" stroke-linecap="round"/>
+          <circle cx="300" cy="15" r="3" fill="#06b6d4">
+            <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+      <div class="flex justify-between mt-2 text-[8px] text-slate-600 font-mono tracking-widest">
+        <span>JAN 12</span>
+        <span class="text-cyan-500">LIVE</span>
+      </div>
+    </div>
+
+    <!-- Attention Flags -->
+    <div class="glass rounded-2xl p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Priority Alerts
+        </h2>
+        <span class="text-[10px] font-mono text-slate-500">3</span>
+      </div>
+      <div class="space-y-3">
+        <div class="flag-card flex items-start gap-3 p-3 bg-gradient-to-r from-red-500/[0.06] to-transparent border-l-2 border-red-500 rounded-r-lg">
+          <span class="material-icons text-red-500 text-base mt-0.5" style="text-shadow: 0 0 8px rgba(239,68,68,0.4)">flag</span>
+          <div>
+            <h3 class="text-[10px] font-bold text-red-400 uppercase tracking-wide">Work Mgmt Stalled</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">No activity for 14 days. Design stage.</p>
+          </div>
+        </div>
+        <div class="flag-card flex items-start gap-3 p-3 bg-gradient-to-r from-amber-500/[0.06] to-transparent border-l-2 border-amber-500 rounded-r-lg">
+          <span class="material-icons text-amber-500 text-base mt-0.5">report_problem</span>
+          <div>
+            <h3 class="text-[10px] font-bold text-amber-400 uppercase tracking-wide">Observability Gaps</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">Least built ring. Blocks autonomy scaling.</p>
+          </div>
+        </div>
+        <div class="flag-card flex items-start gap-3 p-3 bg-gradient-to-r from-blue-500/[0.06] to-transparent border-l-2 border-blue-500 rounded-r-lg">
+          <span class="material-icons text-blue-400 text-base mt-0.5">auto_awesome</span>
+          <div>
+            <h3 class="text-[10px] font-bold text-blue-400 uppercase tracking-wide">KB Synthesis Ready</h3>
+            <p class="text-[10px] text-slate-500 mt-0.5">8 entries on agent-orchestration unlinked.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="glass rounded-2xl p-5 flex-1">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-[10px] uppercase tracking-[0.15em] text-slate-400 font-bold flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span> Live Sessions
+        </h2>
+        <button class="text-[9px] text-cyan-400 hover:text-cyan-300 uppercase font-bold tracking-wider">All</button>
+      </div>
+      <div class="space-y-0 divide-y divide-white/[0.04]">
+        <div class="py-3 flex items-start gap-3 group cursor-pointer">
+          <div class="h-2 w-2 rounded-full bg-emerald-500 mt-1.5 shadow-[0_0_6px_rgba(16,185,129,0.6)]"></div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <h4 class="text-[12px] font-medium text-slate-200 group-hover:text-cyan-200 transition-colors">ADF</h4>
+              <span class="text-[9px] text-slate-600 font-mono">2h ago</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Ecosystem alignment plugin v1.0</p>
+          </div>
+        </div>
+        <div class="py-3 flex items-start gap-3 group cursor-pointer">
+          <div class="h-2 w-2 rounded-full bg-emerald-500 mt-1.5"></div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <h4 class="text-[12px] font-medium text-slate-200 group-hover:text-cyan-200 transition-colors">Capabilities Registry</h4>
+              <span class="text-[9px] text-slate-600 font-mono">5h ago</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Gap analysis, schema updates</p>
+          </div>
+        </div>
+        <div class="py-3 flex items-start gap-3 group cursor-pointer">
+          <div class="h-2 w-2 rounded-full bg-purple-500 mt-1.5"></div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <h4 class="text-[12px] font-medium text-slate-200 group-hover:text-cyan-200 transition-colors">Krypton</h4>
+              <span class="text-[9px] text-slate-600 font-mono">1d ago</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">Memory gatherer, /capture routing</p>
+          </div>
+        </div>
+        <div class="py-3 flex items-start gap-3 group cursor-pointer">
+          <div class="h-2 w-2 rounded-full bg-amber-500 mt-1.5"></div>
+          <div class="flex-1">
+            <div class="flex justify-between">
+              <h4 class="text-[12px] font-medium text-slate-200 group-hover:text-cyan-200 transition-colors">Memory Layer</h4>
+              <span class="text-[9px] text-slate-600 font-mono">2d ago</span>
+            </div>
+            <p class="text-[10px] text-slate-500 mt-0.5">MCP delivery, dual-store testing</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</main>
+
+<!-- Footer -->
+<footer class="h-8 border-t border-white/[0.04] flex items-center justify-between px-8 text-[9px] text-slate-600 font-mono flex-shrink-0">
+  <span>NERVE CENTER v0.1 PROTOTYPE</span>
+  <span>7 COMPONENTS | 60 CAPABILITIES | 25 SPECS | 24 BACKLOG ITEMS</span>
+  <div class="flex items-center gap-4">
+    <span class="text-cyan-500 cursor-pointer">L0: ORBIT</span>
+    <span class="cursor-pointer hover:text-slate-400">L1: DOMAIN</span>
+    <span class="cursor-pointer hover:text-slate-400">L2: ENTITY</span>
+    <span class="cursor-pointer hover:text-slate-400">L3: DATA</span>
+  </div>
+</footer>
+
+</body></html>

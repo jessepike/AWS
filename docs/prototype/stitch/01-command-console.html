@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Manual Override Command Console</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=JetBrains+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0d59f2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                        "terminal-bg": "#0f172a",
+                        "danger": "#ef4444",
+                        "warning": "#f59e0b",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono", "monospace"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "glow": "0 0 15px -3px rgba(13, 89, 242, 0.5)",
+                        "glow-red": "0 0 20px -3px rgba(239, 68, 68, 0.6)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .cursor-blink {
+            animation: blink 1s step-end infinite;
+        }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-track {
+            background: rgba(13, 89, 242, 0.05);
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: rgba(13, 89, 242, 0.3);
+            border-radius: 10px;
+        }
+        .glow-border {
+            box-shadow: 0 0 20px rgba(13, 89, 242, 0.2), inset 0 0 10px rgba(13, 89, 242, 0.1);
+        }
+        .pulse-green {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-200 min-h-screen overflow-hidden">
+<!-- Mock Background: Orbit View Dashboard -->
+<div class="fixed inset-0 z-0 opacity-40 pointer-events-none grayscale">
+<div class="absolute inset-0 bg-gradient-to-br from-background-dark via-slate-900 to-black"></div>
+<div class="grid grid-cols-4 gap-6 p-8">
+<div class="h-64 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+<div class="h-64 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+<div class="h-64 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+<div class="h-64 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+<div class="col-span-2 h-96 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+<div class="col-span-2 h-96 rounded-xl border border-primary/20 bg-primary/5 backdrop-blur-sm"></div>
+</div>
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-primary/10 rounded-full"></div>
+</div>
+<!-- Main Modal Overlay Container -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/40">
+<div class="w-full max-w-6xl aspect-[16/10] bg-terminal-bg/95 border-2 border-primary/50 rounded-xl glow-border flex flex-col overflow-hidden shadow-2xl">
+<!-- Top Section: Header -->
+<div class="h-16 border-b border-primary/30 flex items-center justify-between px-6 bg-primary/5">
+<div class="flex items-center gap-4">
+<div class="flex gap-1.5">
+<div class="w-3 h-3 rounded-full bg-danger/50"></div>
+<div class="w-3 h-3 rounded-full bg-warning/50"></div>
+<div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+</div>
+<h1 class="text-xl font-bold tracking-widest text-primary flex items-center uppercase">
+                        Command Console: Manual Override
+                        <span class="ml-2 w-2 h-6 bg-primary cursor-blink inline-block align-middle"></span>
+</h1>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-xs font-mono text-primary/70">
+<span class="w-2 h-2 rounded-full bg-green-500 pulse-green"></span>
+                        SYSTEM SECURE // ENCRYPTION AES-256
+                    </div>
+<div class="text-xs font-mono text-slate-500">
+                        NODE: 0x4F2A_NERVE_CTR
+                    </div>
+</div>
+</div>
+<!-- Main Area: Split Pane View -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Left Pane: Sidebar -->
+<div class="w-72 border-r border-primary/20 flex flex-col bg-black/20">
+<div class="p-4 border-b border-primary/10">
+<span class="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-500">Active Agents &amp; Projects</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Agent Card: ADF -->
+<div class="p-3 rounded-lg bg-primary/10 border border-primary/30 hover:bg-primary/20 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-bold text-white group-hover:text-primary transition-colors">ADF</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-green-500/20 text-green-400 border border-green-500/30">OPERATIONAL</span>
+</div>
+<div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[85%]"></div>
+</div>
+<div class="mt-2 text-[10px] font-mono text-slate-400">UPTIME: 142:12:04</div>
+</div>
+<!-- Agent Card: Krypton -->
+<div class="p-3 rounded-lg bg-warning/5 border border-warning/30 hover:bg-warning/10 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-bold text-white">Krypton</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-warning/20 text-warning border border-warning/30">WARNING</span>
+</div>
+<div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+<div class="bg-warning h-full w-[42%]"></div>
+</div>
+<div class="mt-2 text-[10px] font-mono text-slate-400">LATENCY: 450ms</div>
+</div>
+<!-- Agent Card: Memory -->
+<div class="p-3 rounded-lg bg-slate-800/50 border border-slate-700 hover:border-primary/40 transition-colors cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="font-bold text-white group-hover:text-primary">Memory</span>
+<span class="px-2 py-0.5 rounded text-[10px] bg-slate-700 text-slate-400 border border-slate-600">LOCKED</span>
+</div>
+<div class="w-full bg-slate-800 h-1 rounded-full overflow-hidden">
+<div class="bg-slate-600 h-full w-[100%]"></div>
+</div>
+<div class="mt-2 text-[10px] font-mono text-slate-400">STATE: IDLE</div>
+</div>
+<!-- Decorative System Map -->
+<div class="mt-8 opacity-50">
+<img alt="Network Topology" class="w-full rounded border border-primary/20" data-alt="Cyberpunk neural network map with glowing nodes" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqQxlFTZMjQWbgNgbE_fNdBKVfea4YJ0HtZjg7vgwyGCo1caapi9sHW__i6q1t5EfvzM8Rrvr2gm6ZhfbenocmiwlUalqcz6UqvVc5XZ1gYrynMGz6nrVYwHeSE_IH1leF6S3TZAo2dwColhRQVlmZ5KluS5y27nFCSglH-BSjMZ-LUUZyoxvZa9zNlYsfRe2SXwXeB4_N7P3-NMR68QEgGVI8qRAbinjGcCpYBR1E27TWOmY-pLBsFMpFA3AJ1des-QSQaCuAgQ"/>
+</div>
+</div>
+</div>
+<!-- Right Pane: Live Console -->
+<div class="flex-1 flex flex-col bg-black/40">
+<div class="p-4 border-b border-primary/10 flex justify-between items-center bg-black/20">
+<span class="text-[10px] uppercase font-bold tracking-[0.2em] text-slate-500">Live System Strings</span>
+<span class="text-[10px] font-mono text-primary/60">SESSION_ID: 994-AXX-0</span>
+</div>
+<div class="flex-1 overflow-y-auto p-6 font-mono text-sm space-y-2 terminal-scroll">
+<div class="text-slate-500">[08:42:01] <span class="text-primary">INFO</span> INITIALIZING BYPASS PROTOCOL...</div>
+<div class="text-slate-500">[08:42:01] <span class="text-primary">INFO</span> HANDSHAKE ESTABLISHED WITH KERNEL_01</div>
+<div class="text-slate-500">[08:42:02] <span class="text-warning">WARN</span> AGENT_KRYPTON_LATENCY_DETECTED (450ms)</div>
+<div class="text-slate-500">[08:42:02] <span class="text-slate-400">DEBUG</span> POLLING AGENT: ADF... SUCCESS</div>
+<div class="text-slate-500">[08:42:03] <span class="text-slate-400">DEBUG</span> POLLING AGENT: MEMORY... LOCKED</div>
+<div class="text-slate-500">[08:42:05] <span class="text-primary">SYSTEM</span> OVERRIDE_AUTHORIZATION_REQUIRED</div>
+<div class="text-slate-500">[08:42:05] <span class="text-primary">SYSTEM</span> AWAITING COMMAND INPUT...</div>
+<div class="text-slate-500">[08:43:10] <span class="text-danger">ALERT</span> MANUAL_OVERRIDE_MODE_ENGAGED</div>
+<div class="text-slate-500">[08:43:12] <span class="text-primary">INFO</span> LOAD_SEQUENCE_INITIATED: /core/bypass/v4</div>
+<div class="text-slate-500">[08:43:14] <span class="text-slate-400">DEBUG</span> MAPPING MEMORY ADDR 0x004F-0x005A</div>
+<div class="text-primary mt-4">&gt; Waiting for manual parameter injection...</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Command Input & Actions -->
+<div class="p-6 border-t border-primary/30 bg-primary/5 space-y-4">
+<!-- Command Input Line -->
+<div class="flex items-center gap-4 bg-black/60 rounded-lg p-3 border border-primary/40 focus-within:border-primary transition-all">
+<span class="font-mono text-primary font-bold text-lg leading-none">&gt;</span>
+<input class="bg-transparent border-none focus:ring-0 w-full font-mono text-white placeholder-slate-600 text-sm p-0" placeholder="Enter command (e.g., /force-stop --agent=ADF)" type="text"/>
+<button class="bg-danger text-white px-6 py-2 rounded font-bold uppercase text-xs tracking-widest shadow-glow-red hover:bg-danger/80 transition-all flex items-center gap-2">
+                        Execute Override
+                    </button>
+</div>
+<!-- Quick Action Buttons -->
+<div class="flex items-center justify-between gap-4">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 bg-danger/20 hover:bg-danger/30 border border-danger/50 text-danger px-4 py-2 rounded text-xs font-bold uppercase transition-all">
+<span class="w-2 h-2 rounded-full bg-danger"></span>
+                            Emergency Stop
+                        </button>
+<button class="flex items-center gap-2 bg-warning/20 hover:bg-warning/30 border border-warning/50 text-warning px-4 py-2 rounded text-xs font-bold uppercase transition-all">
+<span class="w-2 h-2 rounded-full bg-warning"></span>
+                            Restart Kernel
+                        </button>
+<button class="flex items-center gap-2 bg-primary/20 hover:bg-primary/30 border border-primary/50 text-primary px-4 py-2 rounded text-xs font-bold uppercase transition-all">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            Clear Cache
+                        </button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-[10px] text-slate-500 font-mono">AUTH_LEVEL: L5_ROOT</span>
+<div class="w-px h-4 bg-slate-700"></div>
+<span class="text-[10px] text-slate-500 font-mono uppercase">Version 1.04.2-Stable</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

@@ -656,6 +656,52 @@ A lightweight, periodic alignment check that Krypton runs against Intent-layer a
 
 ---
 
+## Local Automation Layer
+
+All scheduled agent jobs run laptop-local via macOS launchd. This is a deliberate architecture decision.
+
+### Decision: Laptop-Local vs. Server-Based
+
+**Rationale for laptop-local:**
+- ADF project files live on the laptop filesystem — server-side parsing requires git cloning with credentials and adds latency
+- Governed writeback (DB → source markdown files) requires local filesystem access — server-side writeback would need git commit/push pipeline, far more complex
+- For a personal single-operator system, laptop durability is acceptable; the operator is present when the laptop is active
+
+**Rejected alternative — git-based server pull:** Would decouple from laptop state but breaks writeback, requires git credentials on server, and adds significant infrastructure for marginal gain.
+
+### Standard
+
+| Aspect | Convention |
+|---|---|
+| **Naming** | `com.claude.{domain}.{job}` |
+| **Scripts** | `~/.claude/scripts/{job}.sh` |
+| **Logs** | `~/.claude/logs/{job}.log` (auto-rotated) |
+| **Config** | `~/.claude/wm-manager/sync.env` |
+| **Claude binary** | `/opt/homebrew/bin/claude` |
+
+### Installed Jobs
+
+| Label | Cadence | Type | Purpose |
+|---|---|---|---|
+| `com.claude.token-watchdog` | Every 15 min + login | Script | OAuth token health monitoring |
+| `com.claude.wm.adf-sync` | Every 15 min + login | Script | ADF→WM data sync (no LLM) |
+| `com.claude.wm.triage-login` | On login (gated 4h) | Claude Code (Haiku) | Morning catchup triage |
+| `com.claude.wm.triage-light` | 12:30pm daily | Claude Code (Haiku) | Midday incremental triage |
+| `com.claude.wm.triage-deep` | 5:00pm daily | Claude Code (Sonnet) | End-of-day full triage + batch dispatch |
+| `com.claude.wm.briefing` | Monday 8am | Claude Code (Sonnet) | Weekly backlog digest |
+
+### Design Patterns
+
+**Script jobs vs. Claude Code jobs:** Deterministic work (sync, monitoring) runs as plain shell scripts — fast, no LLM cost, can run every 15 min. LLM-driven work (triage, briefing) uses `claude -p prompt.md` — fired as one-shot processes, not daemons.
+
+**Token dependency:** Claude Code jobs require a valid OAuth token (~8h TTL). Deep scan and briefing check token validity before running; skip with macOS notification if expired. Flag: `SKIP_TOKEN_CHECK=1` in sync.env disables this once token refresh is resolved.
+
+**Login gating:** Login triage skips if last triage < 4h ago (timestamp in `~/.claude/logs/wm-triage-last-run`) to prevent redundant runs across multiple laptop wakes.
+
+**ADF sync frequency rationale:** 15-min cadence because multiple agents across projects treat Work Management as the authoritative source for work queues, completion status, and what's next. Stale WM data degrades all downstream agent decisions.
+
+---
+
 ## Related Documents
 
 | Document | Relationship |

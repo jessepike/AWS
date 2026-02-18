@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nerve Center Orbit View: High-Tech Spatial Layout</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#38bdf8","secondary": "#6366f1","background-dark": "#020617","surface-dark": "#0f172a","surface-light": "#1e293b","accent-cyan": "#06b6d4",
+                        "accent-purple": "#8b5cf6",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1e293b 1px, transparent 1px), linear-gradient(to bottom, #1e293b 1px, transparent 1px)",
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scanline': 'scanline 8s linear infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(100%)' }
+                        },
+                        glow: {
+                            'from': { boxShadow: '0 0 10px -5px #38bdf8' },
+                            'to': { boxShadow: '0 0 20px 5px #38bdf8' }
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b; 
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155; 
+        }.bg-topography {
+            background-color: #0b1121;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231e293b' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }.node-wrapper {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 20;
+        }
+        .node-wrapper:hover {
+            z-index: 30;
+            transform: scale(1.15);
+            filter: brightness(1.2);
+        }
+        .node {
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.1), inset 0 0 20px rgba(56, 189, 248, 0.05);
+            transition: box-shadow 0.3s ease;
+        }
+        .node:hover {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.4), inset 0 0 30px rgba(56, 189, 248, 0.2);
+            border-color: rgba(56, 189, 248, 0.8);
+        }.connection-line {
+            position: absolute;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.1), rgba(56, 189, 248, 0.6), rgba(56, 189, 248, 0.1));
+            transform-origin: left center;
+            z-index: 10;
+            opacity: 0.6;
+        }.glass-dot {
+            position: relative;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), rgba(255,255,255,0.1) 40%, transparent 60%);
+            box-shadow: 0 0 10px currentColor;
+        }
+        .glass-dot::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 50%;
+            background: transparent;
+            border: 1px solid currentColor;
+            opacity: 0.3;
+            animation: pulse-ring 2s infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }.split-bar-bg {
+            background-image: linear-gradient(90deg, transparent 50%, rgba(0,0,0,0.3) 50%);
+            background-size: 4px 100%;
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 5px rgba(56, 189, 248, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-300 font-display min-h-screen flex flex-col overflow-hidden selection:bg-primary/30">
+<div class="fixed inset-0 pointer-events-none z-0 opacity-[0.03]" style="background-size: 50px 50px; background-image: linear-gradient(to right, #ffffff 1px, transparent 1px), linear-gradient(to bottom, #ffffff 1px, transparent 1px);"></div>
+<header class="h-14 border-b border-slate-800 bg-surface-dark/80 backdrop-blur-xl flex items-center justify-between px-6 z-50 relative">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded bg-gradient-to-br from-primary/20 to-blue-600/20 border border-primary/30 flex items-center justify-center text-primary shadow-[0_0_15px_rgba(56,189,248,0.3)]">
+<span class="material-icons text-xl">hub</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-lg font-bold tracking-widest text-white neon-text-glow uppercase">Nerve Center</h1>
+<span class="text-[10px] tracking-[0.2em] text-primary/60 font-mono">ORBIT VIEW v3.1</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3 px-3 py-1 rounded-full bg-emerald-950/30 border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.1)]">
+<div class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</div>
+<span class="text-emerald-400 text-xs font-bold tracking-wider uppercase">System Optimal</span>
+</div>
+<div class="h-8 w-px bg-slate-800"></div>
+<div class="text-slate-400 font-mono text-xs tracking-wider">
+<span class="text-primary">UTC</span> 14:32:45
+            </div>
+</div>
+</header>
+<main class="flex-1 p-4 lg:p-6 grid grid-cols-12 gap-6 h-[calc(100vh-3.5rem)] relative z-10">
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pr-1">
+<div class="bg-surface-dark border border-slate-800 rounded-lg p-5 shadow-lg relative overflow-hidden group">
+<div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-50"></div>
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xs uppercase tracking-[0.15em] text-primary font-bold">Layer Vitals</h2>
+<span class="material-icons text-slate-600 text-sm group-hover:text-primary transition-colors">tune</span>
+</div>
+<div class="space-y-6">
+<div class="group/item">
+<div class="flex justify-between text-xs mb-2 items-end">
+<span class="text-slate-400 uppercase tracking-wide font-medium">Intent</span>
+<div class="flex gap-2 text-[10px] font-mono">
+<span class="text-primary">H:20%</span>
+<span class="text-slate-600">|</span>
+<span class="text-cyan-300">A:80%</span>
+</div>
+</div>
+<div class="h-3 w-full bg-slate-900 rounded-sm border border-slate-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-primary/30 w-[20%] border-r border-slate-900"></div>
+<div class="absolute top-0 left-[20%] h-full bg-primary w-[65%] split-bar-bg shadow-[0_0_10px_rgba(56,189,248,0.6)]"></div>
+</div>
+</div>
+<div class="group/item">
+<div class="flex justify-between text-xs mb-2 items-end">
+<span class="text-slate-400 uppercase tracking-wide font-medium">Governance</span>
+<div class="flex gap-2 text-[10px] font-mono">
+<span class="text-purple-400">H:45%</span>
+<span class="text-slate-600">|</span>
+<span class="text-purple-300">A:15%</span>
+</div>
+</div>
+<div class="h-3 w-full bg-slate-900 rounded-sm border border-slate-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-purple-500/30 w-[45%] border-r border-slate-900"></div>
+<div class="absolute top-0 left-[45%] h-full bg-purple-500 w-[15%] split-bar-bg shadow-[0_0_10px_rgba(168,85,247,0.6)]"></div>
+</div>
+</div>
+<div class="group/item">
+<div class="flex justify-between text-xs mb-2 items-end">
+<span class="text-slate-400 uppercase tracking-wide font-medium">Management</span>
+<div class="flex gap-2 text-[10px] font-mono">
+<span class="text-amber-400">H:10%</span>
+<span class="text-slate-600">|</span>
+<span class="text-amber-300">A:30%</span>
+</div>
+</div>
+<div class="h-3 w-full bg-slate-900 rounded-sm border border-slate-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-amber-500/30 w-[10%] border-r border-slate-900"></div>
+<div class="absolute top-0 left-[10%] h-full bg-amber-500 w-[30%] split-bar-bg shadow-[0_0_10px_rgba(245,158,11,0.6)]"></div>
+</div>
+</div>
+<div class="group/item">
+<div class="flex justify-between text-xs mb-2 items-end">
+<span class="text-slate-400 uppercase tracking-wide font-medium">Operations</span>
+<div class="flex gap-2 text-[10px] font-mono">
+<span class="text-emerald-400">H:2%</span>
+<span class="text-slate-600">|</span>
+<span class="text-emerald-300">A:90%</span>
+</div>
+</div>
+<div class="h-3 w-full bg-slate-900 rounded-sm border border-slate-800 relative overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-emerald-500/30 w-[2%] border-r border-slate-900"></div>
+<div class="absolute top-0 left-[2%] h-full bg-emerald-500 w-[90%] split-bar-bg shadow-[0_0_10px_rgba(16,185,129,0.6)]"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-slate-800 rounded-lg p-5 shadow-lg flex-1 relative overflow-hidden">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xs uppercase tracking-[0.15em] text-primary font-bold">Ring Status</h2>
+<span class="material-icons text-slate-600 text-sm">donut_large</span>
+</div>
+<div class="space-y-5">
+<div class="flex items-center justify-between group">
+<span class="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">Governance</span>
+<div class="h-4 w-4 glass-dot text-emerald-500 bg-emerald-500"></div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">Intelligence</span>
+<div class="h-4 w-4 glass-dot text-amber-400 bg-amber-400"></div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">Knowledge</span>
+<div class="h-4 w-4 glass-dot text-emerald-500 bg-emerald-500"></div>
+</div>
+<div class="flex items-center justify-between group">
+<span class="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">Control</span>
+<div class="h-4 w-4 glass-dot text-emerald-500 bg-emerald-500"></div>
+</div>
+<div class="mt-6 p-3 rounded bg-red-950/20 border border-red-900/40 flex items-center justify-between">
+<span class="text-xs font-bold text-red-400 tracking-wide">OBSERVABILITY</span>
+<div class="relative">
+<div class="h-4 w-4 glass-dot text-red-500 bg-red-500 animate-pulse"></div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<section class="col-span-12 lg:col-span-6 flex flex-col h-full bg-[#0b1121] rounded-lg border border-slate-800 relative overflow-hidden group shadow-2xl">
+<div class="absolute inset-0 z-0 opacity-40 bg-topography pointer-events-none mix-blend-screen"></div>
+<div class="absolute inset-0 z-0 bg-radial-gradient from-transparent via-[#0b1121]/50 to-[#0b1121] pointer-events-none"></div>
+<div class="absolute top-6 left-6 z-20 pointer-events-none">
+<h2 class="text-xs uppercase tracking-[0.2em] text-primary/80 font-bold mb-1 shadow-black drop-shadow-md">Project Constellation</h2>
+<div class="flex items-center gap-2">
+<div class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></div>
+<span class="text-[10px] text-slate-500 font-mono tracking-widest">LIVE FEED // ARCH_V4.2</span>
+</div>
+</div>
+<div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-20 flex gap-1 bg-slate-900/80 backdrop-blur-md rounded-full p-1 border border-slate-700/50">
+<button class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"><span class="material-icons text-sm">add</span></button>
+<button class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"><span class="material-icons text-sm">remove</span></button>
+<button class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"><span class="material-icons text-sm">center_focus_strong</span></button>
+<button class="p-2 rounded-full hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"><span class="material-icons text-sm">layers</span></button>
+</div>
+<div class="relative w-full h-full flex items-center justify-center z-10 overflow-hidden">
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-0">
+<defs>
+<linearGradient id="lineGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+<stop offset="0%" style="stop-color:rgba(56, 189, 248, 0.0)"></stop>
+<stop offset="50%" style="stop-color:rgba(56, 189, 248, 0.4)"></stop>
+<stop offset="100%" style="stop-color:rgba(56, 189, 248, 0.0)"></stop>
+</linearGradient>
+</defs>
+<path class="animate-pulse-slow" d="M 50% 40% L 20% 50%" fill="none" stroke="url(#lineGradient)" stroke-width="1"></path>
+<path class="animate-pulse-slow" d="M 50% 40% L 35% 75%" fill="none" stroke="url(#lineGradient)" stroke-width="1" style="animation-delay: 1s;"></path>
+<path class="animate-pulse-slow" d="M 50% 40% L 80% 25%" fill="none" stroke="url(#lineGradient)" stroke-width="1" style="animation-delay: 0.5s;"></path>
+<path class="animate-pulse-slow" d="M 50% 40% L 75% 70%" fill="none" stroke="url(#lineGradient)" stroke-width="1" style="animation-delay: 1.5s;"></path>
+<path d="M 25% 25% L 20% 50%" fill="none" stroke="rgba(255,255,255,0.1)" stroke-dasharray="4 4" stroke-width="1"></path>
+</svg>
+<div class="node-wrapper top-[40%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
+<div class="node h-40 w-40 border-cyan-400/50 shadow-[0_0_50px_rgba(6,182,212,0.2)] flex-col relative">
+<div class="absolute inset-0 rounded-full border border-cyan-500/20 animate-ping-slow"></div>
+<span class="material-icons text-cyan-400 text-4xl mb-2 drop-shadow-[0_0_8px_rgba(6,182,212,0.8)]">psychology</span>
+<span class="text-sm font-bold text-white tracking-widest">ADF</span>
+<span class="text-[9px] text-cyan-200/60 mt-1 font-mono uppercase">Neural Core</span>
+</div>
+</div>
+<div class="node-wrapper top-[25%] right-[20%]">
+<div class="node h-24 w-24 border-emerald-500/40 bg-slate-900/80">
+<div class="flex flex-col items-center">
+<span class="material-icons text-emerald-400 text-2xl drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]">security</span>
+<span class="text-[10px] font-bold text-emerald-100 mt-2 tracking-wider">KRYPTON</span>
+</div>
+</div>
+</div>
+<div class="node-wrapper top-[50%] left-[20%]">
+<div class="node h-28 w-28 border-blue-500/40 bg-slate-900/80">
+<div class="flex flex-col items-center">
+<span class="material-icons text-blue-400 text-3xl drop-shadow-[0_0_5px_rgba(96,165,250,0.8)]">library_books</span>
+<span class="text-[10px] font-bold text-blue-100 mt-2 tracking-wider">KNOWLEDGE</span>
+</div>
+</div>
+</div>
+<div class="node-wrapper bottom-[25%] left-[35%]">
+<div class="node h-24 w-24 border-amber-500/40 bg-slate-900/80 shadow-[0_0_20px_rgba(245,158,11,0.15)]">
+<div class="flex flex-col items-center">
+<span class="material-icons text-amber-400 text-2xl drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]">history</span>
+<span class="text-[10px] font-bold text-amber-100 mt-2 tracking-wider">MEMORY</span>
+</div>
+</div>
+</div>
+<div class="node-wrapper bottom-[30%] right-[25%]">
+<div class="node h-20 w-20 border-cyan-500/30 bg-slate-900/80">
+<div class="flex flex-col items-center">
+<span class="material-icons text-cyan-400 text-xl">extension</span>
+<span class="text-[9px] font-bold text-cyan-100 mt-1 tracking-wider">REGISTRY</span>
+</div>
+</div>
+</div>
+<div class="node-wrapper top-[25%] left-[25%]">
+<div class="node h-16 w-16 border-slate-500/40 bg-slate-800/80">
+<span class="material-icons text-slate-300 text-lg">link</span>
+</div>
+<span class="text-[9px] text-slate-400 mt-2 font-mono bg-black/50 px-2 py-0.5 rounded">TRIAGE</span>
+</div>
+<div class="node-wrapper bottom-[20%] left-[15%]">
+<div class="node h-16 w-16 border-purple-500/40 bg-slate-900/80 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+<span class="material-icons text-purple-400 text-lg">work_outline</span>
+</div>
+<span class="text-[9px] text-purple-300 mt-2 font-mono bg-black/50 px-2 py-0.5 rounded">WORK MGMT</span>
+</div>
+</div>
+<div class="absolute top-0 left-0 w-full h-[2px] bg-cyan-400/30 shadow-[0_0_10px_#22d3ee] animate-scanline opacity-30 pointer-events-none z-0"></div>
+</section>
+<aside class="col-span-12 lg:col-span-3 flex flex-col gap-6 h-full overflow-y-auto pl-1">
+<div class="bg-surface-dark border border-slate-800 rounded-lg p-5 shadow-lg relative overflow-hidden">
+<div class="flex items-center justify-between mb-4 relative z-10">
+<h2 class="text-xs uppercase tracking-[0.15em] text-primary font-bold">Activity Pulse</h2>
+<span class="text-[10px] font-mono text-cyan-300 bg-cyan-950/50 px-2 py-1 rounded border border-cyan-900">30D WINDOW</span>
+</div>
+<div class="h-32 w-full relative group">
+<div class="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+<div class="w-full h-px bg-slate-600 border-t border-dashed"></div>
+<div class="w-full h-px bg-slate-600 border-t border-dashed"></div>
+<div class="w-full h-px bg-slate-600 border-t border-dashed"></div>
+</div>
+<svg class="absolute inset-0 h-full w-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 200 100">
+<defs>
+<linearGradient id="pulseGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"></stop>
+<stop offset="100%" stop-color="#38bdf8" stop-opacity="0"></stop>
+</linearGradient>
+<filter height="140%" id="glow" width="140%" x="-20%" y="-20%">
+<feGaussianBlur result="coloredBlur" stdDeviation="2"></feGaussianBlur>
+<feMerge>
+<feMergeNode in="coloredBlur"></feMergeNode>
+<feMergeNode in="SourceGraphic"></feMergeNode>
+</feMerge>
+</filter>
+</defs>
+<path d="M0,70 Q20,60 40,65 T80,40 T120,50 T160,20 T200,60 V100 H0 Z" fill="url(#pulseGradient)"></path>
+<path class="drop-shadow-lg" d="M0,70 Q20,60 40,65 T80,40 T120,50 T160,20 T200,60" fill="none" filter="url(#glow)" stroke="#38bdf8" stroke-width="2"></path>
+</svg>
+<div class="absolute h-full w-px bg-white/20 left-[60%] top-0 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<div class="mt-2 flex justify-between text-[9px] text-slate-500 font-mono uppercase tracking-wider">
+<span>Previous Cycle</span>
+<span>Current</span>
+</div>
+</div>
+<div class="bg-surface-dark border border-slate-800 rounded-lg p-5 shadow-lg">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xs uppercase tracking-[0.15em] text-primary font-bold">Attention Flags</h2>
+<span class="material-icons text-amber-500 text-xs animate-pulse">warning</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-start gap-3 p-3 bg-red-950/20 border-l-[3px] border-red-500 rounded-r hover:bg-red-900/20 transition-colors cursor-pointer">
+<span class="material-icons text-red-500 text-sm mt-0.5">flag</span>
+<div>
+<h3 class="text-[11px] font-bold text-red-400 uppercase tracking-wide">Critical Block</h3>
+<p class="text-[10px] text-slate-400 mt-1 leading-tight">Work Management stalled on Thread #4092. Agent non-responsive.</p>
+</div>
+</div>
+<div class="flex items-start gap-3 p-3 bg-yellow-950/20 border-l-[3px] border-yellow-500 rounded-r hover:bg-yellow-900/20 transition-colors cursor-pointer">
+<span class="material-icons text-yellow-500 text-sm mt-0.5">report_problem</span>
+<div>
+<h3 class="text-[11px] font-bold text-yellow-400 uppercase tracking-wide">Underdeveloped</h3>
+<p class="text-[10px] text-slate-400 mt-1 leading-tight">Observability metrics lacking density. Data stream intermittent.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-dark border border-slate-800 rounded-lg p-5 shadow-lg flex-1 overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<h2 class="text-xs uppercase tracking-[0.15em] text-primary font-bold">Log Stream</h2>
+<button class="text-[10px] text-slate-500 hover:text-white transition-colors font-mono uppercase">View All</button>
+</div>
+<div class="space-y-0 divide-y divide-slate-800/50">
+<div class="py-3 flex items-start gap-3 group cursor-pointer hover:bg-white/5 px-2 -mx-2 rounded transition-colors">
+<div class="h-1.5 w-1.5 rounded-full bg-cyan-400 mt-2 shadow-[0_0_5px_#22d3ee]"></div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-0.5">
+<h4 class="text-xs font-bold text-slate-200 group-hover:text-cyan-300">Project Alpha</h4>
+<span class="text-[9px] text-slate-600 font-mono">00:02:14</span>
+</div>
+<p class="text-[10px] text-slate-500 group-hover:text-slate-400">Optimization routine executed successfully.</p>
+</div>
+</div>
+<div class="py-3 flex items-start gap-3 group cursor-pointer hover:bg-white/5 px-2 -mx-2 rounded transition-colors">
+<div class="h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 group-hover:bg-cyan-400 transition-colors"></div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-0.5">
+<h4 class="text-xs font-bold text-slate-200 group-hover:text-cyan-300">Deep Query V2</h4>
+<span class="text-[9px] text-slate-600 font-mono">00:14:32</span>
+</div>
+<p class="text-[10px] text-slate-500 group-hover:text-slate-400">Knowledge retrieval complete. 42MB Processed.</p>
+</div>
+</div>
+<div class="py-3 flex items-start gap-3 group cursor-pointer hover:bg-white/5 px-2 -mx-2 rounded transition-colors">
+<div class="h-1.5 w-1.5 rounded-full bg-slate-600 mt-2 group-hover:bg-cyan-400 transition-colors"></div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-0.5">
+<h4 class="text-xs font-bold text-slate-200 group-hover:text-cyan-300">System Audit</h4>
+<span class="text-[9px] text-slate-600 font-mono">01:00:00</span>
+</div>
+<p class="text-[10px] text-slate-500 group-hover:text-slate-400">Scheduled maintenance check initiated.</p>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</main>
+
+</body></html>

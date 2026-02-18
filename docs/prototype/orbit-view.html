@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nerve Center — Orbit View</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        navy: { 900: '#0f172a', 800: '#1e293b', 700: '#334155', 600: '#475569' },
+        stage: {
+          discover: '#3b82f6',
+          design: '#a855f7',
+          develop: '#22c55e',
+          deliver: '#eab308',
+          operate: '#94a3b8'
+        }
+      }
+    }
+  }
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+  * { font-family: 'Space Grotesk', sans-serif; }
+  body { background: #0f172a; color: #e2e8f0; }
+
+  .pulse-green { animation: pulse-g 2s ease-in-out infinite; }
+  @keyframes pulse-g {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+  }
+  .pulse-red { animation: pulse-r 1.5s ease-in-out infinite; }
+  @keyframes pulse-r {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+  }
+  .pulse-yellow { animation: pulse-y 2s ease-in-out infinite; }
+  @keyframes pulse-y {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(245,158,11,0.3); }
+    50% { box-shadow: 0 0 0 6px rgba(245,158,11,0); }
+  }
+
+  .card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .sparkline { display: flex; align-items: end; gap: 2px; height: 40px; }
+  .sparkline .bar {
+    width: 4px;
+    border-radius: 2px;
+    background: #3b82f6;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .sparkline .bar:hover { opacity: 1; }
+
+  /* Constellation */
+  .constellation { position: relative; width: 100%; height: 100%; min-height: 420px; }
+  .node {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 2;
+  }
+  .node:hover { transform: scale(1.1); }
+  .node-label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 8px;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 500;
+    color: #94a3b8;
+    text-align: center;
+  }
+  .node-stage {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.7;
+  }
+
+  svg.connections {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+  }
+  svg.connections line {
+    stroke: #334155;
+    stroke-width: 1;
+    opacity: 0.5;
+  }
+
+  .ratio-bar { height: 6px; border-radius: 3px; overflow: hidden; display: flex; }
+  .ratio-fill { height: 100%; transition: width 0.5s ease; }
+
+  .ring-dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .flag { padding: 10px 14px; border-radius: 8px; border-left: 3px solid; margin-bottom: 8px; }
+  .flag-red { border-color: #ef4444; background: rgba(239,68,68,0.08); }
+  .flag-yellow { border-color: #f59e0b; background: rgba(245,158,11,0.08); }
+  .flag-blue { border-color: #3b82f6; background: rgba(59,130,246,0.08); }
+
+  .session-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .session-item:last-child { border-bottom: none; }
+  .session-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  .layer-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(51,65,85,0.5);
+  }
+  .layer-row:last-child { border-bottom: none; }
+
+  .matrix-cell {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .matrix-cell:hover { transform: scale(1.15); }
+</style>
+</head>
+<body class="min-h-screen p-6">
+
+<!-- Top Bar -->
+<header class="flex items-center justify-between mb-6">
+  <div class="flex items-center gap-3">
+    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
+    </div>
+    <h1 class="text-lg font-semibold tracking-tight">Nerve Center</h1>
+    <span class="text-xs text-slate-500 ml-2">v0.1</span>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <div class="pulse-green w-3 h-3 rounded-full bg-green-500"></div>
+    <span class="text-sm font-medium text-green-400">System Healthy</span>
+  </div>
+
+  <div class="text-sm text-slate-500">
+    <span>Feb 11, 2026</span>
+    <span class="ml-3 text-xs px-2 py-1 rounded bg-navy-800 text-slate-400">Orbit View</span>
+  </div>
+</header>
+
+<!-- Main Grid -->
+<div class="grid grid-cols-12 gap-5">
+
+  <!-- LEFT COLUMN -->
+  <div class="col-span-3 space-y-5">
+
+    <!-- Layer Vitals -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Layer Vitals</h2>
+
+      <div class="layer-row">
+        <div class="w-24">
+          <div class="text-sm font-medium text-blue-400">Intent</div>
+          <div class="text-[10px] text-slate-500">80 / 20</div>
+        </div>
+        <div class="flex-1">
+          <div class="ratio-bar bg-navy-700">
+            <div class="ratio-fill bg-blue-500/60" style="width:80%"></div>
+            <div class="ratio-fill bg-blue-500/20" style="width:20%"></div>
+          </div>
+        </div>
+        <div class="ml-3">
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-400">Active</span>
+        </div>
+        <div class="sparkline ml-3" style="height:24px">
+          <div class="bar bg-blue-400" style="height:40%"></div>
+          <div class="bar bg-blue-400" style="height:30%"></div>
+          <div class="bar bg-blue-400" style="height:60%"></div>
+          <div class="bar bg-blue-400" style="height:45%"></div>
+          <div class="bar bg-blue-400" style="height:70%"></div>
+          <div class="bar bg-blue-400" style="height:55%"></div>
+          <div class="bar bg-blue-400" style="height:80%"></div>
+        </div>
+      </div>
+
+      <div class="layer-row">
+        <div class="w-24">
+          <div class="text-sm font-medium text-purple-400">Governance</div>
+          <div class="text-[10px] text-slate-500">50 / 50</div>
+        </div>
+        <div class="flex-1">
+          <div class="ratio-bar bg-navy-700">
+            <div class="ratio-fill bg-purple-500/60" style="width:50%"></div>
+            <div class="ratio-fill bg-purple-500/20" style="width:50%"></div>
+          </div>
+        </div>
+        <div class="ml-3">
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400">Partial</span>
+        </div>
+        <div class="sparkline ml-3" style="height:24px">
+          <div class="bar bg-purple-400" style="height:20%"></div>
+          <div class="bar bg-purple-400" style="height:15%"></div>
+          <div class="bar bg-purple-400" style="height:25%"></div>
+          <div class="bar bg-purple-400" style="height:10%"></div>
+          <div class="bar bg-purple-400" style="height:30%"></div>
+          <div class="bar bg-purple-400" style="height:20%"></div>
+          <div class="bar bg-purple-400" style="height:15%"></div>
+        </div>
+      </div>
+
+      <div class="layer-row">
+        <div class="w-24">
+          <div class="text-sm font-medium text-amber-400">Management</div>
+          <div class="text-[10px] text-slate-500">30 / 70</div>
+        </div>
+        <div class="flex-1">
+          <div class="ratio-bar bg-navy-700">
+            <div class="ratio-fill bg-amber-500/60" style="width:30%"></div>
+            <div class="ratio-fill bg-amber-500/20" style="width:70%"></div>
+          </div>
+        </div>
+        <div class="ml-3">
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-400">Design</span>
+        </div>
+        <div class="sparkline ml-3" style="height:24px">
+          <div class="bar bg-amber-400" style="height:35%"></div>
+          <div class="bar bg-amber-400" style="height:50%"></div>
+          <div class="bar bg-amber-400" style="height:40%"></div>
+          <div class="bar bg-amber-400" style="height:65%"></div>
+          <div class="bar bg-amber-400" style="height:55%"></div>
+          <div class="bar bg-amber-400" style="height:45%"></div>
+          <div class="bar bg-amber-400" style="height:70%"></div>
+        </div>
+      </div>
+
+      <div class="layer-row">
+        <div class="w-24">
+          <div class="text-sm font-medium text-green-400">Operations</div>
+          <div class="text-[10px] text-slate-500">10 / 90</div>
+        </div>
+        <div class="flex-1">
+          <div class="ratio-bar bg-navy-700">
+            <div class="ratio-fill bg-green-500/60" style="width:10%"></div>
+            <div class="ratio-fill bg-green-500/20" style="width:90%"></div>
+          </div>
+        </div>
+        <div class="ml-3">
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-green-500/15 text-green-400">Active</span>
+        </div>
+        <div class="sparkline ml-3" style="height:24px">
+          <div class="bar bg-green-400" style="height:70%"></div>
+          <div class="bar bg-green-400" style="height:85%"></div>
+          <div class="bar bg-green-400" style="height:60%"></div>
+          <div class="bar bg-green-400" style="height:90%"></div>
+          <div class="bar bg-green-400" style="height:75%"></div>
+          <div class="bar bg-green-400" style="height:95%"></div>
+          <div class="bar bg-green-400" style="height:80%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ring Status -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Ring Status</h2>
+      <div class="flex items-center justify-between">
+        <div class="text-center">
+          <div class="ring-dot bg-green-500 mx-auto mb-1.5"></div>
+          <div class="text-[10px] text-slate-500">Gov</div>
+        </div>
+        <div class="text-center">
+          <div class="ring-dot bg-amber-500 pulse-yellow mx-auto mb-1.5"></div>
+          <div class="text-[10px] text-slate-500">Intel</div>
+        </div>
+        <div class="text-center">
+          <div class="ring-dot bg-green-500 mx-auto mb-1.5"></div>
+          <div class="text-[10px] text-slate-500">Know</div>
+        </div>
+        <div class="text-center">
+          <div class="ring-dot bg-green-500 mx-auto mb-1.5"></div>
+          <div class="text-[10px] text-slate-500">Ctrl</div>
+        </div>
+        <div class="text-center">
+          <div class="ring-dot bg-red-500 pulse-red mx-auto mb-1.5"></div>
+          <div class="text-[10px] text-slate-500">Obs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layers x Rings Matrix -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Layers x Rings</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr>
+              <th class="text-left text-[9px] text-slate-600 pb-2 w-20"></th>
+              <th class="text-center text-[9px] text-slate-600 pb-2">Gov</th>
+              <th class="text-center text-[9px] text-slate-600 pb-2">Int</th>
+              <th class="text-center text-[9px] text-slate-600 pb-2">Kno</th>
+              <th class="text-center text-[9px] text-slate-600 pb-2">Ctl</th>
+              <th class="text-center text-[9px] text-slate-600 pb-2">Obs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-[10px] text-blue-400 py-1">Intent</td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-navy-700 text-slate-600 mx-auto">&#9675;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+            </tr>
+            <tr>
+              <td class="text-[10px] text-purple-400 py-1">Gov</td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-navy-700 text-slate-600 mx-auto">&#9675;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-navy-700 text-slate-600 mx-auto">&#9675;</div></td>
+            </tr>
+            <tr>
+              <td class="text-[10px] text-amber-400 py-1">Mgmt</td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-navy-700 text-slate-600 mx-auto">&#9675;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+            </tr>
+            <tr>
+              <td class="text-[10px] text-green-400 py-1">Ops</td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-green-500/20 text-green-400 mx-auto">&#9679;</div></td>
+              <td class="text-center"><div class="matrix-cell bg-amber-500/20 text-amber-400 mx-auto">&#9681;</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="flex items-center gap-4 mt-3 text-[9px] text-slate-500">
+        <span><span class="text-green-400">&#9679;</span> Operational</span>
+        <span><span class="text-amber-400">&#9681;</span> Partial</span>
+        <span><span class="text-slate-600">&#9675;</span> Not built</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER COLUMN -->
+  <div class="col-span-6 space-y-5">
+
+    <!-- Project Constellation -->
+    <div class="card" style="min-height: 460px;">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Project Constellation</h2>
+        <div class="flex items-center gap-3 text-[9px] text-slate-500">
+          <span><span class="inline-block w-2 h-2 rounded-full bg-stage-discover mr-1"></span>Discover</span>
+          <span><span class="inline-block w-2 h-2 rounded-full bg-stage-design mr-1"></span>Design</span>
+          <span><span class="inline-block w-2 h-2 rounded-full bg-stage-develop mr-1"></span>Develop</span>
+          <span><span class="inline-block w-2 h-2 rounded-full bg-stage-deliver mr-1"></span>Deliver</span>
+          <span><span class="inline-block w-2 h-2 rounded-full bg-stage-operate mr-1"></span>Operate</span>
+        </div>
+      </div>
+      <div class="constellation">
+        <!-- Connection Lines SVG -->
+        <svg class="connections" viewBox="0 0 800 400">
+          <!-- ADF to KB -->
+          <line x1="350" y1="160" x2="180" y2="100"/>
+          <!-- ADF to Memory -->
+          <line x1="350" y1="160" x2="530" y2="90"/>
+          <!-- ADF to Registry -->
+          <line x1="350" y1="160" x2="220" y2="280"/>
+          <!-- ADF to Krypton -->
+          <line x1="350" y1="160" x2="540" y2="230"/>
+          <!-- Krypton to KB -->
+          <line x1="540" y1="230" x2="180" y2="100"/>
+          <!-- Krypton to Memory -->
+          <line x1="540" y1="230" x2="530" y2="90"/>
+          <!-- Krypton to Work Mgmt -->
+          <line x1="540" y1="230" x2="650" y2="330"/>
+          <!-- KB to Link Triage -->
+          <line x1="180" y1="100" x2="100" y2="260"/>
+          <!-- ADF to AWS -->
+          <line x1="350" y1="160" x2="400" y2="340"/>
+        </svg>
+
+        <!-- ADF — largest, center -->
+        <div class="node" style="width:80px;height:80px;background:radial-gradient(circle,rgba(34,197,94,0.3),rgba(34,197,94,0.05));border:2px solid rgba(34,197,94,0.5);left:310px;top:120px;">
+          <div class="text-[10px] font-bold text-green-400">ADF</div>
+          <div class="node-label">
+            Agentic Dev Framework
+            <div class="node-stage text-green-400">Develop</div>
+          </div>
+        </div>
+
+        <!-- Knowledge Base -->
+        <div class="node" style="width:60px;height:60px;background:radial-gradient(circle,rgba(34,197,94,0.25),rgba(34,197,94,0.03));border:2px solid rgba(34,197,94,0.4);left:150px;top:70px;">
+          <div class="text-[9px] font-bold text-green-400">KB</div>
+          <div class="node-label">
+            Knowledge Base
+            <div class="node-stage text-green-400">Develop</div>
+          </div>
+        </div>
+
+        <!-- Memory -->
+        <div class="node" style="width:55px;height:55px;background:radial-gradient(circle,rgba(234,179,8,0.25),rgba(234,179,8,0.03));border:2px solid rgba(234,179,8,0.4);left:503px;top:63px;">
+          <div class="text-[9px] font-bold text-yellow-400">MEM</div>
+          <div class="node-label">
+            Memory Layer
+            <div class="node-stage text-yellow-400">Deliver</div>
+          </div>
+        </div>
+
+        <!-- Krypton -->
+        <div class="node" style="width:65px;height:65px;background:radial-gradient(circle,rgba(34,197,94,0.25),rgba(34,197,94,0.03));border:2px solid rgba(34,197,94,0.4);left:508px;top:198px;">
+          <div class="text-[9px] font-bold text-green-400">KRY</div>
+          <div class="node-label">
+            Krypton
+            <div class="node-stage text-green-400">Develop</div>
+          </div>
+        </div>
+
+        <!-- Capabilities Registry -->
+        <div class="node" style="width:50px;height:50px;background:radial-gradient(circle,rgba(34,197,94,0.2),rgba(34,197,94,0.03));border:2px solid rgba(34,197,94,0.3);left:195px;top:255px;">
+          <div class="text-[8px] font-bold text-green-400">REG</div>
+          <div class="node-label">
+            Capabilities
+            <div class="node-stage text-green-400">Develop</div>
+          </div>
+        </div>
+
+        <!-- Link Triage -->
+        <div class="node" style="width:40px;height:40px;background:radial-gradient(circle,rgba(34,197,94,0.15),rgba(34,197,94,0.02));border:1.5px solid rgba(34,197,94,0.25);left:80px;top:240px;">
+          <div class="text-[7px] font-bold text-green-400">LT</div>
+          <div class="node-label">
+            Link Triage
+            <div class="node-stage text-green-400">Develop</div>
+          </div>
+        </div>
+
+        <!-- Work Management -->
+        <div class="node" style="width:45px;height:45px;background:radial-gradient(circle,rgba(168,85,247,0.2),rgba(168,85,247,0.03));border:1.5px solid rgba(168,85,247,0.35);left:628px;top:308px;">
+          <div class="text-[7px] font-bold text-purple-400">WM</div>
+          <div class="node-label">
+            Work Mgmt
+            <div class="node-stage text-purple-400">Design</div>
+          </div>
+        </div>
+
+        <!-- Agentic Work System (meta) -->
+        <div class="node" style="width:48px;height:48px;background:radial-gradient(circle,rgba(148,163,184,0.2),rgba(148,163,184,0.03));border:1.5px dashed rgba(148,163,184,0.3);left:376px;top:316px;">
+          <div class="text-[7px] font-bold text-slate-400">AWS</div>
+          <div class="node-label">
+            System Gov
+            <div class="node-stage text-slate-400">Operate</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activity Pulse (full width) -->
+    <div class="card">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Activity Pulse</h2>
+        <div class="flex items-center gap-2 text-[10px] text-slate-500">
+          <button class="px-2 py-0.5 rounded bg-navy-700 text-slate-400">7d</button>
+          <button class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400">30d</button>
+          <button class="px-2 py-0.5 rounded bg-navy-700 text-slate-400">90d</button>
+        </div>
+      </div>
+      <div class="sparkline" style="height: 60px; gap: 3px;">
+        <div class="bar bg-blue-500/50" style="height:20%"></div>
+        <div class="bar bg-blue-500/50" style="height:35%"></div>
+        <div class="bar bg-blue-500/50" style="height:25%"></div>
+        <div class="bar bg-blue-500/50" style="height:15%"></div>
+        <div class="bar bg-blue-500/50" style="height:30%"></div>
+        <div class="bar bg-blue-500/50" style="height:45%"></div>
+        <div class="bar bg-blue-500/50" style="height:40%"></div>
+        <div class="bar bg-blue-500/50" style="height:55%"></div>
+        <div class="bar bg-blue-500/50" style="height:35%"></div>
+        <div class="bar bg-blue-500/50" style="height:20%"></div>
+        <div class="bar bg-blue-500/50" style="height:40%"></div>
+        <div class="bar bg-blue-500/50" style="height:50%"></div>
+        <div class="bar bg-blue-500/50" style="height:45%"></div>
+        <div class="bar bg-blue-500/50" style="height:60%"></div>
+        <div class="bar bg-blue-500/50" style="height:55%"></div>
+        <div class="bar bg-blue-500/60" style="height:50%"></div>
+        <div class="bar bg-blue-500/60" style="height:65%"></div>
+        <div class="bar bg-blue-500/60" style="height:70%"></div>
+        <div class="bar bg-blue-500/60" style="height:55%"></div>
+        <div class="bar bg-blue-500/70" style="height:60%"></div>
+        <div class="bar bg-blue-500/70" style="height:75%"></div>
+        <div class="bar bg-blue-500/70" style="height:80%"></div>
+        <div class="bar bg-blue-500/80" style="height:70%"></div>
+        <div class="bar bg-blue-500/80" style="height:85%"></div>
+        <div class="bar bg-blue-500/80" style="height:90%"></div>
+        <div class="bar bg-blue-500/80" style="height:75%"></div>
+        <div class="bar bg-blue-500/90" style="height:95%"></div>
+        <div class="bar bg-blue-500/90" style="height:80%"></div>
+        <div class="bar bg-blue-500" style="height:100%"></div>
+        <div class="bar bg-blue-500" style="height:85%"></div>
+      </div>
+      <div class="flex justify-between mt-2 text-[9px] text-slate-600">
+        <span>Jan 12</span>
+        <span>Jan 19</span>
+        <span>Jan 26</span>
+        <span>Feb 2</span>
+        <span>Feb 11</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-span-3 space-y-5">
+
+    <!-- Attention Flags -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">Attention Flags</h2>
+
+      <div class="flag flag-red">
+        <div class="text-xs font-medium text-red-400">Work Management stalled</div>
+        <div class="text-[10px] text-slate-500 mt-1">No activity for 14 days. Design stage incomplete.</div>
+      </div>
+
+      <div class="flag flag-yellow">
+        <div class="text-xs font-medium text-amber-400">Observability Ring gaps</div>
+        <div class="text-[10px] text-slate-500 mt-1">Least built ring across all layers. Blocks autonomy escalation.</div>
+      </div>
+
+      <div class="flag flag-blue">
+        <div class="text-xs font-medium text-blue-400">KB synthesis opportunity</div>
+        <div class="text-[10px] text-slate-500 mt-1">8 entries on "agent-orchestration" — no synthesis article yet.</div>
+      </div>
+    </div>
+
+    <!-- System Stats -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">System Stats</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <div class="text-2xl font-bold text-slate-200">60</div>
+          <div class="text-[10px] text-slate-500">Capabilities</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-slate-200">7</div>
+          <div class="text-[10px] text-slate-500">Components</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-blue-400">142</div>
+          <div class="text-[10px] text-slate-500">KB Entries</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-purple-400">87</div>
+          <div class="text-[10px] text-slate-500">Memories</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Sessions -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Recent Sessions</h2>
+
+      <div class="session-item">
+        <div class="session-dot bg-green-500"></div>
+        <div class="flex-1">
+          <div class="text-xs font-medium">ADF</div>
+          <div class="text-[10px] text-slate-500">Ecosystem alignment plugin v1.0</div>
+        </div>
+        <div class="text-[10px] text-slate-600">2h ago</div>
+      </div>
+
+      <div class="session-item">
+        <div class="session-dot bg-green-500"></div>
+        <div class="flex-1">
+          <div class="text-xs font-medium">Capabilities Registry</div>
+          <div class="text-[10px] text-slate-500">Gap analysis, CR-4/CR-5 schema updates</div>
+        </div>
+        <div class="text-[10px] text-slate-600">5h ago</div>
+      </div>
+
+      <div class="session-item">
+        <div class="session-dot bg-purple-500"></div>
+        <div class="flex-1">
+          <div class="text-xs font-medium">Krypton</div>
+          <div class="text-[10px] text-slate-500">Memory gatherer agent, /capture routing</div>
+        </div>
+        <div class="text-[10px] text-slate-600">1d ago</div>
+      </div>
+
+      <div class="session-item">
+        <div class="session-dot bg-yellow-500"></div>
+        <div class="flex-1">
+          <div class="text-xs font-medium">Memory Layer</div>
+          <div class="text-[10px] text-slate-500">MCP server delivery, dual-store testing</div>
+        </div>
+        <div class="text-[10px] text-slate-600">2d ago</div>
+      </div>
+
+      <div class="session-item">
+        <div class="session-dot bg-slate-500"></div>
+        <div class="flex-1">
+          <div class="text-xs font-medium">Agentic Work System</div>
+          <div class="text-[10px] text-slate-500">Communication protocols, architecture update</div>
+        </div>
+        <div class="text-[10px] text-slate-600">2d ago</div>
+      </div>
+    </div>
+
+    <!-- Autonomy Ratios -->
+    <div class="card">
+      <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Autonomy Trajectory</h2>
+      <div class="space-y-3">
+        <div>
+          <div class="flex justify-between text-[10px] mb-1">
+            <span class="text-blue-400">Intent</span>
+            <span class="text-slate-500">80/20 <span class="text-slate-600">target: 60/40</span></span>
+          </div>
+          <div class="h-1.5 rounded bg-navy-700 relative">
+            <div class="h-full rounded bg-blue-500/50" style="width:80%"></div>
+            <div class="absolute top-0 h-full w-0.5 bg-blue-300/50 rounded" style="left:60%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-[10px] mb-1">
+            <span class="text-purple-400">Governance</span>
+            <span class="text-slate-500">50/50 <span class="text-slate-600">target: 30/70</span></span>
+          </div>
+          <div class="h-1.5 rounded bg-navy-700 relative">
+            <div class="h-full rounded bg-purple-500/50" style="width:50%"></div>
+            <div class="absolute top-0 h-full w-0.5 bg-purple-300/50 rounded" style="left:30%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-[10px] mb-1">
+            <span class="text-amber-400">Management</span>
+            <span class="text-slate-500">30/70 <span class="text-slate-600">target: 15/85</span></span>
+          </div>
+          <div class="h-1.5 rounded bg-navy-700 relative">
+            <div class="h-full rounded bg-amber-500/50" style="width:30%"></div>
+            <div class="absolute top-0 h-full w-0.5 bg-amber-300/50 rounded" style="left:15%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-[10px] mb-1">
+            <span class="text-green-400">Operations</span>
+            <span class="text-slate-500">10/90 <span class="text-slate-600">target: 3/97</span></span>
+          </div>
+          <div class="h-1.5 rounded bg-navy-700 relative">
+            <div class="h-full rounded bg-green-500/50" style="width:10%"></div>
+            <div class="absolute top-0 h-full w-0.5 bg-green-300/50 rounded" style="left:3%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="mt-6 flex items-center justify-between text-[10px] text-slate-600">
+  <span>Nerve Center v0.1 Concept Prototype</span>
+  <span>Data: 7 components | 60 capabilities | Last sync: just now</span>
+  <div class="flex items-center gap-4">
+    <span class="cursor-pointer hover:text-slate-400">L0: Orbit</span>
+    <span class="cursor-pointer hover:text-slate-400 text-slate-500">L1: Domain</span>
+    <span class="cursor-pointer hover:text-slate-400 text-slate-500">L2: Entity</span>
+    <span class="cursor-pointer hover:text-slate-400 text-slate-500">L3: Data</span>
+  </div>
+</footer>
+
+</body>
+</html>
