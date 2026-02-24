@@ -18,6 +18,7 @@ The meta-project governing how the agentic work system's components work togethe
 - `docs/status.md` — Current state, component maturity, session log
 - `docs/brief.md` — Scope, success criteria, component inventory
 - `BACKLOG.md` — Prioritized improvement items seeded from brainstorm
+- `~/code/_shared/nerve-center/config/jobs.yaml` — canonical list of running monitoring jobs
 
 ## Component Projects
 
@@ -30,6 +31,7 @@ The meta-project governing how the agentic work system's components work togethe
 | Krypton | `~/code/_shared/krypton/` |
 | Link Triage | `~/code/_shared/link-triage/` |
 | Work Management | `~/code/_shared/work-management/` |
+| Nerve Center    | `~/code/_shared/nerve-center/` |
 
 ## Working Norms
 
@@ -38,6 +40,7 @@ The meta-project governing how the agentic work system's components work togethe
 - Backlog items should be traceable to the architecture (which gap does this close?)
 - Status.md is updated every session per the Agent Session Protocol
 - Cross-project learnings go to Memory MCP; project-local conventions stay here
+- Backlog items are often built inside component projects — audit against component backlogs/status before assuming items are still open
 
 ## Session Protocol
 
