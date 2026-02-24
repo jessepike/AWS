@@ -34,8 +34,14 @@ Newly created artifacts that exist but aren't yet embedded in regular workflows.
 ## Last Session
 
 - **Date:** 2026-02-24
-- **What happened:** Cross-project audit + maturity model built. Replaced Low/Medium/High with 5-level CMM-scored model across 5 dimensions. Closed B3, B20. Added Why/Realized to backlog. Added Embedding Queue to track new artifacts until integrated.
+- **What happened:** Cross-project audit + CMM maturity model + Why/Realized cascade to all 8 components. Closed B3, B20, B30. ADF spec v1.1.0 shipped.
 - **Key insight:** Built broadly, not linearly — new artifacts need an active embedding phase or they drift into orphaned docs. Embedding Queue is the mechanism.
+
+## Session Log
+
+| Date | Summary |
+|------|---------|
+| 2026-02-24 | CMM maturity model, Why/Realized cascade to 8 components, closed B3/B20/B30 |
 
 ## Next Steps
 
