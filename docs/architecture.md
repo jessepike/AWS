@@ -681,14 +681,7 @@ All scheduled agent jobs run laptop-local via macOS launchd. This is a deliberat
 
 ### Installed Jobs
 
-| Label | Cadence | Type | Purpose |
-|---|---|---|---|
-| `com.claude.token-watchdog` | Every 15 min + login | Script | OAuth token health monitoring |
-| `com.claude.wm.adf-sync` | Every 15 min + login | Script | ADF→WM data sync (no LLM) |
-| `com.claude.wm.triage-login` | On login (gated 4h) | Claude Code (Haiku) | Morning catchup triage |
-| `com.claude.wm.triage-light` | 12:30pm daily | Claude Code (Haiku) | Midday incremental triage |
-| `com.claude.wm.triage-deep` | 5:00pm daily | Claude Code (Sonnet) | End-of-day full triage + batch dispatch |
-| `com.claude.wm.briefing` | Monday 8am | Claude Code (Sonnet) | Weekly backlog digest |
+**35 jobs total** (17 launchd + 18 NC Railway). See [`docs/job-registry.md`](job-registry.md) for the full canonical registry with schedules, models, and last-verified dates.
 
 ### Design Patterns
 
