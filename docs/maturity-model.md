@@ -107,10 +107,10 @@ Each dimension is scored 1–5. Total score (5–25) maps to a maturity level.
 |-----------|-------|-------|
 | Delivery | 4 | 16 MCP tools, 442 tests, synthesis linking, batch ops |
 | Integration | 3 | Krypton gatherer, Link Triage capture, kb-manager plugin |
-| Observability | 2 | Health checks open in backlog (KB-11) — not yet built |
+| Observability | 3 | Functional health check in mcp-health-check.sh (2x daily) — SQLite integrity + source_items count + Chroma dir |
 | Documentation | 3 | Architecture documented, kb-manager plugin docs |
 | Adoption | 3 | Regular use for knowledge storage and retrieval |
-| **Total** | **15** | **L3 — Defined** |
+| **Total** | **16** | **L3 — Defined** |
 
 ### Memory
 
@@ -118,10 +118,10 @@ Each dimension is scored 1–5. Total score (5–25) maps to a maturity level.
 |-----------|-------|-------|
 | Delivery | 3 | 14 MCP tools, episodic log, hash-chaining, verify_chain |
 | Integration | 2 | Used by Krypton /capture and NC jobs, but adoption thin |
-| Observability | 2 | NC runs some memory health checks; not comprehensive |
+| Observability | 3 | Functional health check in mcp-health-check.sh (2x daily) — SQLite integrity + memory count + 24h error rate |
 | Documentation | 2 | Routing guide exists, README covers basics |
-| Adoption | 2 | Used but not habitual — 78 NC sessions had zero writes (now partially fixed) |
-| **Total** | **11** | **L2 — Managed** |
+| Adoption | 2 | Used but not habitual — automated memory capture in 5 job prompts now |
+| **Total** | **12** | **L2 — Managed** |
 
 ### Capabilities Registry
 
@@ -185,8 +185,8 @@ Each dimension is scored 1–5. Total score (5–25) maps to a maturity level.
 | Component | D | I | O | Doc | A | Total | Tier |
 |-----------|---|---|---|-----|---|-------|------|
 | ADF | 4 | 3 | 3 | 4 | 3 | 17 | L3 |
-| Knowledge Base | 4 | 3 | 2 | 3 | 3 | 15 | L3 |
-| Memory | 3 | 2 | 2 | 2 | 2 | 11 | L2 |
+| Knowledge Base | 4 | 3 | 3 | 3 | 3 | 16 | L3 |
+| Memory | 3 | 2 | 3 | 2 | 2 | 12 | L2 |
 | Capabilities Registry | 2 | 1 | 1 | 2 | 1 | 7 | L1 |
 | Krypton | 3 | 4 | 2 | 3 | 3 | 15 | L3 |
 | Link Triage | 3 | 2 | 1 | 2 | 2 | 10 | L2 |
@@ -194,7 +194,7 @@ Each dimension is scored 1–5. Total score (5–25) maps to a maturity level.
 | Nerve Center | 4 | 4 | 4 | 3 | 4 | 19 | L4 |
 
 **System median:** L3 — Defined
-**Weakest dimension across system:** Observability (avg 2.3)
+**Weakest dimension across system:** Observability (avg 2.5) — improving
 **Strongest dimension across system:** Delivery (avg 3.5)
 
 ---

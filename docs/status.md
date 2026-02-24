@@ -12,15 +12,15 @@ Full rubric: `docs/maturity-model.md`
 | Component | D | I | O | Doc | A | Score | Tier |
 |-----------|---|---|---|-----|---|-------|------|
 | ADF | 4 | 3 | 3 | 4 | 3 | 17 | L3 — Defined |
-| Knowledge Base | 4 | 3 | 2 | 3 | 3 | 15 | L3 — Defined |
-| Memory | 3 | 2 | 2 | 2 | 2 | 11 | L2 — Managed |
+| Knowledge Base | 4 | 3 | 3 | 3 | 3 | 16 | L3 — Defined |
+| Memory | 3 | 2 | 3 | 2 | 2 | 12 | L2 — Managed |
 | Capabilities Registry | 2 | 1 | 1 | 2 | 1 | 7 | L1 — Initial |
 | Krypton | 3 | 4 | 2 | 3 | 3 | 15 | L3 — Defined |
 | Link Triage | 3 | 2 | 1 | 2 | 2 | 10 | L2 — Managed |
 | Work Management | 4 | 3 | 3 | 2 | 3 | 15 | L3 — Defined |
 | Nerve Center | 4 | 4 | 4 | 3 | 4 | 19 | L4 — Measured |
 
-**System median:** L3 | **Weakest:** Observability (avg 2.3) | **Strongest:** Delivery (avg 3.5)
+**System median:** L3 | **Weakest:** Observability (avg 2.5, improving) | **Strongest:** Delivery (avg 3.5)
 
 ## Embedding Queue
 
@@ -42,6 +42,7 @@ Newly created artifacts that exist but aren't yet embedded in regular workflows.
 | Date | Summary |
 |------|---------|
 | 2026-02-24 | CMM maturity model, Why/Realized cascade to 8 components, closed B3/B20/B30 |
+| 2026-02-24 | Phase 2 floor raise complete. Phase 3: canonical job registry, capabilities registry accuracy mechanism |
 
 ## Next Steps
 
