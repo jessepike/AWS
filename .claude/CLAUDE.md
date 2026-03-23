@@ -29,7 +29,7 @@ The meta-project governing how the agentic work system's components work togethe
 | Memory | `~/code/_shared/memory/` |
 | Capabilities Registry | `~/code/_shared/capabilities-registry/` |
 | Krypton | `~/code/_shared/krypton/` |
-| Link Triage | `~/code/_shared/link-triage/` |
+| Link Triage | `~/code/_shared/link-triage-pipeline/` |
 | Work Management | `~/code/_shared/work-management/` |
 | Nerve Center    | `~/code/_shared/nerve-center/` |
 

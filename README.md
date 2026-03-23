@@ -28,6 +28,8 @@ See `docs/architecture.md` for the full reference.
 ## Key Files
 
 - `docs/architecture.md` — System architecture reference
+- `docs/standards/capture-envelope-standard.md` — Cross-project capture schema + routing policy
+- `docs/standards/capture-pipeline-visual.md` — Capture-to-routing visual flow
 - `docs/intent.md` — Why this project exists
 - `docs/status.md` — Current state and session log
 - `docs/brief.md` — Scope and success criteria

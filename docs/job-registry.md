@@ -1,6 +1,6 @@
 # Automation Job Registry
 
-**Total jobs:** 35 (17 launchd + 18 NC Railway)
+**Total jobs:** 38 (17 launchd + 21 NC Railway)
 **Last full audit:** 2026-02-24
 
 This is the canonical source of truth for all automation jobs in the Agentic Work System. Update here when jobs are added, changed, or removed.
@@ -59,6 +59,9 @@ Defined in `~/code/_shared/nerve-center/config/jobs.yaml`. Run on Railway. Monit
 | 16 | `governance-sentinel` | Hourly | Sonnet | CLAUDE.md + recent commits governance check | 2026-02-24 |
 | 17 | `knowledge-auditor` | Mon 8am | Sonnet | Knowledge base doc audit | 2026-02-24 |
 | 18 | `autonomy-assessor` | Mon 8am | Sonnet | Weekly autonomy level assessment | 2026-02-24 |
+| 19 | `monitoring-integrity` | Hourly | Haiku | Coverage-critical freshness and monitoring integrity checks | 2026-02-24 |
+| 20 | `weekly-regression-suite` | Mon 8:15am | Haiku | Weekly regression suite and value-report probe | 2026-02-24 |
+| 21 | `wm-daemon-health` | Every 15min | Haiku | WM daemon health/readiness/lock/job-freshness probe | 2026-02-24 |
 
 ---
 
@@ -67,8 +70,8 @@ Defined in `~/code/_shared/nerve-center/config/jobs.yaml`. Run on Railway. Monit
 | Category | Count | Failure Alerting |
 |----------|-------|-----------------|
 | LaunchD jobs | 17 | Yes — EXIT trap → job-fail-notify.sh → Slack |
-| NC Railway jobs | 18 | NC health infrastructure |
-| **Total** | **35** | **All covered** |
+| NC Railway jobs | 21 | NC health infrastructure |
+| **Total** | **38** | **All covered** |
 
 ### Model Distribution (launchd)
 

@@ -1,0 +1,26 @@
+[
+  {
+    "name": "project_route_with_capability_topic",
+    "input": "need to validate diagram forge mcp server is ready #diagram-forge #mcp",
+    "expected": {
+      "route_strategy": "project_backlog",
+      "topics": ["diagram-forge", "mcp"]
+    }
+  },
+  {
+    "name": "inbox_route_capability_topic_only",
+    "input": "capture tip about prompt chaining #skills",
+    "expected": {
+      "route_strategy": "inbox_backlog",
+      "topics": ["skills"]
+    }
+  },
+  {
+    "name": "inbox_route_memory_topic",
+    "input": "review memory consolidation approach #memory",
+    "expected": {
+      "route_strategy": "inbox_backlog",
+      "topics": ["memory"]
+    }
+  }
+]
