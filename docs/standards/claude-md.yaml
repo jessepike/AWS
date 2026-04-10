@@ -1,0 +1,58 @@
+# AWS Standard: Project CLAUDE.md
+#
+# Defines the shell of a project CLAUDE.md file. Only project-specific
+# content. Global standards live in ~/.claude/CLAUDE.md and are loaded
+# every turn — duplicating them creates drift.
+
+standard: claude-md
+version: 1.0.0
+updated: 2026-04-09
+owner: forge
+adr: ADR-001
+
+# What a project CLAUDE.md MAY contain
+allowed_sections:
+  - identity
+  - key_locations
+  - project_constraints
+  - project_workflows
+  - project_commands
+
+# What a project CLAUDE.md MUST NOT contain (already in global)
+forbidden_sections:
+  - generic_orientation_protocol
+  - model_routing_guidance
+  - environment_tiers
+  - adf_stage_flow_descriptions
+  - session_lifecycle_descriptions
+  - memory_system_descriptions
+  - capability_discovery_descriptions
+  - host_protection_rules
+  - workflow_constraints
+
+# Limits
+max_lines: 40
+max_tokens: 400
+
+# Template
+template: |
+  # {project-name}
+
+  {one-line description of what this project is}
+
+  ## Key Locations
+  - **{name}:** `{path}`
+  - **{name}:** `{path}`
+
+  ## Project Constraints
+  - {project-specific rule}
+  - {project-specific rule}
+
+  ## Workflow Notes
+  {any project-specific workflow notes not covered by global}
+
+# Validation
+validation:
+  - must_have_project_identity
+  - must_not_duplicate_global
+  - must_be_under_max_lines

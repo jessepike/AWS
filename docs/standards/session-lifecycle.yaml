@@ -1,0 +1,58 @@
+# AWS Standard: Session Lifecycle
+#
+# Defines the contract between session-start, session-wrap, and
+# session-handoff skills. Ensures consistent context management.
+
+standard: session-lifecycle
+version: 1.0.0
+updated: 2026-04-09
+owner: forge
+adr: ADR-001
+
+lanes:
+  orient:
+    purpose: Read-only orientation at session start
+    reads: [CLAUDE.md, status.md, BACKLOG.md, lessons.md, .claude/rules/]
+    writes: []
+    skill: orient
+
+  session-wrap:
+    purpose: Close-out ritual for an ending session
+    reads: [status.md, BACKLOG.md, lessons.md, git status]
+    writes: [status.md, BACKLOG.md, lessons.md]
+    actions:
+      - update_status
+      - update_backlog
+      - capture_lessons
+      - promote_cross_project_to_kb
+      - memory_capture_if_available
+      - capabilities_registry_sync_check
+      - commit_pending_work
+      - session_summary
+    skill: session-wrap
+
+  session-handoff:
+    purpose: Prepare context for a specific next agent or continuation
+    reads: [current session context, status.md, BACKLOG.md]
+    writes: [docs/active/handoff-*.md]
+    note: Extends session-wrap; handoff block is the unique addition
+    skill: session-handoff
+
+  pre-compact-hook:
+    purpose: Reminder only — no writes, no reads
+    fires_on: before compaction event
+    responsibility: Remind the session to save uncaptured state to
+      lessons.md and status.md before compacting
+
+non_duplication:
+  - orient does not write
+  - session-wrap handles KB promotion
+  - session-handoff adds handoff block but does not duplicate wrap
+  - pre-compact-hook is reminder-only
+
+required_artifacts_produced:
+  session-wrap:
+    - updated status.md
+    - updated BACKLOG.md (if exists)
+    - updated lessons.md (if new learnings)
+    - optional git commit

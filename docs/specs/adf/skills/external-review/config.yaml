@@ -1,0 +1,35 @@
+# External Review Skill Configuration
+# Versioned with skill — safe to commit
+
+version: "1.0.0"
+implements: "ADF-REVIEW-SPEC v1.2.0"
+
+# Stage → prompt mapping (relative to adf/)
+prompts:
+  discover: "../prompts/external-review-prompt.md"
+  design: "../prompts/design-external-review-prompt.md"
+  develop: "../prompts/develop-external-review-prompt.md"
+
+# Stage → default artifact path (relative to project root)
+artifacts:
+  discover: "docs/discover-brief.md"
+  design: "docs/design.md"
+  develop: "docs/design.md"
+
+# Default models if --models not specified
+default_models:
+  - kimi-k2
+  - gemini
+
+# Cycle rules (from ADF-REVIEW-SPEC v1.2.0)
+cycles:
+  min: 1
+  max: 10
+  structural_problem_signal: 4
+  stuck_signal: 3
+
+# Execution settings
+execution:
+  parallel: true
+  timeout_seconds: 120
+  retry_attempts: 2

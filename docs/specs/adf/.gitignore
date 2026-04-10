@@ -1,0 +1,9 @@
+.DS_Store
+acm-server/node_modules/
+acm-server/build/
+.env
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/

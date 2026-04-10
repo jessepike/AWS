@@ -4,6 +4,11 @@ Hot buffer of insights, patterns, and gotchas from recent sessions. One line per
 
 ## 2026-04-09
 
+- AWS vs AGF clarification: AWS is Jesse's personal OS for daily work; AGF is the commercial client framework. Inspiration relationship only — not parent/child. Keep them separate.
+- Symlink-first migration is the right shape for risky directory moves — safety net during transition, removal as a follow-up backlog item once verified stable.
+- Forge as exclusive write-authority on AWS components eliminates "which agent for this?" decisions — single ownership = lower cognitive load.
+- Existing pike-agent capability schema uses `source: internal` not `source: pike-agents`. Schema drift between handoff spec and live pattern caught at registration time — verify schema before writing new capability.yaml files.
+- Phase 1 + Phase 2 + Phase 7 ran in parallel (subagent + 2 inline) — solid pattern for spec-heavy sprints with independent phases. Apply to future multi-phase governance work.
 - `architecture.md` is read-only — any proposed changes must go through CTO review before editing. Treat it as an ADR, not a living doc.
 - The CMM maturity model (added 2026-04-07) provides a measurable ladder for each Knowledge Ring component — reference it when evaluating Phase 0a → 0b gate.
 

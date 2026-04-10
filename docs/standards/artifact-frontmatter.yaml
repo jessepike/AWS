@@ -1,0 +1,61 @@
+# AWS Standard: Artifact Frontmatter
+#
+# Required frontmatter fields per artifact type. Enables machine
+# checks for freshness, ownership, scope.
+
+standard: artifact-frontmatter
+version: 1.0.0
+updated: 2026-04-09
+owner: forge
+adr: ADR-001
+
+artifacts:
+  intent.md:
+    required:
+      - status          # active | paused | archived
+      - updated         # ISO date
+    recommended:
+      - owner
+      - version
+
+  status.md:
+    required:
+      - updated
+      - stage           # discover | design | develop | deliver | operate | unknown
+    recommended:
+      - last_session
+
+  brief.md:
+    required:
+      - status
+      - updated
+    recommended:
+      - version
+      - covers            # scope breadth
+
+  design.md:
+    required:
+      - status
+      - updated
+      - covers
+    recommended:
+      - version
+      - owner
+
+  ADR files:
+    required:
+      - adr               # number
+      - title
+      - date
+      - status            # proposed | accepted | deprecated | superseded
+    recommended:
+      - owner
+      - supersedes
+      - superseded_by
+
+freshness_thresholds:
+  intent.md: 90d          # review quarterly
+  status.md: 7d           # should be current
+  brief.md: 30d
+  design.md: 30d
+  lessons.md: 7d

@@ -1,5 +1,25 @@
 # Backlog: Agentic Work System
 
+## AWS Governance Sprint — Day 2
+
+- [ ] Build `/project-doctor` skill — audits projects against `docs/standards/project-layout.yaml` + `claude-md.yaml`, fixes drift
+- [ ] Build `workflow-change-detector` skill — routes governance-change phrases to Forge agent
+- [ ] Write `baseline-audit.sh` — runs project-doctor across all projects, generates drift report
+- [ ] Write `com.macbook2014.baseline-audit.plist` launchd plist — deploy deferred until registry on macbook2014 is confirmed
+- [ ] Run manual baseline audit, fix drift on all projects
+- [ ] Draft client template extraction plan from AWS
+
+## Symlink Cleanup — P1 (next 3-7 days)
+
+- [ ] Remove `_shared/agentic-work-system` symlink — verify no downstream breakage first, then grep all SOFT doc references and update to `_shared/aws/`
+- [ ] Remove `_shared/adf` symlink — same verification + cleanup
+- [ ] Cleanup pass: grep-and-replace SOFT references to old paths in `_shared/aws/` self-refs (README.md, docs/overview.md, docs/component-registry.md, .claude/CLAUDE.md) — update to canonical `_shared/aws/...` form
+
+## Pending Renames — P2 (dedicated future sessions)
+
+- [ ] Rename `tools/ai-dev/` → `tools/aws-workbench/` — high path-dependency risk, dedicated session required
+- [ ] Merge `_shared/agent-exec/` into `_shared/pike-agents/context/` — dedicated session required
+
 ## Active Items
 
 | ID | Item | Type | Pri | Why |

@@ -1,5 +1,28 @@
 # Status: Agentic Work System
 
+## 2026-04-09 — AWS Governance Sprint Day 1
+
+**Maturity:** 5/10 → 6/10 structural
+
+**Shipped:**
+- ADR-001: AWS governance activation (decisions framework stood up)
+- 4 standards YAMLs: `docs/standards/` (project-layout, claude-md, model-routing, agent-authority)
+- Directory rename: `agentic-work-system/` → `aws/` (canonical path is now `_shared/aws/`)
+- ADF specs folded into `docs/specs/adf/` (symlink at `_shared/adf/` → `_shared/aws/docs/specs/adf/`)
+- Global CLAUDE.md: AWS Governance section added + Forge exclusive write-authority rule
+- Forge agent registered in capabilities-registry
+- ai-dev CLAUDE.md cleaned to ≤30 lines
+- ai-dev legacy ADF specs archived
+- 7 downstream HARD path references updated to new canonical paths
+
+**Safety net:** Symlinks in place at `_shared/agentic-work-system` and `_shared/adf` (old paths). These are temporary — targeted for removal in 3-7 days after no breakage observed. Removal tracked in BACKLOG.md.
+
+**Next session entry point (Day 2):** Build `/project-doctor` skill, `workflow-change-detector`, and `baseline-audit.sh`. Run manual baseline audit across all projects.
+
+**References:** `docs/decisions/ADR-001.md`, `docs/active/aws-governance-sprint-handoff.md`
+
+---
+
 ## Current Stage: Operate & Evolve
 
 All major MVPs have been delivered. The system is entering integration and tuning phase.
@@ -33,7 +56,7 @@ Newly created artifacts that exist but aren't yet embedded in regular workflows.
 
 ## Last Session
 
-- **Date:** 2026-02-24
+- **Date:** 2026-04-09
 - **What happened:** Cross-project audit + CMM maturity model + Why/Realized cascade to all 8 components. Closed B3, B20, B30. ADF spec v1.1.0 shipped.
 - **Key insight:** Built broadly, not linearly — new artifacts need an active embedding phase or they drift into orphaned docs. Embedding Queue is the mechanism.
 
@@ -41,6 +64,7 @@ Newly created artifacts that exist but aren't yet embedded in regular workflows.
 
 | Date | Summary |
 |------|---------|
+| 2026-04-09 | AWS Governance Sprint Day 1 — ADR-001, 4 standards YAMLs, dir rename, ADF fold, global CLAUDE.md, Forge registration, ai-dev cleanup, 7 HARD ref updates. Maturity 5→6/10. |
 | 2026-02-24 | CMM maturity model, Why/Realized cascade to 8 components, closed B3/B20/B30 |
 | 2026-02-24 | Phase 2 floor raise complete. Phase 3: canonical job registry, capabilities registry accuracy mechanism |
 

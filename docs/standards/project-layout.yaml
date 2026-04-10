@@ -1,0 +1,71 @@
+# AWS Standard: Project Layout
+#
+# Defines required artifacts every project must have. Enforced by
+# /project-doctor (Day 2). Governed by Forge.
+
+standard: project-layout
+version: 1.0.0
+updated: 2026-04-09
+owner: forge
+adr: ADR-001
+
+# REQUIRED artifacts at project root
+required:
+  - path: intent.md
+    purpose: Why this project exists, problem statement, desired outcome
+    required_frontmatter: [status, updated]
+    template: templates/intent.md
+
+  - path: status.md
+    purpose: Current state, stage, next steps, blockers
+    required_frontmatter: [updated, stage]
+    alt_paths: [docs/status.md]
+    template: templates/status.md
+
+  - path: BACKLOG.md
+    purpose: Tracked work, prioritized
+    template: templates/backlog.md
+
+  - path: lessons.md
+    purpose: Hot buffer of recent learnings, max ~15 entries
+    alt_paths: [docs/lessons.md]
+    promotion_target: knowledge-base
+    template: templates/lessons.md
+
+  - path: CLAUDE.md
+    purpose: Project-specific shell (see claude-md.yaml standard)
+    spec_ref: claude-md.yaml
+    max_lines: 40
+    must_not_duplicate: ~/.claude/CLAUDE.md
+
+  - path: docs/active/
+    purpose: Working documents
+    type: directory
+
+# OPTIONAL but recommended
+recommended:
+  - path: decisions.md
+    purpose: Append-only decision log
+    alt_paths: [docs/decisions/]
+
+  - path: AGENTS.md
+    purpose: Codex mirror of CLAUDE.md project-specific content
+
+# Layout variants supported
+layout_variants:
+  root:
+    description: Artifacts at project root (default)
+    example_project: ai-dev
+
+  hybrid:
+    description: Root artifacts + .status/ subfolder for operational state
+    example_project: pike-acm
+    status_subfolder: .status/
+
+# Exit criteria — project is "conformant" when:
+exit_criteria:
+  - all required artifacts exist
+  - frontmatter present where specified
+  - CLAUDE.md under max_lines
+  - CLAUDE.md contains no duplicated global content
+  - lessons.md entries ≤ 15
