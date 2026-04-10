@@ -4,8 +4,8 @@
 # /project-doctor (Day 2). Governed by Forge.
 
 standard: project-layout
-version: 1.0.0
-updated: 2026-04-09
+version: 1.1.0
+updated: 2026-04-10
 owner: forge
 adr: ADR-001
 
@@ -14,6 +14,7 @@ required:
   - path: intent.md
     purpose: Why this project exists, problem statement, desired outcome
     required_frontmatter: [status, updated]
+    alt_paths: [docs/intent.md]
     template: templates/intent.md
 
   - path: status.md

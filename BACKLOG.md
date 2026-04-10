@@ -2,12 +2,23 @@
 
 ## AWS Governance Sprint — Day 2
 
-- [ ] Build `/project-doctor` skill — audits projects against `docs/standards/project-layout.yaml` + `claude-md.yaml`, fixes drift
-- [ ] Build `workflow-change-detector` skill — routes governance-change phrases to Forge agent
-- [ ] Write `baseline-audit.sh` — runs project-doctor across all projects, generates drift report
+- [x] Build `/project-doctor` skill — audits projects against `docs/standards/project-layout.yaml` + `claude-md.yaml`, fixes drift (2026-04-10)
+- [x] Build `workflow-change-detector` hook — routes workflow-change phrases to Forge agent, live in production (2026-04-10)
+- [x] Run manual baseline audit, fix drift on all projects — 18 projects audited, 11 bulk-fixed (2026-04-10)
+- [x] Draft client template extraction plan from AWS — `docs/active/client-template-extraction-plan.md` (2026-04-10)
+- [ ] Write `baseline-audit.sh` — runs project-doctor across all projects, generates drift report (scripted automation, not yet built)
 - [ ] Write `com.macbook2014.baseline-audit.plist` launchd plist — deploy deferred until registry on macbook2014 is confirmed
-- [ ] Run manual baseline audit, fix drift on all projects
-- [ ] Draft client template extraction plan from AWS
+
+## Post-Sprint Human-Judgment Fixes (2026-04-10)
+
+- [ ] **Trim agent-exec CLAUDE.md** — Strip Reference Routing paragraph, 45→~39 lines
+- [ ] **Trim memory CLAUDE.md** — Reduce from ~60 to ≤40 lines
+- [ ] **Re-run project-doctor audit** — Verify v1.1.0 alt_paths fix resolves `docs/intent.md` false positives
+- [ ] **Tune workflow-change-detector trigger patterns** — False positive rate too high; narrow 8 patterns after real-session observation
+- [ ] **Registry health: diagrams + design-sprint** — Create capability.yaml for both (real drift, not false positives)
+- [ ] **Registry freshness thresholds** — Tune per type: plugins/agents 180d, skills 60d (current 60d catches 41% as stale)
+- [ ] **Client project conformance sprint** — AGF, pike-acm, pike-finances, even-ground (separate sprint, use project-doctor)
+- [ ] **Stale status.md in 4 projects** — Manual review required; project-doctor can't auto-update content
 
 ## Symlink Cleanup — P1 (next 3-7 days)
 

@@ -1,3 +1,8 @@
+---
+status: active
+updated: 2026-02-11
+---
+
 # Intent: Agentic Work System
 
 ## Problem

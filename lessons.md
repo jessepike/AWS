@@ -2,6 +2,15 @@
 
 Hot buffer of insights, patterns, and gotchas from recent sessions. One line per insight, dated. Keep last ~15. Promote cross-project patterns to KB at session wrap.
 
+## 2026-04-10 (governance sprint Day 2)
+
+- Portfolio audit before conformance standardization is expected to show 0% compliance — baseline value comes from the structured remediation list, not the initial score.
+- Standards that fight reality lose. `project-layout.yaml` required root-level `intent.md`, but 10/13 Tier 1 projects used `docs/intent.md`. Updating the standard (alt_paths) instantly fixed ~40% of drift. Audit projects before writing standards.
+- Subagent outputs need verification against known corrections — a subagent reading updated standard v1.1.0 still reported `docs/intent.md` as a violation. Explicit context in prompts is not guaranteed to internalize.
+- `workflow-change-detector` hook false positive rate is high with broad trigger patterns. Non-blocking mode is mandatory for hooks that may fire on benign input. Tune patterns after observing real-session behavior.
+- Building governance tooling as readable SKILL.md files (not binaries) is the right pattern — any agent can read and follow the instructions. `/project-doctor` is a reference document, not an executable.
+- Bulk conformance fixes are high-leverage: 13 files + 10 dirs across 11 projects in one session moved portfolio from 0% to ~73% at minor-or-better. Automated baseline → bulk remediation → human-judgment pass is the right sequence.
+
 ## 2026-04-09
 
 - AWS vs AGF clarification: AWS is Jesse's personal OS for daily work; AGF is the commercial client framework. Inspiration relationship only — not parent/child. Keep them separate.

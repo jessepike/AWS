@@ -1,4 +1,29 @@
+---
+updated: 2026-04-10
+stage: operate
+---
+
 # Status: Agentic Work System
+
+## 2026-04-10 — AWS Governance Sprint Day 2
+
+**Maturity:** 6/10 → 7/10 operational
+
+**Shipped:**
+- `/project-doctor` skill (SKILL.md + standards-checklist + 5 templates + capability.yaml, 113 capabilities total)
+- `workflow-change-detector` UserPromptSubmit hook — live in production, 8 trigger patterns, non-blocking
+- `project-layout.yaml` v1.1.0: added `alt_paths: [docs/intent.md]` (standard was wrong, not the projects)
+- Portfolio baseline audit: 18 projects, 583-line report at `docs/active/baseline-audit-2026-04-09.md`
+- Bulk conformance fix: 13 files created, 5 modified, 10 docs/active/ dirs across 11 Forge-owned projects
+- Client template extraction plan at `docs/active/client-template-extraction-plan.md` (Q3 recommendation)
+
+**Post-fix portfolio:** 1 clean / 7 minor / 3 moderate / 0 major (was 7 major). 7 critical skipped (client/bare repos).
+
+**Next session entry point:** Verify overnight hygiene job, re-run project-doctor to confirm v1.1.0 fix, handle human-judgment CLAUDE.md trims (agent-exec, memory), tune hook trigger patterns, registry health (diagrams + design-sprint capability.yaml).
+
+**References:** `docs/decisions/ADR-001.md`, `docs/active/baseline-audit-2026-04-09.md`, `CHANGELOG.md`
+
+---
 
 ## 2026-04-09 — AWS Governance Sprint Day 1
 
