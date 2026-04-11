@@ -1,5 +1,5 @@
 ---
-updated: 2026-04-10
+updated: 2026-04-11
 stage: operate
 ---
 
@@ -16,10 +16,11 @@ stage: operate
 - Portfolio baseline audit: 18 projects, 583-line report at `docs/active/baseline-audit-2026-04-09.md`
 - Bulk conformance fix: 13 files created, 5 modified, 10 docs/active/ dirs across 11 Forge-owned projects
 - Client template extraction plan at `docs/active/client-template-extraction-plan.md` (Q3 recommendation)
+- Intelligence Layer Phase 1 workspace pieces: `scripts/il-classifier.sh` and `session-lifecycle.yaml` v1.1.0 (pre-compact extraction prompt + async hot-buffer classifier)
 
 **Post-fix portfolio:** 1 clean / 7 minor / 3 moderate / 0 major (was 7 major). 7 critical skipped (client/bare repos).
 
-**Next session entry point:** Verify overnight hygiene job, re-run project-doctor to confirm v1.1.0 fix, handle human-judgment CLAUDE.md trims (agent-exec, memory), tune hook trigger patterns, registry health (diagrams + design-sprint capability.yaml).
+**Next session entry point:** Verify `il-classifier.sh` against live `claude -p` output shape, route the blocked adf-init + hook-path changes through Forge, then continue with overnight hygiene verification, project-doctor re-run, CLAUDE.md trims, hook pattern tuning, and registry health.
 
 **References:** `docs/decisions/ADR-001.md`, `docs/active/baseline-audit-2026-04-09.md`, `CHANGELOG.md`
 
@@ -89,6 +90,8 @@ Newly created artifacts that exist but aren't yet embedded in regular workflows.
 
 | Date | Summary |
 |------|---------|
+| 2026-04-11 | Added `scripts/il-lint-sweep.sh`, a weekly Intelligence Layer health-check script covering contradictions, staleness, hot-buffer overflow, boundary violations, and orphaned KB captures with markdown report output under `~/.logs/`. |
+| 2026-04-10 | Intelligence Layer Phase 1 (workspace-local): added async hot-buffer classifier script with sweep/lock/pending handling; updated session lifecycle standard so pre-compact becomes an extraction prompt rather than a reminder-only hook. |
 | 2026-04-09 | AWS Governance Sprint Day 1 — ADR-001, 4 standards YAMLs, dir rename, ADF fold, global CLAUDE.md, Forge registration, ai-dev cleanup, 7 HARD ref updates. Maturity 5→6/10. |
 | 2026-02-24 | CMM maturity model, Why/Realized cascade to 8 components, closed B3/B20/B30 |
 | 2026-02-24 | Phase 2 floor raise complete. Phase 3: canonical job registry, capabilities registry accuracy mechanism |
