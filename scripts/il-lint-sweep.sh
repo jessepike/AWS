@@ -214,19 +214,20 @@ run_orphaned_check() {
   local prompt_file="${output_file}.prompt"
 
   cat > "$prompt_file" <<'EOF'
-Search KB for entries with source_type 'session_capture' that have zero reuse_count and are older than 30 days. These may be low-value captures. Report count and examples.
+Use get_stats to check the KB corpus health. Look at the stats for any signs of:
+- Large numbers of entries with zero reuse (never accessed after creation)
+- Entries stuck in non-active states
+- Corpus size anomalies
 
-Return ONLY a JSON array. If none, return [].
+Return ONLY a JSON array summarizing findings. If the corpus looks healthy, return [].
 Each item must include:
-- item
-- age_days
-- reuse_count
-- source_type
-- reason
+- issue: description of the problem
+- details: specific numbers or examples
+- severity: high/medium/low
 EOF
 
   run_claude_array \
-    "mcp__knowledge-base__search_knowledge" \
+    "mcp__knowledge-base__get_stats,mcp__knowledge-base__search_knowledge" \
     "$prompt_file" \
     "$output_file" \
     "Orphaned entries check"
@@ -311,14 +312,18 @@ format_json_details() {
     return 0
   fi
 
-  jq -r '
-    .[] |
-    "- " + (
-      to_entries
-      | map("\(.key): \(.value | if type == \"array\" then (map(tostring) | join(\"; \")) else tostring end)")
-      | join(" | ")
-    )
-  ' "$file_path"
+  python3 -c "
+import json, sys
+with open(sys.argv[1]) as f:
+    items = json.load(f)
+for item in items:
+    parts = []
+    for k, v in item.items():
+        if isinstance(v, list):
+            v = '; '.join(str(x) for x in v)
+        parts.append(f'{k}: {v}')
+    print(f'- {\" | \".join(parts)}')
+" "$file_path"
 }
 
 write_report() {
