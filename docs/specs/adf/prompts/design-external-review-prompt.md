@@ -14,6 +14,8 @@ usage: "Sent to external models via external-review MCP server alongside artifac
 
 This prompt is sent to external LLM models via the `external-review` MCP server. The server reads the artifact from disk and appends it to this prompt automatically.
 
+**Multi-model requirement (per ADF-REVIEW-SPEC-v2):** External review MUST include at least one non-Claude model. Run this prompt via both `claude -p` (Sonnet) AND `codex exec` (GPT). Different model families catch different issues — Claude-on-Claude shares blind spots.
+
 **Automated (MCP):** Invoked by the external-review skill — no manual assembly needed.
 
 **Manual fallback:** If the MCP server is unavailable, assemble with:

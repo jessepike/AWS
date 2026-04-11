@@ -43,6 +43,10 @@ Fresh-perspective review by external models or agents, triggered by the user bas
 - Simple or low-complexity projects
 - When user explicitly decides it's not needed
 
+**Multi-model requirement:** When external review is run, it MUST include at least one non-Claude model (GPT via Codex, Gemini, etc.). Claude reviewing Claude catches surface issues but shares blind spots. Different model families find genuinely different problems. Run Claude -p AND GPT (via `codex exec`) as separate review passes — do not substitute one for the other.
+
+**Source values:** `External-Claude`, `External-GPT`, `External-Gemini`, `Human`.
+
 ---
 
 ## Severity Definitions
