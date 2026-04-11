@@ -1,8 +1,9 @@
 # Capture Envelope Standard
 
 Status: active  
-Version: `aws.capture-envelope.v1`  
-Owner: Agentic Work System (umbrella)
+Version: `aws.capture-envelope.v2`  
+Owner: Agentic Work System (umbrella)  
+Updated: 2026-04-11
 
 ## Purpose
 
@@ -74,6 +75,40 @@ Minimal required fixture set:
 3. `"review memory consolidation approach #memory"`
 - route: `inbox_backlog`
 - topics include: `memory`
+
+## v2 Extension: Session Captures
+
+v2 adds a lighter envelope for session-originated content (hot buffer entries processed by the IL classifier). The classifier generates the full envelope at processing time — agents never see it.
+
+### Session Capture Envelope (v2)
+
+```json
+{
+  "schema_version": "aws.capture-envelope.v2",
+  "source": "session",
+  "source_ref": "captures.md:line:7",
+  "raw_text": "FastMCP returns content[0].text not .result",
+  "project_hint": "knowledge-base",
+  "classified_at": "2026-04-10T15:30:00Z",
+  "route": {
+    "primary_target": "knowledge_base|memory",
+    "strategy": "kb_ingest|memory_write",
+    "memory_type": "observation|decision|preference",
+    "namespace": "global|project-{name}"
+  }
+}
+```
+
+### Session Capture Routing Rules
+
+1. **captures.md entries:** Classifier decides KB vs Memory vs keep vs discard.
+2. **lessons.md entries:** Cross-project → KB. Project-specific → stay. Over 15 cap → oldest trimmed.
+3. **decisions.md entries:** Always → Memory (type: decision).
+4. Classifier applies heuristics from `memory-routing.md` and `reference-routing.md`.
+
+### Backward Compatibility
+
+v1 pipelines (Link Triage, Knowledge Capture) continue unchanged. v1 envelope schema is still valid. v2 only applies to session captures processed by the IL classifier.
 
 ## References
 
