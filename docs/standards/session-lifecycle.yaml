@@ -4,8 +4,8 @@
 # session-handoff skills. Ensures consistent context management.
 
 standard: session-lifecycle
-version: 1.0.0
-updated: 2026-04-09
+version: 1.1.0
+updated: 2026-04-10
 owner: forge
 adr: ADR-001
 
@@ -39,16 +39,20 @@ lanes:
     skill: session-handoff
 
   pre-compact-hook:
-    purpose: Reminder only — no writes, no reads
+    purpose: Extraction prompt — triggers agent writes to hot buffers
     fires_on: before compaction event
-    responsibility: Remind the session to save uncaptured state to
-      lessons.md and status.md before compacting
+    responsibility: Inject structured extraction prompt that causes the
+      agent to append uncaptured learnings, decisions, and observations
+      to captures.md, lessons.md, and decisions.md before context is lost
+    writes: [captures.md, lessons.md, decisions.md]
+    note: The hook injects text only — the agent does the writing in response.
+      This is a safety net; primary path is agents writing during normal work.
 
 non_duplication:
   - orient does not write
   - session-wrap handles KB promotion
   - session-handoff adds handoff block but does not duplicate wrap
-  - pre-compact-hook is reminder-only
+  - pre-compact-hook triggers agent writes to hot buffers (extraction prompt, not direct write)
 
 required_artifacts_produced:
   session-wrap:
