@@ -624,7 +624,7 @@ Not in scope for this implementation. The core library pattern (`KBStorage`, `Me
 
 **Exit gate:** SC-1 and SC-5 passing.
 
-### Phase 3: Stabilize + Measure (Week 5-8)
+### Phase 3: Stabilize + Measure (1 week)
 
 **Goal:** System runs autonomously. Metrics show compounding.
 
@@ -633,9 +633,8 @@ Not in scope for this implementation. The core library pattern (`KBStorage`, `Me
 3. Monitor lint sweep findings, fix recurring issues
 4. Measure SC-3 (decision persistence rate)
 5. Measure SC-8 (KB reuse trending)
-6. Run wiki 2-week assessment (if macmini is back online)
 
-**Exit gate:** All Phase 1+2 success criteria sustained for 4 weeks.
+**Exit gate:** All Phase 1+2 success criteria sustained for 1 week of normal use.
 
 ### Phase 4: Multi-Client (Month 3+, deferred)
 
