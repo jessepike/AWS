@@ -100,12 +100,21 @@ mark_failed_or_pending() {
 }
 
 md5_hash() {
-  if ! command -v md5 >/dev/null 2>&1; then
+  # macOS md5 is at /sbin/md5 — not in default launchd PATH
+  local md5_bin
+  if command -v md5 >/dev/null 2>&1; then
+    md5_bin="md5"
+  elif [ -x "/sbin/md5" ]; then
+    md5_bin="/sbin/md5"
+  elif command -v md5sum >/dev/null 2>&1; then
+    printf '%s' "$1" | md5sum | awk '{print $1}'
+    return 0
+  else
     log "md5 command not found"
     return 1
   fi
 
-  md5 -qs "$1"
+  "$md5_bin" -qs "$1"
 }
 
 acquire_lock() {
@@ -148,9 +157,19 @@ release_lock() {
 discover_projects() {
   local root
 
+  # Exclude: templates, references, drafts, node_modules, .venv, .ctx, archive dirs
   for root in "${ROOTS[@]}"; do
     [[ -d "$root" ]] || continue
-    find "$root" -type f \( -name 'captures.md' -o -name 'lessons.md' -o -name 'decisions.md' \) -print 2>/dev/null
+    find "$root" -type f \( -name 'captures.md' -o -name 'lessons.md' -o -name 'decisions.md' \) \
+      -not -path '*/templates/*' \
+      -not -path '*/references/*' \
+      -not -path '*/drafts/*' \
+      -not -path '*/node_modules/*' \
+      -not -path '*/.venv/*' \
+      -not -path '*/.ctx/*' \
+      -not -path '*/_archive/*' \
+      -not -path '*/archive/*' \
+      -print 2>/dev/null
   done | while IFS= read -r path; do
     dirname "$path"
   done | sort -u
