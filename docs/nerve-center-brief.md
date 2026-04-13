@@ -1,304 +1,181 @@
 ---
-type: "concept-brief"
-description: "Concept brief for the Nerve Center — a visual interface for the agentic work system that instantiates the Observability Ring as a human-readable medium."
-version: "0.1.0"
-updated: "2026-02-11"
+type: "component-brief"
+component: "Nerve Center"
+description: "Canonical governance/intent brief for Nerve Center — the Observability Ring runtime for the Agentic Work System. This is the single authoritative doc on what NC is, why it exists, and how it fits AWS."
+version: "1.0.0"
+created: "2026-02-11"
+updated: "2026-04-13"
 scope: "system"
-lifecycle: "superseded"
+lifecycle: "canonical"
 owner: "Jess"
-status: "superseded"
-superseded-by: ["nerve-center-product-brief.md", "nerve-center-architecture.md"]
+status: "active"
+supersedes: ["prior concept brief at aws/docs/nerve-center-brief.md v0.1.0"]
+related:
+  - "~/code/_shared/nerve-center/docs/ (design + operational state)"
+  - "~/code/_shared/agent-exec/docs/jobs-registry.yaml (live job inventory)"
+  - "~/code/_shared/aws/docs/architecture.md (governing architecture)"
+  - "~/code/_shared/aws/docs/decisions/ADR-002-canonical-doc-homes.md (doc-home rule)"
 backlog-refs: ["B4", "B21", "B9"]
 ---
 
-> **SUPERSEDED:** This concept brief has been replaced by two documents in the Nerve Center project:
-> - `~/code/_shared/nerve-center/docs/nerve-center-product-brief.md` — Product brief (what and why)
-> - `~/code/_shared/nerve-center/docs/nerve-center-architecture.md` — Architecture spec (how)
->
-> The Nerve Center is now its own ADF project at `~/code/_shared/nerve-center/`.
-> Retained for historical reference.
-
-# Nerve Center: Visual Interface for the Agentic Work System
-
-## Problem
-
-The agentic work system has seven active components (ADF, Knowledge Base, Memory, Capabilities Registry, Krypton, Link Triage, Work Management), each with their own project workspace, status files, health checks, and backlogs. The system's architecture defines four layers and five rings — but the **Observability Ring is the least built ring across all layers.**
-
-Today, understanding system health requires:
-
-- Reading 7+ status.md files manually
-- Running `/krypton:kstatus` for a text-based cross-project snapshot
-- Running `/adf-env:audit` per project for environment health
-- Querying KB and Memory MCP servers for knowledge statistics
-- Checking git logs across repositories for activity patterns
-- Reviewing audit logs at `~/.krypton/audit/` for action trails
-
-This is operationally expensive and cognitively fragmented. The human can't form a spatial, intuitive mental model of system state. And the architecture's governing principle — **"You can't increase autonomy for what you can't observe"** — means the system can't evolve until observation improves.
-
-## Desired Outcome
-
-A visual interface ("Nerve Center") that:
-
-1. Gives the human a complete system health assessment in under 10 seconds
-2. Enables spatial, visual pattern recognition that text interfaces can't provide
-3. Makes the Observability Ring operational across all four layers
-4. Provides the trust-building evidence needed for autonomy escalation
-5. Reads from agent-native data sources — no separate data pipeline
-6. Remains agent-first: agents don't need the UI, but can contribute to it
-
-## Design Philosophy
-
-### Agent-First, Human-Second
-
-The UI is a **read-only viewport** onto data that agents already produce. It does not introduce new data flows, processing pipelines, or storage systems. Every data source it reads already exists:
-
-| Source | Format | Already Exists At |
-|--------|--------|-------------------|
-| Project stage & health | Markdown (status.md) | Each project's docs/ |
-| Knowledge entries | SQLite + Chroma | knowledge-base/data/ |
-| Memory entries | SQLite + Chroma | memory/data/ |
-| Capabilities catalog | YAML + JSON | capabilities-registry/ |
-| Audit trail | JSONL | ~/.krypton/audit/ |
-| Backlog items | Markdown | Each project's BACKLOG.md |
-| ADF health checks | MCP tools | adf-server (live) |
-| Git activity | Git log | Each project repo |
-
-Agents remain the primary operators. The UI amplifies what humans uniquely contribute: spatial reasoning, anomaly detection, trend recognition, and intuitive pattern matching.
-
-### The Cockpit, Not the Engine Room
-
-Not everything agents see needs to be shown. The UI surfaces **signals**, not **data**. It optimizes for:
-
-- **10-second assessment** — system health at a glance from any zoom level
-- **Anomaly visibility** — problems glow, healthy systems fade to background
-- **Spatial relationships** — see how components connect, where knowledge flows, what depends on what
-- **Temporal patterns** — trends, velocity, staleness, activity rhythms
-
-### Zoom Levels
-
-The interface operates on a consistent zoom metaphor:
-
-| Level | Name | What You See | When You Use It |
-|-------|------|-------------|-----------------|
-| **L0** | Orbit | Entire system, one screen, 10s assessment | Daily check-in, "is everything OK?" |
-| **L1** | Domain | One subsystem in detail (projects, knowledge, capabilities, etc.) | Investigating a specific area |
-| **L2** | Entity | Single item with full context and relationships | Focused work on one thing |
-| **L3** | Data | Raw underlying data | Debugging, agent troubleshooting |
-
-## Feature Areas
-
-### L0 — Orbit View (System Pulse)
-
-The home screen. Everything at a glance.
-
-**Components:**
-
-- **System heartbeat** — single composite health indicator (green/yellow/red) synthesized from all subsystems
-- **Layer vitals** — four horizontal bands (Intent → Governance → Management → Operations) showing activity and health. Maps directly to the architecture's layer model.
-- **Ring status** — five indicators (Governance, Intelligence, Knowledge, Control, Observability) showing ring health. Gaps pulse for attention.
-- **Project constellation** — all active projects as spatial nodes. Size = activity. Color = ADF stage. Lines = dependencies/knowledge flows.
-- **Activity pulse** — sparkline of system-wide activity (commits, KB writes, memory entries, stage transitions) over 7/30 days
-- **Attention flags** — 0-3 items needing human attention now (stale projects, failed checks, governance drift, blocked work)
-
-### L1 — Domain Views
-
-Six domain views, each accessible from orbit:
-
-**1. Project Pipeline**
-ADF stages as a horizontal flow. Projects as cards within their stage. Hard gates as barriers. Each card shows health, days-in-stage, next action, blockers. Stale projects visually decay.
-
-**2. Knowledge Topology**
-KB entries as a force-directed graph. Nodes = entries, edges = shared topics. Clusters form around topic areas. Size = priority score. Focus topics highlighted. Orphans isolated. Time slider for growth animation.
-
-**3. Memory Landscape**
-Namespace bubbles (global, project-scoped, private) as map regions. Entries as points within regions. Color = type (observation, preference, decision, relationship, progress). Density heatmap. Confidence as opacity.
-
-**4. Capability Observatory**
-60 capabilities as a visual inventory. Grouped by type. Quality score as fill level. Source distinguished by color. Staging → Active pipeline. Usage mapping.
-
-**5. Work Board**
-Unified kanban across all projects. Swimlanes by project or priority tier. Cross-project items highlighted. Dependencies as connecting lines.
-
-**6. Intelligence Feed**
-Synthesized signals (not raw data). "Project X stalled for 14 days." "KB topic has entries but no synthesis." Each insight linked to source data and actionable (dismiss, investigate, create backlog item).
-
-### Layers & Rings Matrix
-
-The architecture's core model — interactive:
-
-```
-              Gov.  Intel.  Knowledge  Control  Observ.
-Intent        [●]    [●]      [●]       [○]      [◐]
-Governance    [◐]    [○]      [●]       [◐]      [○]
-Management    [◐]    [○]      [●]       [●]      [◐]
-Operations    [●]    [●]      [●]       [●]      [◐]
-```
-
-Each cell = instantiation status (full, partial, empty). Click any cell to see infrastructure, gaps, and related backlog items. This is the system's **maturity model made visible**.
-
-### Autonomy Ratio Tracking
-
-Four gauges showing current human-agent ratio per layer, with historical trend and target markers:
-
-```
-Intent:      [████████░░] 80/20  →  target: 60/40 (12mo)
-Governance:  [█████░░░░░] 50/50  →  target: 30/70 (12mo)
-Management:  [███░░░░░░░] 30/70  →  target: 15/85 (12mo)
-Operations:  [█░░░░░░░░░] 10/90  →  target: 3/97  (12mo)
-```
-
-Tracks whether the system is evolving toward its design goals.
-
-### Governance Health (Visual)
-
-The weekly governance check from `architecture.md`, rendered visually:
-
-| Check | Status | Trend | Detail |
-|-------|--------|-------|--------|
-| Priority alignment | Green | Stable | Execution matches stated strategy |
-| Execution drift | Yellow | Worsening | 2 projects diverging from plan |
-| Policy adherence | Green | Improving | All reviews using adf-review skill |
-| Stale work | Red | 2 stalled | Link Triage, Work Management inactive 14d+ |
-| Resource coherence | Yellow | Scattered | Attention spread across 5 projects |
-
-## Agent Integration
-
-The UI is read-only for humans, but agents can contribute:
-
-**Notification bus** — agents post structured alerts that surface as attention flags:
-```json
-{
-  "severity": "warning",
-  "source": "adf-env-audit",
-  "message": "CLAUDE.md exceeds 50 lines in project X",
-  "action": "review-context"
-}
-```
-
-**Dashboard as MCP resource** — aggregated health data exposed via MCP so agents querying system health get the same view the UI shows. Maintains agent-first parity.
-
-**Human intent gestures** — lightweight UI interactions that inform agents without directing them:
-- "This project needs attention" → priority signal adjustment
-- "Pause this work" → flag for agent awareness
-- "These are related" → knowledge link creation
-
-## Technical Architecture
-
-### Data Aggregation Layer
-
-A thin local service that:
-1. Watches file changes (status.md, BACKLOG.md, audit logs) via filesystem events
-2. Reads SQLite databases (KB, Memory) on interval
-3. Queries ADF health via MCP tools
-4. Parses git logs for activity data
-5. Computes derived metrics (velocity, staleness, drift indicators)
-6. Serves unified API to the web frontend
-
-This layer is the Observability Ring's implementation. It observes everything, computes nothing new, and makes system state visible.
-
-### Recommended Stack
-
-**Local web server + browser UI:**
-
-- **Backend:** Python or Node.js local server
-  - Direct SQLite reads (KB, Memory databases)
-  - File watchers for markdown artifacts
-  - Git log parsing
-  - MCP client for live ADF health queries
-  - REST/WebSocket API to frontend
-- **Frontend:** React or Svelte
-  - D3.js or similar for graph visualizations (knowledge topology, project constellation)
-  - Standard charting for sparklines, gauges, timelines
-  - Responsive grid layout for dashboard composition
-- **No cloud dependency** — fully local, fully private
-- **Optional:** Expose aggregation layer as MCP server (agents get the same aggregated view)
-
-### Why This Stack
-
-| Requirement | How It's Met |
-|-------------|-------------|
-| Agent-first (no new data flows) | Reads existing SQLite, files, MCP — no new storage |
-| Visual richness for human cognition | Browser rendering with D3.js graphs, rich CSS |
-| Local and private | No cloud, no auth, no network dependency |
-| Extensible to agents | Backend can double as MCP server |
-| Rapid iteration | Web tech allows fast UI experimentation |
-
-## MVP Scope
-
-### Phase 1: Orbit + Projects (Weeks 1-2)
-
-Delivers the highest-value view — system health at a glance.
-
-- System health composite indicator
-- Project constellation (all projects, stages, health colors)
-- Activity pulse sparkline (7/30 day)
-- Attention flags (stale projects, failed checks)
-- Click-to-expand project cards (status, stage, next action)
-- Data sources: status.md files, git logs, ADF health checks
-
-**Value:** Replaces reading 7+ status.md files. Immediate spatial understanding.
-
-### Phase 2: Knowledge + Memory (Weeks 3-4)
-
-- KB topology graph (force-directed, topic clusters)
-- Memory landscape (namespace regions, type colors)
-- Knowledge flow summary (capture → store → synthesize pipeline)
-- Data sources: KB SQLite, Memory SQLite, Chroma metadata
-
-**Value:** Visual exploration of accumulated knowledge. Gap identification.
-
-### Phase 3: Capabilities + Work (Weeks 5-6)
-
-- Capability observatory (visual inventory, quality scores)
-- Unified work board (cross-project backlog items)
-- Cross-project dependency web
-- Data sources: capabilities YAML/JSON, BACKLOG.md files
-
-**Value:** Full operational visibility across the system.
-
-### Phase 4: Intelligence + Governance (Weeks 7-8)
-
-- Layers & Rings matrix (interactive maturity model)
-- Autonomy ratio gauges with trend tracking
-- Governance health report (visual traffic lights)
-- Intelligence feed (synthesized signals)
-- Session timeline (unified activity view)
-- Data sources: audit logs, all previous sources combined
-
-**Value:** Governance and evolution tracking. The full Observability Ring.
-
-## Success Criteria
-
-1. **10-second rule:** Human can assess full system health in one screen view
-2. **Zero new data flows:** All data read from existing agent-native sources
-3. **Pattern discovery:** Human identifies at least one non-obvious pattern (stale project, knowledge gap, dependency risk) within the first week of use
-4. **Agent parity:** Aggregated data available to agents via MCP (optional but valuable)
-5. **Autonomy evidence:** Provides the observation foundation needed to justify shifting human-agent ratios
-
-## What This Is Not
-
-- Not a task management tool (agents manage tasks via CLI and MCP)
-- Not a code editor or IDE (stays out of execution)
-- Not a replacement for Krypton's text-based intelligence (complements it visually)
-- Not a remote/cloud service (local only, personal scale)
-- Not a control plane (read-heavy, write-light — human intent gestures only)
-
-## Relationship to Architecture
-
-This concept directly instantiates the **Observability Ring** from `architecture.md`. It addresses:
-
-- **B4:** Cross-project observability — system-level dashboard
-- **B9:** Autonomy escalation tracking — visual ratio evolution
-- **B21:** Architecture diagrams — visual models at multiple levels
-
-The architecture states: *"You can't increase autonomy for what you can't observe."* This project builds the observation infrastructure required for the system to evolve.
-
-## Open Questions
-
-| # | Question | Impact |
-|---|----------|--------|
-| 1 | Should the aggregation layer be a standalone MCP server? | Determines whether agents get the same aggregated view |
-| 2 | How to handle real-time vs. polling for data freshness? | WebSocket for live updates vs. interval polling |
-| 3 | Should the UI support multiple users (e.g., showing a collaborator the system)? | Scope: personal-only vs. shareable |
-| 4 | What's the right balance of interactivity? Read-only vs. intent gestures? | Determines UI complexity and agent integration depth |
-| 5 | Should there be a TUI companion for quick checks without leaving terminal? | Parallel lightweight interface |
+# Nerve Center — AWS Governance Brief
+
+> **Canonical home:** this file. If you want to know what Nerve Center is,
+> why it exists, or how it fits the Agentic Work System, read this. For
+> code, runbooks, and operational detail see
+> `~/code/_shared/nerve-center/docs/`. For the live job inventory across
+> hosts see `~/code/_shared/agent-exec/docs/jobs-registry.yaml`.
+
+## What Nerve Center is
+
+Nerve Center (NC) is the **runtime implementation of the Observability
+Ring** from the AWS architecture. It watches the rest of the system —
+MCP servers, launchd jobs, project status artifacts, capability registry
+health, knowledge pipelines — and produces structured findings plus
+operator-facing alerts. It is the mechanism that makes the principle
+*"you can't increase autonomy for what you can't observe"* operational.
+
+NC is one of the `_shared/` runtime components. It is a **peer** of the
+other AWS runtime components (Knowledge Base, Memory, Capabilities
+Registry, Krypton, Work Management, Link Triage) — it is not part of
+AWS itself. AWS governs NC via standards and ADRs; NC reports back into
+AWS via observability signal.
+
+## Why it exists
+
+The AWS architecture defines four layers (Intent → Governance →
+Management → Operations) and five rings (Governance, Intelligence,
+Knowledge, Control, Observability). The Observability Ring is the
+prerequisite for autonomy escalation at every layer — trust is built on
+evidence, and evidence requires monitoring that is continuous, structured,
+and correlatable across subsystems.
+
+Before NC, observability across the portfolio meant:
+
+- Reading 7+ `status.md` files manually
+- Running `/krypton:kstatus` for a text snapshot
+- Running `/adf-env:audit` per project
+- Checking git logs for activity
+- Reviewing audit logs under `~/.krypton/audit/`
+
+That is operationally expensive, fragmented, and lossy. It does not produce
+structured findings that other agents can act on, and it cannot alert when
+something degrades between sessions. NC exists to close that gap with a
+runtime that watches continuously, writes findings to a durable store,
+and pages the operator when a RED threshold trips.
+
+## Responsibilities
+
+NC owns, end to end:
+
+| Responsibility | Detail |
+|---|---|
+| **Infrastructure probes** | Scheduled shell probes check MCP servers (ports 9101/9102), NC API, scheduler heartbeat, launchd jobs, disk/backup state |
+| **Finding generation** | Probes emit structured findings (severity + category + evidence) into SQLite with WAL |
+| **Finding dedup + lifecycle** | Duplicate findings suppressed; resolved findings auto-close; stale findings escalate |
+| **Operator alerting** | RED findings push to `#nerve-center-critical` via Slack webhook; WARN aggregated into daily digest |
+| **Dead-man's switch** | `com.claude.nc-heartbeat` launchd job fires every 4h; absence means NC itself is down |
+| **Operator workflow UI** | `@nerve-center/desktop` provides incident view, acknowledge/resolve actions, trace of signal streams |
+| **Health surface** | `/api/health` (open) and `/api/ops/runtime` (auth) for external health checks and for Krypton/forge diagnostics |
+
+NC does **not** own:
+
+- Strategic prioritization (Krypton)
+- Work state (Work Management)
+- Knowledge or memory (KB / Memory)
+- Capability catalog (Capabilities Registry)
+- Project governance checks (ADF + `/project-doctor` skill)
+
+Those systems push signal *into* NC as findings where relevant. NC
+observes; it does not decide.
+
+## Fit in AWS rings and layers
+
+NC primarily instantiates the **Observability Ring** and feeds the
+**Governance Ring** (via alignment/drift findings that reach Krypton).
+
+| Ring | NC's role |
+|---|---|
+| Observability | Primary — probes, findings store, alerting, UI |
+| Governance | Secondary — drift and stale-work findings inform governance health |
+| Knowledge | Consumer — reads KB/Memory process state for health |
+| Control | Consumer — permissioned API access for operator |
+| Intelligence | Not NC — synthesis of findings happens in Krypton |
+
+| Layer | NC's role |
+|---|---|
+| Intent | None |
+| Governance | Provides evidence; does not govern |
+| Management | None |
+| Operations | Primary consumer — most findings describe operations-layer state |
+
+## Runtime baseline
+
+NC is **not** deployed to any cloud provider. It runs as local launchd
+jobs on `macbook2014`. Previous Railway deployment was abandoned in
+early 2026; the archived Railway-era docs live at
+`~/code/_shared/nerve-center/docs/adf/_archived/railway-era/`. NC will
+not be re-hosted on Railway. If cloud hosting is ever reconsidered, it
+starts from a new brief.
+
+Live deployment facts — **see `agent-exec/docs/jobs-registry.yaml`** for
+the authoritative inventory. Do not duplicate that inventory here.
+
+The minimum facts stable enough to live in governance:
+
+- Scheduler: `com.nerve-center.scheduler` launchd job on macbook2014
+- API: `http://localhost:9100` on macbook2014 LAN
+- Persistence: SQLite (WAL) on macbook2014 local volume
+- Backup: 24 hourly + 7 daily snapshots, local destination
+- Dead-man's switch: `com.claude.nc-heartbeat`, 4h cadence
+- Alerts: Slack `#nerve-center-*`
+
+Anything that changes when NC is redeployed, retuned, or rebalanced —
+ports, hosts, service names, env vars — belongs in the NC project's own
+docs and the jobs registry, not here.
+
+## Design principles
+
+These are the governance-level commitments. NC's internal design docs
+may elaborate; they may not contradict.
+
+1. **Read-only for humans, structured writes for agents.** NC observes
+   agent-native state. It does not introduce new data flows.
+2. **Findings are durable and structured.** Every observation goes to
+   SQLite with severity, category, source probe, and evidence payload.
+3. **Signals, not data.** The UI surfaces what needs attention. Raw
+   data stays in the store.
+4. **Local-first, personal-scale.** No cloud dependency. No multi-user
+   surface. Local launchd is the scheduler.
+5. **Agent-first parity.** Everything the UI shows is queryable by
+   agents via the NC API, so Krypton and Forge can read the same state.
+6. **Dead-man's switch is non-negotiable.** NC watching the system
+   requires a separate mechanism watching NC.
+
+## When to talk to Forge about NC
+
+| Topic | Owner |
+|---|---|
+| What NC *is* for, what rings it serves, governance posture | Forge (update this file) |
+| New probe type, new finding category, schema changes | NC project owner (design doc + ADR if cross-cutting) |
+| Deployment or hosting change | NC project owner + ADR (because it moves governance facts) |
+| Adding NC-related job to launchd | NC project owner + registry update in agent-exec |
+| Drift between this brief and NC reality | Forge (reconcile) |
+
+## References
+
+- NC project docs: `~/code/_shared/nerve-center/docs/`
+- NC manifest (runtime): `~/code/_shared/nerve-center/docs/adf/manifest.md`
+- NC status: `~/code/_shared/nerve-center/status.md`
+- NC changelog: `~/code/_shared/nerve-center/CHANGELOG.md`
+- Archived Railway-era docs: `~/code/_shared/nerve-center/docs/adf/_archived/railway-era/`
+- Live job inventory: `~/code/_shared/agent-exec/docs/jobs-registry.yaml`
+- Governing architecture: `~/code/_shared/aws/docs/architecture.md`
+- Canonical-doc-home rule: `~/code/_shared/aws/docs/decisions/ADR-002-canonical-doc-homes.md`
+
+## Revision history
+
+| Version | Date | Change |
+|---|---|---|
+| 0.1.0 | 2026-02-11 | Original concept brief for NC as visual interface — broader scope (UI vision, MVP phases, technical stack). Superseded. |
+| 1.0.0 | 2026-04-13 | Rewritten as canonical governance brief. Scope tightened to what-it-is / why / responsibilities / fit in AWS. Product design and stack detail moved to NC project docs. Railway deployment language removed. |

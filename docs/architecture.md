@@ -462,7 +462,7 @@ Learning loop — "how do we get better?" Identifies improvement opportunities f
 | Intelligence | Krypton's reasoning engine, agent model tier selection | Designed in Krypton brief, not built |
 | Knowledge | KB (MCP server, operational), Memory (planned), agent instructions (CLAUDE.md, rules, prompts) | KB operational. Memory planned (B18-B19). Instructions operational. |
 | Control | Capabilities registry, permission model, guardrails, sandboxing | Registry operational. Permissions partially implemented. |
-| Observability | Activity logs, status artifacts, audit trails | Basic — status.md per project. No cross-project observability yet. |
+| Observability | **Nerve Center** (runtime), activity logs, status artifacts, audit trails | NC operational on macbook2014 (local launchd). Structured findings store, probes, Slack alerts, dead-man's switch. Governance brief: `nerve-center-brief.md`. |
 
 ### ADF Within the Architecture
 
@@ -503,6 +503,20 @@ Work Management's internal agent hierarchy:
 | **Backlog/Status Manager** | Maintains backlogs across projects. Ensures status artifacts stay current. |
 
 Note: Validator, Reviewer, and Improver agents are NOT owned by Work Management — they are cross-cutting teams dispatched as needed.
+
+### Nerve Center Within the Architecture
+
+Nerve Center is the **runtime instantiation of the Observability Ring**.
+It runs as local launchd jobs on `macbook2014` (not cloud-deployed). NC
+probes MCP servers, launchd jobs, project status, and capability health,
+writes structured findings to SQLite, and pages the operator via Slack
+when a RED threshold trips. It makes the principle *"you can't increase
+autonomy for what you can't observe"* operational.
+
+NC is a peer `_shared/` runtime component, not part of AWS. AWS governs
+NC via standards; NC reports observability signal back. Canonical
+governance doc: `nerve-center-brief.md`. Live job inventory:
+`~/code/_shared/agent-exec/docs/jobs-registry.yaml`.
 
 ### Krypton Within the Architecture
 

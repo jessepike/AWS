@@ -4,6 +4,26 @@ All notable changes to the Agentic Work System governance layer are
 logged here. Versioning follows semver. Every change routes through
 Forge and references an ADR.
 
+## [1.2.0] — 2026-04-13
+
+### Added
+- ADR-002: Canonical Doc Homes for Cross-Cutting Infrastructure — codifies
+  the rule "one canonical home per topic, pointers everywhere else" with
+  topic→location mapping (governance → AWS, code/runbooks → component
+  repo, live job inventory → agent-exec/jobs-registry.yaml)
+- `docs/nerve-center-brief.md` rewritten v0.1.0 → v1.0.0 as the canonical
+  governance brief for Nerve Center (responsibilities, fit in AWS rings
+  and layers, design principles, pointers to component docs and jobs
+  registry). Deployment specifics removed.
+
+### Changed
+- `docs/architecture.md`: Observability Ring mapping now names Nerve
+  Center as the runtime. New "Nerve Center Within the Architecture"
+  section added after the Krypton section heading.
+
+### Decision log
+- ADR-002: Canonical doc homes
+
 ## [1.1.0] — 2026-04-10
 
 ### Added
