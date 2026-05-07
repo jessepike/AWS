@@ -1,0 +1,162 @@
+# AWS Standard: MCP Server Environment Handling
+#
+# Defines how Pike MCP servers MUST resolve secrets (API keys, tokens) so
+# they survive Claude Code config migrations, plugin user_config gaps, and
+# env-passing layer changes. Established 2026-05-06 after a CC auto-update
+# silently wiped the diagram-forge entry from ~/.claude.json mcpServers,
+# breaking 9 days of diagram generation while no source code had changed.
+
+standard: mcp-server-env-handling
+version: 1.0.0
+updated: 2026-05-06
+owner: forge
+applies_to: All Pike-authored MCP servers (current: diagram-forge, knowledge-base, memory; future: any new server)
+
+# === Why this standard exists ============================================
+incident_2026_05_06:
+  summary: |
+    diagram-forge MCP relied on Claude Code's plugin user_config substitution
+    (`${user_config.openai_api_key}`) to receive API keys. The previous
+    fix was a global `~/.claude.json` mcpServers entry with literal env
+    values — but a CC auto-update migration (2.1.126→132 over 10 days on
+    `latest` channel) silently dropped the entry between Apr 27 and May 1.
+    CC fell back to the plugin's `.mcp.json` template, but user_config
+    storage was never populated, so substitution returned empty STRINGS
+    (not unset). 40 zombie MCP processes spawned over 9 days, each with
+    `OPENAI_API_KEY=""`, all failing.
+  root_cause: |
+    Coupling secret resolution to CC's MCP env-passing layer. The layer
+    has multiple failure modes (config migrations wiping entries, empty
+    user_config returning "" not unset, dual-registration race conditions,
+    schema drift between minor versions) and Pike doesn't control any of
+    them. Servers must be self-sufficient on the env layer.
+
+# === The standard ========================================================
+requirements:
+  - id: ENV-1
+    name: Self-loading from .env
+    rule: |
+      MCP server MUST call `load_dotenv()` (or equivalent) at package
+      import time, BEFORE any module reads environment variables. For
+      Python servers: in `<package>/__init__.py`. The path resolved to
+      `<repo>/.env` is the canonical source of truth.
+    rationale: |
+      Decouples the server from CC's env-passing layer entirely. Server
+      works under any spawn config — CC plugin, ~/.claude.json mcpServers,
+      `claude mcp add ...`, manual launch — as long as `.env` is on disk.
+
+  - id: ENV-2
+    name: Empty-string env vars treated as unset
+    rule: |
+      Before calling `load_dotenv()`, the package MUST scan known secret
+      env vars and `del` them from `os.environ` if present and empty
+      (`""`). Real shell exports (non-empty values) MUST be preserved.
+    rationale: |
+      CC's `${user_config.X}` substitution sets env vars to empty STRING
+      (not unset) when user_config storage is empty. dotenv's default
+      `override=False` would respect those empty strings and refuse to
+      fill from `.env`. Empty strings carry no signal — strip them.
+    code_pattern: |
+      import os
+      from pathlib import Path
+      from dotenv import load_dotenv
+
+      for _var in ("OPENAI_API_KEY", "GEMINI_API_KEY", ...):
+          if _var in os.environ and not os.environ[_var]:
+              del os.environ[_var]
+
+      _REPO_ENV = Path(__file__).resolve().parent.parent.parent / ".env"
+      load_dotenv(_REPO_ENV if _REPO_ENV.exists() else None)
+
+  - id: ENV-3
+    name: Explicit dependency declaration
+    rule: |
+      `python-dotenv` (or equivalent for non-Python servers) MUST be
+      declared explicitly in the project's dependency manifest, not
+      relied on as transitive.
+    rationale: |
+      Transitive deps can disappear when upstream packages re-pin. The
+      env-loading contract is too important to depend on someone else's
+      requirements.
+
+  - id: ENV-4
+    name: .env.example with documented keys
+    rule: |
+      Every Pike MCP repo MUST include a `.env.example` at the repo root
+      listing all required env vars with empty values and documentation
+      comments. Setup docs MUST reference `cp .env.example .env` as the
+      canonical setup step.
+    rationale: |
+      OSS contributors and fresh-clone setups need explicit guidance.
+      Discoverability beats convention.
+
+  - id: ENV-5
+    name: No literal secrets in CC config files
+    rule: |
+      Secrets MUST NOT be inlined into `~/.claude.json`, `~/.claude/settings.json`,
+      `~/.zshrc`, plugin `.mcp.json`, or any committed config file. Use
+      `.env` exclusively (which is gitignored).
+    rationale: |
+      Config files are read/written by tooling that's hard to audit,
+      survive backups across boundaries, and accumulate over time. `.env`
+      is the single quarantine surface for secrets.
+
+  - id: ENV-6
+    name: Test the actual failure mode, not a proxy for it
+    rule: |
+      Any change touching secret resolution MUST be tested by reproducing
+      the EXACT spawn env that failed in production, before claiming the
+      fix complete. For CC plugin failures: launch the server with the
+      relevant env vars set to empty STRING (`OPENAI_API_KEY=""`), not
+      simply unset.
+    rationale: |
+      Different env states (unset vs empty-string vs populated) hit
+      different code paths in dotenv, in the package init, and in the
+      provider config. A pass under one state doesn't generalize. We
+      hit this exact failure on 2026-05-06 PM — partial fix shipped,
+      production still broken.
+
+# === Verification ========================================================
+verification_test:
+  description: |
+    Standard test sequence for any new or modified Pike MCP server.
+    Run all three and confirm PASS before merging changes that touch
+    secret resolution.
+  scenarios:
+    - name: CC plugin spawn failure mode
+      env: 'OPENAI_API_KEY="" GEMINI_API_KEY=""'
+      expected: Keys load from .env on package import
+    - name: Clean shell (no env)
+      env: 'env -u OPENAI_API_KEY -u GEMINI_API_KEY'
+      expected: Keys load from .env on package import
+    - name: Real shell export preserved
+      env: 'OPENAI_API_KEY="real-shell-value"'
+      expected: Real value preserved, NOT overridden by .env
+
+# === Compliance ==========================================================
+compliance:
+  diagram-forge:
+    status: compliant
+    as_of: 2026-05-06
+    commits:
+      - e173ed2 (initial load_dotenv)
+      - 15d8fba (empty-string-as-unset fix)
+    notes: |
+      All 6 requirements met. Belt-and-suspenders backup: User MCP entry
+      in ~/.claude.json with `uv run --env-file` retained for redundancy.
+  knowledge-base:
+    status: needs-audit
+    notes: |
+      Per memory ID 6a983b5a: "AGRC reads via env var OPENAI_API_KEY at
+      runtime; never committed." Need to verify load_dotenv pattern is in
+      place. File a Forge backlog item.
+  memory:
+    status: needs-audit
+    notes: |
+      Local-only MCP. Should still follow the pattern for consistency.
+
+# === Related ============================================================
+references:
+  - ~/.claude/state/forge-lessons.md  # incident lessons
+  - ~/code/_shared/pike-agents/CHANGELOG.md  # full diagnostic write-up
+  - https://github.com/theskumar/python-dotenv  # canonical implementation
