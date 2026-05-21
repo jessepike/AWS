@@ -1,7 +1,6 @@
 ---
-type: "brief"
-updated: "2026-02-11"
-updated: "2026-02-11"
+type: brief
+updated: 2026-02-11
 ---
 
 # Brief: Agentic Work System
