@@ -4,6 +4,26 @@ All notable changes to the Agentic Work System governance layer are
 logged here. Versioning follows semver. Every change routes through
 Forge and references an ADR.
 
+## [1.3.0] — 2026-05-22
+
+### Added
+- ADR-003: Canvas Interaction Protocol for Rich Human-in-the-Loop
+  Handoffs — establishes a typed interaction protocol (not raw HTML) as
+  the default for rich operator interaction. Orchestrators-first rollout,
+  Canvas optional with terminal (`AskUserQuestion`) fallback, structured
+  machine-actionable returns, reuse of the `AskUserQuestion` envelope, and
+  a tie-in to the handoff-event schema (each canvas interaction is a
+  governance boundary event owned by the wm-agent spine).
+- `docs/specs/interaction-protocol/INTERACTION-PROTOCOL-SPEC-v1.md`
+  (v1.1.0) — canonical contract: 4 interaction classes (decision-set,
+  document-review, approval-gate, visual-artifact), request envelope,
+  normative structured-return contract, Canvas MCP transport (incl. the
+  `get_user_messages`/`get_comments` array→record wrapper fix surfaced in
+  the 2026-05-22 dogfood), surface-selection rule, and versioning.
+
+### Decision log
+- ADR-003: Canvas interaction protocol
+
 ## [1.2.0] — 2026-04-13
 
 ### Added
