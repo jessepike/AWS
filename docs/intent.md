@@ -1,9 +1,28 @@
 ---
 status: active
-updated: 2026-02-11
+updated: 2026-05-24
 ---
 
 # Intent: Agentic Work System
+
+## North Star
+
+> Build and operate a personal agentic work system — the governed substrate, operating methodology, and agent org that lets me orchestrate a portfolio of work at high leverage and low cognitive load. Built deliberately AGF-aligned as an act of dogfooding, so that operating it both (a) compounds my capability and is monetizable through consulting and products, and (b) validates and sharpens AGF itself.
+
+This is the gravity well. Every active workstream should trace back to it. `orient` re-grounds against this statement each session and flags work that doesn't trace; the AWS `CLAUDE.md` routes here as the canonical re-grounding source (resolver discipline — see ADR-006).
+
+## Living North Star (method)
+
+The North Star is kept honest by separating two layers and logging the signals that move it:
+
+- **INVARIANT (the why — rarely changes):** learn → leverage → monetize, while improving AGF. This is the durable purpose. If this changes, the project has fundamentally changed.
+- **ARTICULATION (the statement above — versioned):** the current best phrasing of the North Star. It is expected to be re-sharpened as understanding improves. Version it; don't silently overwrite it.
+
+### Signal log
+
+Dated entries that materially shaped the articulation or the frame. Newest first.
+
+- **2026-05-24** — Established four-layer model (substrate / operating-system / org / output) as the organizing frame; AWS = the whole enterprise, "personal AI infrastructure" = its substrate layer (nested, not parallel). AGF + Krypton named as the cross-cutting alignment pair (plumb line + continuity role).
 
 ## Problem
 

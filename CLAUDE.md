@@ -9,6 +9,7 @@ Meta-project governing the Agentic Work System — integration, governance stand
 - **Decisions:** `docs/decisions/`
 - **Component registry:** `docs/component-registry.md`
 - **Architecture:** `docs/architecture.md`
+- **North Star / re-grounding source:** `docs/intent.md` — read here to re-ground; all active work should trace back to it (ADR-006)
 
 ## Project Constraints
 
