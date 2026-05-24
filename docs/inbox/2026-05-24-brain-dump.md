@@ -50,3 +50,19 @@ Krypton files here on "capture:" with no discussion; we triage later.
 **Decision (Jesse, 2026-05-24):** Personal context IS substrate. The two should be **merged and managed as one unit/component.**
 
 **Status:** Captured for later. Krypton will surface the dedupe as part of the portfolio-map exercise; the actual merge is a separate scoped task (likely Forge/CTO).
+
+## 4. Scratch / execution-durability items (2026-05-24, from workstream brief)
+
+- **[FOUNDATION primitive] Per-project contract + assigned PM/owner.** Recurring theme across the whole workstream brief: every project needs a single **lead/PM** (one point of contact who directs the work and holds its state) AND a standard **core-artifact set** — a repo-root CLAUDE.md that names the PM/owner, plus project map, resolver, intent, architecture — so any agent orienting to a project ingests a known set and minimizes assumptions/stale info. This is Jesse priority #1 foundation and resolves the "who owns this?" question recurring in nearly every workstream. → **Design next.**
+- **Directory-maintenance skill + weekly schedule.** Reuse existing ADF-audit tooling. Assign owner + schedule + wire it up so it actually fires. Execution/durability, not design. → Forge (skill + launchd schedule).
+- **Agent-canvas app** — agents write HTML surfaces for interaction. `sandbox/agent-canvas` exists. → explore later.
+
+## Jesse priority stack (2026-05-24) — Krypton's operating order
+1. Build AWS / personal operating infrastructure foundation + how Jesse↔Krypton work, prioritize, execute, track.
+2. Clean up stale/bad jobs; token conservation + optimization.
+3. CLS + personal-context.
+4. Work/task-management capability (the spine).
+5. Change workflow to adopt new processes.
+6. Marcus coach (new interaction approach).
+7. Krypton personal-agent capabilities.
+8. Core substrate health (KB, memory): current state, future state, gaps.
