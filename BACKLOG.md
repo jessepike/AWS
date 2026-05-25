@@ -38,7 +38,8 @@
 - [x] Create jobs-agent; formalize wm-agent latent owner face
 - [x] Phase 2a — default-to-delegate instruction (all 7 managers) + `project-layout.yaml` v1.2.0 + pilot plan
 - [ ] **Run pilot #1: capabilities-registry** — add AGENTS.md + contract conformance (then aws, then krypton) — P1
-- [ ] **Set remotes on no-origin repos** — agent-exec, knowledge-base, wm-agent, pike-dashboard (+others); commits stuck local — P1
+- [x] **Set remotes — substrate-4** — agent-exec, knowledge-base, wm-agent, pike-dashboard now private on GitHub + pushed (secret-scanned), 2026-05-25
+- [ ] **Set remotes — remaining no-origin** — knowledge-capture, sources, personal-wiki, clients/*, sandbox/*, projects/* (held pending review; privacy/secret check each) — P3
 - [ ] **ADR-007 soft-constraint footnote** — record manager tool-boundary is SOFT/monitored, 2b contingent — P2 (next Forge run)
 - [ ] Manager-overreach monitor hook — log manager Write/Edit/Bash beyond trivial threshold — P3 (optional, Forge)
 - [ ] Rebase + push `even-ground`, `vet-books` (pre-existing non-ff) — P3
