@@ -31,10 +31,10 @@ Baseline: extend the existing AWS `project-layout.yaml` standard. Do not replace
 
 | Artifact | Draft role | Notes / options |
 |---|---|---|
-| `CLAUDE.md` or `AGENTS.md` | Lean machine-context file | One should be canonical. It should name the PM/owner and define the orientation map. The other should be a pointer or mirror, not divergent context. |
+| `CLAUDE.md` or `AGENTS.md` | Lean machine-context file | One should be canonical. It should name the PM/owner and define the orientation map. The other should be a pointer or mirror, not divergent context. | claude.md is cannonical, agents should refer to. i thought this was settled in our ADF specs.??
 | `README.md` | Human-facing overview | Verbose, HTML-renderable, suitable for people, not the agent's minimal context source. |
-| `intent.md` or `docs/intent.md` | North Star | Already required by `project-layout.yaml`; why the project exists and what success means. |
-| `status.md` or `docs/status.md` | Current state | Already required; should state freshness, active blockers, last meaningful session, and next sync target. |
+| `intent.md` or `docs/intent.md` | North Star | Already required by `project-layout.yaml`; why the project exists and what success means. |  intent.md should be root. this needs to be part of cleanup so move to root for consistency. Claude.md and agents.md need to be resolvers.
+| `status.md` or `docs/status.md` | Current state | Already required; should state freshness, active blockers, last meaningful session, and next sync target. |  status.md should be root. same as intent
 | `BACKLOG.md` | Tracked work | Already required; should be used after orientation, not as the only state source. |
 | `decisions.md` or `docs/decisions/` | Decision log | Currently recommended; proposal option is to require for active system projects. |
 | `lessons.md` or `docs/lessons.md` | Recent learnings hot buffer | Already required; project-local gotchas and patterns before promotion. |
@@ -114,6 +114,8 @@ Tradeoffs:
 
 Draft preference for discussion: Option A for immediate incremental rollout, with a resolver entry as the portfolio-level index. Consider `PROJECT.md` only if Jesse wants ownership metadata fully decoupled from model-specific files.
 
+**RESOLVED (Krypton rec — see §6/R1): long-term shape = LOCAL TRUTH + GLOBAL INDEX.** Owner declared in `CLAUDE.md` frontmatter (local, self-contained, where agents already land); the resolver / portfolio-map is the global index that reconciles and audits. One write per project, reconciled up. No `PROJECT.md`.
+
 ## 3. PM/Owner Model
 
 Draft definition: a project PM/owner is the single point of contact for project direction and state. This does not mean the owner writes all code or owns every implementation detail. It means the owner:
@@ -176,18 +178,27 @@ Migration should not require every project to be perfect before the model helps.
 - one resolver entry;
 - one portfolio-map pointer.
 
-## 6. Open Questions for Jesse
+## 6. Recommended Decisions (Krypton) — approve or veto each
 
-1. Should the owner declaration live in `CLAUDE.md` frontmatter, `AGENTS.md` frontmatter, a dedicated `PROJECT.md`, or the resolver?
-2. Which file is canonical for machine context: `CLAUDE.md`, `AGENTS.md`, or "one canonical, one pointer" chosen per project?
-3. Should `decisions.md` move from recommended to required for all active system projects?
-4. Should `README.md` become required even for internal projects, or only for human-facing / shared projects?
-5. What is the minimum resolver entry schema: path, owner, stage, context file, status file, portfolio row, freshness threshold?
-6. What freshness threshold should trigger "state may be stale" warnings?
-7. Who is assigned PM for currently unowned substrate projects: Knowledge Base, Knowledge Capture, Link Triage, Memory, Personal Wiki, Work Management, Personal Context, Context Lifecycle Substrate, Agent Exec / Pike Agents, Agent Canvas, and directory maintenance?
-8. Can a project PM be an agent role such as Krypton or Forge, or must every project have Jesse as final owner with an agent as operating PM?
-9. How should ownership interact with Forge-only dev-system paths, where Forge has write authority but another project PM may own product direction?
-10. Should this become `project-layout.yaml` v1.2.0, a separate `project-contract.yaml` standard, or an ADR-backed convention first?
+**Model (answers Jesse's two direct questions):**
+- **No custom agent per project.** Custom agents are reserved for distinct personas/products (Krypton, Marcus). A project's PM is an *existing* domain agent. 14 bespoke PM agents = more fragmentation + maintenance, against lean-harness.
+- **One agent owns many projects because PM ≠ doer.** The PM directs + holds state + accepts/rejects work; implementation delegates to sub-agents/Codex. Multi-project ownership is therefore tractable.
+- **Two-tier ownership:** Jesse = principal/ultimate owner; the assigned agent = operating PM (single point of contact).
+
+| # | Question | Recommendation |
+|---|----------|----------------|
+| R1 | Where is owner declared? | **`CLAUDE.md` frontmatter `owner:` field (local truth) + resolver/portfolio-map (global index).** No `PROJECT.md`. Long-term shape = local-truth + global-index: one write per project where agents already land, reconciled up. |
+| R2 | Canonical machine-context file? | **`CLAUDE.md` stays canonical now** (already populated — zero migration) **+ a one-line `AGENTS.md` pointer** so Codex/other tools resolve to it. Flip to AGENTS.md-canonical only if non-Claude tools later need first-class context. Don't churn 14 projects today. |
+| R3 | `decisions.md` required for active projects? | **Yes, required** for active system projects (cheap; it's the Memory-feed convention). |
+| R4 | `README.md` required for internal projects? | **No — required only for human-facing/shared projects.** Optional internal. No busywork. |
+| R5 | Minimum resolver entry schema? | **path, owner, stage, canonical-context-file, status-file, portfolio-row, freshness-threshold** (those 7). |
+| R6 | Freshness threshold for stale warning? | **30 days** for active system projects (single default; tune per-class later). |
+| R7 | PM assignments for unowned projects | **Forge:** aws, capabilities-registry, ai-dev, pike-agents, agent-exec, diagram-forge, directory-maintenance. **CTO:** nerve-center, pike-dashboard, work-management + wm-agent (the spine — single PM = CTO, Forge+Krypton contribute), agent-canvas. **Krypton:** knowledge-base, knowledge-capture, memory, link-triage, personal-wiki, personal-context, context, krypton. (Krypton also holds portfolio oversight — tracks owners, isn't PM of everything.) |
+| R8 | Can PM be an agent role? | **Yes — Jesse = principal; agent = operating PM.** Two-tier, always. |
+| R9 | Ownership vs Forge-only dev-system paths? | **Different axes.** PM owns *direction*; Forge keeps *write-authority* on dev-system paths. Non-Forge PM routes dev-system changes to Forge (existing rule). No conflict. |
+| R10 | Standard form? | **ADR-backed convention first → pilot on 2-3 projects → fold into `project-layout.yaml` v1.2.0.** No separate standard. |
+
+> These are recommendations to approve/veto, not re-open. Veto any line and I'll revise; silence on a line = approved. On approval, the PM assignments (R7) get stamped into each project's `CLAUDE.md` owner field via Forge, and R1–R10 route to an ADR.
 
 ## Draft Design Session Prompt
 
