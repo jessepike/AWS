@@ -4,13 +4,50 @@
 # /project-doctor (Day 2). Governed by Forge.
 
 standard: project-layout
-version: 1.1.0
-updated: 2026-04-10
+version: 1.2.0
+updated: 2026-05-25
 owner: forge
-adr: ADR-001
+adr: ADR-001, ADR-007
+
+# CHANGELOG
+# 1.2.0 (2026-05-25) — ADR-007 (Agent Org Charter) encoding
+#   - AGENTS.md is now the CANONICAL context source; CLAUDE.md imports @AGENTS.md
+#     and adds Claude-specific rules. Reverses the prior "AGENTS.md = mirror of CLAUDE.md"
+#     line. Rationale: AGENTS.md is the open multi-runtime standard (Codex, Gemini, Cursor,
+#     and 20+ tools read it); CLAUDE.md is the Claude-specific overlay that imports it.
+#   - owner: field required in CLAUDE.md frontmatter (R1) — local truth for project ownership.
+#   - decisions.md promoted from recommended to required for active system projects (R3).
+#   - README.md: required ONLY for human-facing/shared projects; optional for internal (R4).
+#   - Minimum resolver entry schema added (R5): path, owner, stage, canonical-context-file,
+#     status-file, portfolio-row, freshness-threshold.
+#   - Freshness threshold: 30 days for active system projects before stale warning (R6).
+#   - Per-project contract R1-R10 folded in from docs/active/per-project-contract-proposal.md
+#     (ratified via ADR-007 by Jesse, 2026-05-25).
+# 1.1.0 (2026-04-10) — initial standard (ADR-001)
 
 # REQUIRED artifacts at project root
 required:
+  - path: AGENTS.md
+    purpose: >
+      CANONICAL context source for all runtimes (Codex, Gemini, Claude, Cursor, etc.).
+      Contains project context, orientation sequence, owner declaration, and constraints.
+      CLAUDE.md imports this file via @AGENTS.md and adds Claude-specific rules on top.
+      Required for all projects. Must include owner: field.
+    required_frontmatter: [owner, stage, updated]
+    note: "ADR-007 R2 — AGENTS.md is canonical; CLAUDE.md imports it (reverses prior guidance)"
+
+  - path: CLAUDE.md
+    purpose: >
+      Claude-specific overlay. Must import AGENTS.md via @AGENTS.md at the top,
+      then add only Claude-specific rules, constraints, and context not covered by AGENTS.md.
+      Owner field in frontmatter required (local truth per R1). Max 40 lines of Claude-specific
+      content (not counting the @AGENTS.md import line).
+    spec_ref: claude-md.yaml
+    required_frontmatter: [owner]
+    max_lines: 40
+    must_not_duplicate: ~/.claude/CLAUDE.md
+    note: "ADR-007 R1+R2 — owner in frontmatter; imports AGENTS.md canonical context"
+
   - path: intent.md
     purpose: Why this project exists, problem statement, desired outcome
     required_frontmatter: [status, updated]
@@ -18,10 +55,12 @@ required:
     template: templates/intent.md
 
   - path: status.md
-    purpose: Current state, stage, next steps, blockers
+    purpose: Current state, stage, next steps, blockers. Must include freshness date.
     required_frontmatter: [updated, stage]
     alt_paths: [docs/status.md]
     template: templates/status.md
+    freshness_threshold_days: 30
+    note: "ADR-007 R6 — 30-day freshness threshold for active system projects"
 
   - path: BACKLOG.md
     purpose: Tracked work, prioritized
@@ -33,24 +72,43 @@ required:
     promotion_target: knowledge-base
     template: templates/lessons.md
 
-  - path: CLAUDE.md
-    purpose: Project-specific shell (see claude-md.yaml standard)
-    spec_ref: claude-md.yaml
-    max_lines: 40
-    must_not_duplicate: ~/.claude/CLAUDE.md
-
   - path: docs/active/
     purpose: Working documents
     type: directory
 
-# OPTIONAL but recommended
-recommended:
+# CONDITIONALLY REQUIRED
+conditionally_required:
   - path: decisions.md
-    purpose: Append-only decision log
+    purpose: >
+      Append-only decision log — required for active system projects (the Memory-feed
+      convention; cheap per-project decision ledger). Optional for sandboxes/archives.
     alt_paths: [docs/decisions/]
+    condition: active_system_projects
+    note: "ADR-007 R3 — required for active system projects"
 
-  - path: AGENTS.md
-    purpose: Codex mirror of CLAUDE.md project-specific content
+  - path: README.md
+    purpose: Human-facing overview (verbose, HTML-renderable, for people not agents)
+    condition: human_facing_or_shared_projects
+    note: "ADR-007 R4 — required only for human-facing/shared projects; optional for internal"
+
+# OPTIONAL
+optional:
+  - path: docs/intent.md
+    purpose: Alt location for intent.md (prefer root)
+
+# Resolver entry — minimum schema (R5)
+# Every active project should have a resolver entry in the portfolio map
+# (docs/active/portfolio-map.md) with these 7 fields:
+resolver_entry_schema:
+  required_fields:
+    - path           # absolute filesystem path
+    - owner          # agent handle (e.g., forge, krypton, cto)
+    - stage          # ADF stage (Discover, Design, Develop, Deliver, Operate)
+    - canonical-context-file  # AGENTS.md (canonical) or CLAUDE.md (Claude-specific overlay)
+    - status-file    # path to status.md or docs/status.md
+    - portfolio-row  # row identifier in portfolio-map.md
+    - freshness-threshold  # days before stale warning (default: 30 for active projects)
+  note: "ADR-007 R5 — minimum 7-field resolver entry"
 
 # Layout variants supported
 layout_variants:
@@ -66,7 +124,25 @@ layout_variants:
 # Exit criteria — project is "conformant" when:
 exit_criteria:
   - all required artifacts exist
+  - AGENTS.md present with owner/stage/updated frontmatter
+  - CLAUDE.md imports @AGENTS.md and has owner: in frontmatter
+  - owner: declared in CLAUDE.md frontmatter
   - frontmatter present where specified
-  - CLAUDE.md under max_lines
+  - CLAUDE.md under max_lines (Claude-specific content only)
   - CLAUDE.md contains no duplicated global content
   - lessons.md entries ≤ 15
+  - decisions.md exists for active system projects
+  - status.md updated within 30 days for active system projects
+  - resolver entry present with all 7 required fields
+
+# Per-project contract summary (ADR-007 R1-R10)
+# R1:  owner declared in CLAUDE.md frontmatter (local truth) + resolver/portfolio-map (global index)
+# R2:  AGENTS.md canonical; CLAUDE.md imports @AGENTS.md + adds Claude-specific rules
+# R3:  decisions.md required for active system projects
+# R4:  README.md required only for human-facing/shared projects; optional for internal
+# R5:  minimum resolver entry schema: 7 fields above
+# R6:  freshness threshold 30 days for active system projects
+# R7:  PM assignments re-derived by ownership rubric (not stamped here; see ownership-rubric.md)
+# R8:  PM may be an agent role; two-tier: Jesse = principal, assigned agent = operating PM
+# R9:  ownership vs Forge-only dev-system paths are different axes (PM directs; Forge writes)
+# R10: ADR-backed convention first (this ADR) → pilot on 2-3 projects → this standard is result
