@@ -72,3 +72,25 @@ Krypton files here on "capture:" with no discussion; we triage later.
 **Rules durability gap (Forge-flagged → Forge backlog):** `~/.claude/rules/` (agent-delegation.md, bias-to-action.md) — same class: Krypton inbox notes + agent state files — *take effect* durably (load every turn / surface on orient) but are NOT git-tracked or backed up. If this Mac dies, they're gone. Reconstructable from ADR-004 (committed), but the files themselves are single-machine/unversioned. Fix: back `~/.claude/rules/` (+ inbox/state) into a tracked location. **This is the SAME "takes effect by existing but not preserved" durability gap as our cross-session-visibility thread — treat as one durability primitive.** → Forge (config-management decision).
 
 **Parallel-work shipped (Forge session, pre-dating this Krypton session):** ADR-004 + ADR-005 → aws `b3f8f48`; agent CHANGELOG → pike-agents `ee5bd2e`; the two rules → `~/.claude/rules/` (untracked, see gap). Two notes now in Krypton inbox: the decisions/review-set + a **token-accounting requirement** — pending Krypton processing on next orient.
+
+## 6. Forge headless session completion (2026-05-25)
+
+**De-drift sweep completed:**
+- aws/VERSION: 1.0.0 → 1.3.0 (committed `d51d844`)
+- aws/docs/overview.md: dead work-management spine claim corrected; absorbed Tools agent removed from count (9→8); AGF doctrine sentence held for ADR-005 (committed `d587890`)
+- Symlinks `_shared/adf` and `_shared/agentic-work-system`: **NOT removed** — both have live active references (pike-acm `.mcp.json` → `_shared/adf`; `cto/CLAUDE.md`, work-management, link-triage-pipeline → `_shared/agentic-work-system`). Removal requires coordinated ref updates first; deferred.
+- Global `.DS_Store` gitignore: already configured at `~/.gitignore_global` (via `core.excludesfile`) — verified, no change needed.
+
+**NC token-burn P0:**
+- NC-51 logged in nerve-center `BACKLOG.md`, marked DONE (committed `52a188a`)
+- il-classifier match bug fixed in `aws/scripts/il-classifier.sh` — Haiku strips markdown (`**`, backtick) from `.entry`, so `index($5, entry)` never matched the full-markdown candidate; now normalizes both sides before the substring test (committed `5fdefe9`)
+- 7→8 stuck `[pending]` entries cleared from `krypton/lessons.md` — markers stripped so they revert to `new` candidates; fixed classifier routes them to KB on next 4h sweep (committed `9a88754`)
+- forge inbox 2026-05-24 batch marked `done` + agent-exec CLAUDE.md de-drift (committed `32ecbf3`)
+
+**Commit hashes:**
+- aws: `d51d844`, `d587890`, `5fdefe9` (+ this brain-dump update)
+- nerve-center: `52a188a`
+- krypton: `9a88754`
+- agent-exec: `32ecbf3`
+
+**Not pushed** — all commits local per session constraint. AGF doctrine sentence untouched. NC job rates (governance-sentinel / infra-monitor) untouched.
