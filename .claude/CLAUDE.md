@@ -24,7 +24,7 @@ The meta-project governing how the agentic work system's components work togethe
 
 | Component | Location |
 |-----------|----------|
-| ADF | `~/code/_shared/adf/` |
+| ADF | `~/code/_shared/aws/docs/specs/adf/` |
 | Knowledge Base | `~/code/_shared/knowledge-base/` |
 | Memory | `~/code/_shared/memory/` |
 | Capabilities Registry | `~/code/_shared/capabilities-registry/` |

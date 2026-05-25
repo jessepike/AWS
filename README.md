@@ -17,7 +17,7 @@ See `docs/architecture.md` for the full reference.
 
 | Component | What It Does | Location |
 |-----------|-------------|----------|
-| **ADF** | Development project lifecycle (stages, specs, agents) | `~/code/_shared/adf/` |
+| **ADF** | Development project lifecycle (stages, specs, agents) | `~/code/_shared/aws/docs/specs/adf/` |
 | **Knowledge Base** | Curated learnings, patterns, best practices | `~/code/_shared/knowledge-base/` |
 | **Memory** | Cross-project, cross-session knowledge persistence | `~/code/_shared/memory/` |
 | **Capabilities Registry** | Catalog of available skills, tools, agents | `~/code/_shared/capabilities-registry/` |

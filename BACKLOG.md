@@ -20,11 +20,11 @@
 - [ ] **Client project conformance sprint** — AGF, pike-acm, pike-finances, even-ground (separate sprint, use project-doctor)
 - [ ] **Stale status.md in 4 projects** — Manual review required; project-doctor can't auto-update content
 
-## Symlink Cleanup — P1 (next 3-7 days)
+## Symlink Cleanup — DONE (2026-05-25)
 
-- [ ] Remove `_shared/agentic-work-system` symlink — verify no downstream breakage first, then grep all SOFT doc references and update to `_shared/aws/`
-- [ ] Remove `_shared/adf` symlink — same verification + cleanup
-- [ ] Cleanup pass: grep-and-replace SOFT references to old paths in `_shared/aws/` self-refs (README.md, docs/overview.md, docs/component-registry.md, .claude/CLAUDE.md) — update to canonical `_shared/aws/...` form
+- [x] Remove `_shared/agentic-work-system` symlink — symlinks already absent; all live refs updated to `_shared/aws/`
+- [x] Remove `_shared/adf` symlink — symlinks already absent; all live refs updated; adf MCP entry retired from pike-acm
+- [x] Cleanup pass: grep-and-replace SOFT references to old paths in active agent configs and `_shared/aws/` self-refs
 
 ## Pending Renames — P2 (dedicated future sessions)
 
