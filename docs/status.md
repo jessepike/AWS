@@ -15,11 +15,11 @@ stage: operate
 
 **7 ratified org decisions:** infra split (Krypton = knowledge substrate / CTO = compute) · wm-agent owns the WM spine · jobs-agent + NC-as-product · Forge peer-to-CTO · CTO pure orchestrator (tool-boundary = guardrail) · trivial-change threshold (≤15 lines / 1 file / reversible / own-domain) · Krypton owns the charter.
 
-**Phase 2 (ADR-007 approved → authorized):** 2a = default-to-delegate instruction on managers + `project-layout.yaml` v1.2.0 (encode the contract) + pilot selection; 2b = manager tool-boundary *removal* (gated on 2a review).
+**Phase 2a DONE + pushed:** default-to-delegate instruction on all 7 managers + `project-layout.yaml` v1.2.0 (AGENTS.md canonical, R1–R10) + contract pilot plan. **Decision (Jesse):** manager tool-boundary is a **SOFT constraint** — managers retain Write/Edit/Bash, are *instructed* to delegate by default, **monitored**. **Phase 2b (hard tool-removal) is downgraded to contingent** — revisited only if monitoring shows over-implementation. Resolves the contradiction with the trivial-change carve-out.
 
 **Open infra flags:** no-origin repos (`agent-exec`, `knowledge-base`, `wm-agent`, `pike-dashboard` +) can't push — need remotes set; `even-ground` / `vet-books` need rebase. v2 harness forces Opus on all agents regardless of frontmatter `model:` (jobs-agent runs Opus, not its Sonnet class).
 
-**Next entry point:** review Phase 2a commits → authorize Phase 2b (tool stripping) + contract pilot · set remotes on no-origin repos · /session-wrap (write Krypton continuity state).
+**Next entry point:** approve the 3 pilots (capabilities-registry → aws → krypton) → run **pilot #1** (add AGENTS.md + contract conformance to capabilities-registry) · set remotes on no-origin repos (agent-exec, knowledge-base, wm-agent, pike-dashboard) · optional manager-overreach monitor hook (Forge) · ADR-007 soft-constraint footnote (next Forge run).
 
 **References:** `docs/active/agent-org-charter.md`, `docs/decisions/ADR-007*`, `docs/active/per-project-contract-proposal.md`, `docs/inbox/2026-05-24-brain-dump.md`
 

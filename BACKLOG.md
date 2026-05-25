@@ -31,6 +31,20 @@
 - [ ] Rename `tools/ai-dev/` → `tools/aws-workbench/` — high path-dependency risk, dedicated session required
 - [ ] Merge `_shared/agent-exec/` into `_shared/pike-agents/context/` — dedicated session required
 
+## Org Model + Foundation — 2026-05-25
+
+- [x] Ratify Agent Org Charter — manager/operator model, ownership, functional owners (`docs/active/agent-org-charter.md`)
+- [x] ADR-007 — manager/operator model + 7 decisions + contract R1–R10
+- [x] Create jobs-agent; formalize wm-agent latent owner face
+- [x] Phase 2a — default-to-delegate instruction (all 7 managers) + `project-layout.yaml` v1.2.0 + pilot plan
+- [ ] **Run pilot #1: capabilities-registry** — add AGENTS.md + contract conformance (then aws, then krypton) — P1
+- [ ] **Set remotes on no-origin repos** — agent-exec, knowledge-base, wm-agent, pike-dashboard (+others); commits stuck local — P1
+- [ ] **ADR-007 soft-constraint footnote** — record manager tool-boundary is SOFT/monitored, 2b contingent — P2 (next Forge run)
+- [ ] Manager-overreach monitor hook — log manager Write/Edit/Bash beyond trivial threshold — P3 (optional, Forge)
+- [ ] Rebase + push `even-ground`, `vet-books` (pre-existing non-ff) — P3
+- [ ] v2-harness forces Opus on all agents regardless of frontmatter `model:` (jobs-agent runs Opus) — P2 Forge harness
+- [~] Phase 2b (manager tool-removal) — **CONTINGENT**, not scheduled; only if monitoring shows over-implementation
+
 ## Active Items
 
 | ID | Item | Type | Pri | Why |
