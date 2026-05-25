@@ -66,3 +66,9 @@ Krypton files here on "capture:" with no discussion; we triage later.
 6. Marcus coach (new interaction approach).
 7. Krypton personal-agent capabilities.
 8. Core substrate health (KB, memory): current state, future state, gaps.
+
+## 5. Forge parallel-session handoff (2026-05-25)
+
+**Rules durability gap (Forge-flagged → Forge backlog):** `~/.claude/rules/` (agent-delegation.md, bias-to-action.md) — same class: Krypton inbox notes + agent state files — *take effect* durably (load every turn / surface on orient) but are NOT git-tracked or backed up. If this Mac dies, they're gone. Reconstructable from ADR-004 (committed), but the files themselves are single-machine/unversioned. Fix: back `~/.claude/rules/` (+ inbox/state) into a tracked location. **This is the SAME "takes effect by existing but not preserved" durability gap as our cross-session-visibility thread — treat as one durability primitive.** → Forge (config-management decision).
+
+**Parallel-work shipped (Forge session, pre-dating this Krypton session):** ADR-004 + ADR-005 → aws `b3f8f48`; agent CHANGELOG → pike-agents `ee5bd2e`; the two rules → `~/.claude/rules/` (untracked, see gap). Two notes now in Krypton inbox: the decisions/review-set + a **token-accounting requirement** — pending Krypton processing on next orient.
