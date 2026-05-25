@@ -1,9 +1,29 @@
 ---
-updated: 2026-04-11
+updated: 2026-05-25
 stage: operate
 ---
 
 # Status: Agentic Work System
+
+## 2026-05-25 — Agent Org Model ratified + foundation landed
+
+**Shipped (all committed; aws + pike-agents + capabilities-registry + krypton + nerve-center pushed to remote):**
+- **Agent Org Charter ratified** — manager/operator model, continuity-ownership model, functional owners. `docs/active/agent-org-charter.md` (+ HTML surface for Agent Canvas review).
+- **ADR-007** — manager/operator model + 7 ratified org decisions + per-project contract R1–R10; reconciles AGENTS.md-canonical (R2).
+- **jobs-agent created** — functional owner of all scheduled jobs; Nerve Center = the observability/control product it operates through. **wm-agent latent owner-face** formalized (deterministic runtime + latent owner).
+- **il-classifier token leak fixed** (self-heal matcher) · de-drift sweep (VERSION 1.0.0→1.3.0) · 11-repo stale-symlink ref cleanup · marketplace.json refresh · jobs-agent `.zshrc` launcher.
+
+**7 ratified org decisions:** infra split (Krypton = knowledge substrate / CTO = compute) · wm-agent owns the WM spine · jobs-agent + NC-as-product · Forge peer-to-CTO · CTO pure orchestrator (tool-boundary = guardrail) · trivial-change threshold (≤15 lines / 1 file / reversible / own-domain) · Krypton owns the charter.
+
+**Phase 2 (ADR-007 approved → authorized):** 2a = default-to-delegate instruction on managers + `project-layout.yaml` v1.2.0 (encode the contract) + pilot selection; 2b = manager tool-boundary *removal* (gated on 2a review).
+
+**Open infra flags:** no-origin repos (`agent-exec`, `knowledge-base`, `wm-agent`, `pike-dashboard` +) can't push — need remotes set; `even-ground` / `vet-books` need rebase. v2 harness forces Opus on all agents regardless of frontmatter `model:` (jobs-agent runs Opus, not its Sonnet class).
+
+**Next entry point:** review Phase 2a commits → authorize Phase 2b (tool stripping) + contract pilot · set remotes on no-origin repos · /session-wrap (write Krypton continuity state).
+
+**References:** `docs/active/agent-org-charter.md`, `docs/decisions/ADR-007*`, `docs/active/per-project-contract-proposal.md`, `docs/inbox/2026-05-24-brain-dump.md`
+
+---
 
 ## 2026-04-10 — AWS Governance Sprint Day 2
 
