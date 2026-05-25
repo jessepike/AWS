@@ -78,15 +78,14 @@ flow decision and an AGF control — you can audit a decision apart from the act
   <tr><td class="lbl">Lifespan</td><td>Persistent, stateful</td><td>Ephemeral, near-stateless</td></tr>
   <tr><td class="lbl">Job</td><td>Oversee health · route · resolve · judgment · thought-partner</td><td>Execute a well-specified task, then terminate</td></tr>
   <tr><td class="lbl">Continuity</td><td>Hold context across sessions</td><td>Fresh each spawn; direction supplied per task</td></tr>
-  <tr><td class="lbl">Tools (target)</td><td>Read + delegate + coordinate (Read, Grep, Glob, Task, Memory/KB). <strong>No</strong> Write/Edit/Bash-mutation</td><td>Execution tools (Write, Edit, Bash, …)</td></tr>
+  <tr><td class="lbl">Tools</td><td>Read + delegate + coordinate (Read, Grep, Glob, Task, Memory/KB). <strong>Retain</strong> Write/Edit/Bash but <strong>instructed to delegate by default</strong> — soft constraint, monitored <em>(amended 2026-05-25)</em></td><td>Execution tools (Write, Edit, Bash, …)</td></tr>
   <tr><td class="lbl">Model</td><td>Opus/Sonnet (judgment)</td><td>Cheapest that fits (Haiku→Sonnet)</td></tr>
   <tr><td class="lbl">Entry point?</td><td><strong>Yes</strong> — Jesse/Krypton talk to managers</td><td>No — spawned by a manager</td></tr>
 </table>
 <p><span class="lbl">Flow preserved:</span> Jesse still "calls up the CTO." The CTO is still his thought partner and
 oversees the build. What changes: after the conversation, the CTO <strong>spawns an operator</strong> (Codex or an
 ephemeral Claude implementer) with a spec and reviews the result — it does not implement in its own context.</p>
-<p><span class="lbl">Phasing the tool boundary:</span> default-to-delegate first; harden to actual tool-removal from
-managers once the spawn path is proven.</p>
+<p style="background:#fffbe9;border:1px solid #f0e2a8;border-radius:8px;padding:10px 14px"><span class="lbl">Tool boundary = SOFT constraint (amended 2026-05-25, Jesse).</span> Managers <strong>keep</strong> their execution tools and are <em>instructed</em> to delegate by default; this is <strong>monitored</strong>, not enforced by tool-removal. Hard tool-stripping (Phase 2b) is <strong>contingent</strong> — only if monitoring shows over-implementation — not the default endpoint. The trivial carve-out works <em>because</em> tools are retained. (You can't both strip Write/Edit and allow a ≤15-line direct edit.)</p>
 <p><span class="lbl">Trivial-change carve-out (ratified):</span> a manager may make a direct edit only if it is
 <strong>≤15 lines, a single existing file, no new files/deps/schema, fully reversible, and within its own
 domain.</strong> Anything larger → spawn an operator. Flagged as <em>monitored</em>.</p>
@@ -126,7 +125,7 @@ domain.</strong> Anything larger → spawn an operator. Flagged as <em>monitored
   <h3>CTO <span class="pill mgr">Technical Architecture &amp; Compute Infra</span> <span class="pill ok">pure orchestrator</span></h3>
   <div class="meta"><span class="lbl">Remit:</span> product/technical architecture; system design; integration coherence; <strong>compute/runtime infra</strong> — hosts, environments, MCP-server ops, networking <em>(decision 1)</em>. Knowledge substrate is Krypton's, not CTO's.</div>
   <div class="meta"><span class="lbl">JTBD:</span> thought-partner Jesse on builds · set architecture · oversee implementation · review.</div>
-  <div class="meta"><span class="lbl">Constraints (ratified):</span> <strong>no direct implementation tools</strong> — the tool boundary <em>is</em> the guardrail (CTO can't build out of convenience, must delegate, which frees it to oversee more). <strong>No separate Architect agent</strong> — architecture <em>thinking</em> is the CTO's job; <em>building</em> goes to operators. Revisit only if build volume demands it.</div>
+  <div class="meta"><span class="lbl">Constraints (amended — pure orchestrator, soft):</span> retains tools but is <strong>instructed to delegate by default</strong> (soft constraint, monitored — <em>not</em> tool-stripped). The instruction + monitoring is the guardrail; hard tool-removal is contingent. <strong>No separate Architect agent</strong> — architecture <em>thinking</em> is the CTO's job; <em>building</em> goes to operators.</div>
 </div>
 
 <div class="card">
@@ -168,7 +167,7 @@ route/resolve on failure (Jesse's "one agent owns all the jobs" pattern).</p>
   <li><strong>wm-agent owns the WM spine</strong> — deterministic runtime face + latent owner face.</li>
   <li><strong>Create <code>jobs-agent</code></strong> as the functional owner of all scheduled jobs; <strong>Nerve Center is the observability/control <em>product</em></strong> it operates through (agent ≠ product).</li>
   <li><strong>Forge is a peer to CTO</strong>, owning the dev-system end-to-end; delegates heavy implementation. Not under CTO.</li>
-  <li><strong>CTO is a pure orchestrator</strong> — no direct implementation tools; the tool boundary is the guardrail. No separate Architect agent for now.</li>
+  <li><strong>CTO is a pure orchestrator</strong> — <em>instructed</em> to delegate by default (soft constraint, monitored). Tools <strong>retained</strong>, not stripped; hard tool-removal is contingent on monitoring. No separate Architect agent for now.</li>
   <li><strong>Trivial-change threshold:</strong> ≤15 lines / single existing file / no new artifacts / reversible / own-domain = direct edit OK; else delegate. <em>Monitored.</em></li>
   <li><strong>Krypton owns this charter</strong> (design/map = coordination); Forge owns what it encodes (agent definitions, the ADR, <code>project-layout.yaml</code>).</li>
 </ol>

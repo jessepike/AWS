@@ -35,7 +35,7 @@ and an AGF control (you can audit a decision apart from the action only if they'
 | Lifespan | Persistent, stateful | Ephemeral, near-stateless |
 | Job | Oversee health · route · resolve · judgment · thought-partner | Execute a well-specified task, then terminate |
 | Continuity | Hold context across sessions | Fresh each spawn; direction supplied per task |
-| Tools (target) | Read + delegate + coordinate (Read, Grep, Glob, Task, Memory/KB). **No** Write/Edit/Bash-mutation | Execution tools (Write, Edit, Bash, etc.) |
+| Tools | Read + delegate + coordinate (Read, Grep, Glob, Task, Memory/KB). **Retain** Write/Edit/Bash but **instructed to delegate by default** — soft constraint, monitored (amended 2026-05-25) | Execution tools (Write, Edit, Bash, etc.) |
 | Model | Opus/Sonnet (judgment) | Cheapest that fits (Haiku→Sonnet) |
 | Entry point? | **Yes** — Jesse/Krypton talk to managers | No — spawned by a manager |
 
@@ -44,8 +44,12 @@ oversees the build. What changes: after the conversation, the CTO **spawns an op
 or an ephemeral Claude implementer) with a spec and reviews the result — it does not implement in
 its own context. Same shape Krypton already is.
 
-**Phasing the tool boundary:** default-to-delegate first; harden to actual tool-removal from
-managers once the spawn path is proven. Don't rip tools away on day one.
+**Tool boundary = SOFT constraint (amended 2026-05-25, Jesse).** Managers **keep** their execution
+tools and are *instructed* to delegate by default; this is **monitored**, not enforced by tool-removal.
+Hard tool-stripping (Phase 2b) is **contingent** — done only if monitoring shows managers
+over-implementing — *not* the default endpoint. The trivial-change carve-out below works precisely
+because tools are retained. (Resolves the contradiction: you can't both strip Write/Edit and allow a
+≤15-line direct edit.)
 
 **Trivial-change carve-out (ratified):** a manager may make a direct edit only if it is **≤15 lines,
 a single existing file, no new files/deps/schema, fully reversible, and within its own domain.**
@@ -101,10 +105,10 @@ Tool posture is the §1 manager default unless noted; exact arrays are Forge's t
   substrate is Krypton's, not CTO's.
 - **JTBD:** thought-partner Jesse on builds · set architecture · oversee implementation · review.
 - **Oversees:** architecture decisions, compute infra. (Does **not** own every project.)
-- **Constraints (ratified — pure orchestrator):** **no direct implementation tools** (the tool
-  boundary *is* the guardrail — CTO literally can't build out of convenience, must delegate, which
-  frees it to oversee more). **No separate Architect agent** — architecture *thinking* is the CTO's
-  job; *building* goes to operators. Revisit an Architect-operator only if build volume demands it.
+- **Constraints (amended — pure orchestrator, soft):** retains tools but is **instructed to delegate
+  by default** (soft constraint, monitored — *not* tool-stripped). The instruction + monitoring is the
+  guardrail; hard tool-removal is contingent. **No separate Architect agent** — architecture *thinking*
+  is the CTO's job; *building* goes to operators. Revisit an Architect-operator only if build volume demands it.
 
 ### Forge — Dev-System Owner *(peer to CTO)*
 - **Remit:** the dev system (skills, agents, standards, ADRs, hooks, configs, registry).
@@ -162,8 +166,9 @@ All settled at Krypton's recommendation. Decision IDs referenced from the role c
    observability/control *product*** it operates through (agent ≠ product).
 4. **Forge is a peer to CTO**, owning the dev-system end-to-end; delegates heavy implementation to
    operators. Not subordinated under CTO.
-5. **CTO is a pure orchestrator** — no direct implementation tools; the tool boundary is the
-   guardrail. No separate Architect agent for now.
+5. **CTO is a pure orchestrator** — *instructed* to delegate by default (soft constraint, monitored).
+   Tools are **retained**, not stripped; hard tool-removal is contingent on monitoring. No separate
+   Architect agent for now.
 6. **Trivial-change threshold:** ≤15 lines / single existing file / no new artifacts / reversible /
    own-domain = direct edit OK; else delegate. *Monitored.*
 7. **Krypton owns this charter** (design/map = coordination); Forge owns what it encodes (agent
