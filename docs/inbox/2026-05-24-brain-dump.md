@@ -94,3 +94,22 @@ Krypton files here on "capture:" with no discussion; we triage later.
 - agent-exec: `32ecbf3`
 
 **Not pushed** — all commits local per session constraint. AGF doctrine sentence untouched. NC job rates (governance-sentinel / infra-monitor) untouched.
+
+## 7. Agent Org Charter — Phase 1 completion (Forge, 2026-05-25)
+
+**Trigger:** Charter RATIFIED 2026-05-25 (Jesse, Canvas decision-set — org model + all 7 §6 calls + per-project contract R1–R10). Forge owns implementation (charter §7). Phase 1 = **SAFE / ADDITIVE ONLY**. **No tools stripped from any existing agent** (that is Phase 2, NOT authorized).
+
+**Shipped (3 repos, committed locally, NOT pushed):**
+- **ADR-007 — Agent Org Charter Ratification** → aws `d36f8ba` (`docs/decisions/ADR-007-agent-org-charter-ratification.md`, status: accepted). Captures (a) manager/operator model + trivial-change carve-out, (b) the 7 ratified decisions, (c) per-project contract R1–R10. **Reconciles the AGENTS.md↔CLAUDE.md contradiction per R2: AGENTS.md canonical, CLAUDE.md imports `@AGENTS.md` + Claude-specific rules** (Claude = primary coding model; AGENTS.md = open multi-runtime standard). Cross-refs charter + contract. Consistent with ADR-002 (one canonical home).
+- **jobs-agent (NEW)** → pike-agents `d393fe3` (`plugins/jobs-agent/`). Functional owner of ALL scheduled jobs (launchd, cron, NC probes, IL sweeps). Manager-class: read + delegate + coordinate, read-only Bash diagnostics, spawns operators for remediation. Operates *through* Nerve Center (observability product ≠ agent). model sonnet, maxTurns 25, inbox-scan on orient. Registered: `marketplace.json` + capabilities-registry `abc1f08` (capability.yaml + inventory → 126 caps). Deployed to `~/.claude/agents/jobs-agent.md` via pike-sync hook — **live**.
+- **wm-agent latent owner face formalized** → pike-agents `d393fe3`. Now explicitly OWNS the WM spine with TWO faces: deterministic **runtime** (workflow not loop; never reasons/speaks; hard constraints scope here) + latent **owner** (interactive; answers status + spine-domain judgment; the face Krypton stood in for, now formalized). Owner face may reason/speak about the spine but never bypasses runtime rules (no budget override). Light, surgical edit.
+- **forge maxTurns** confirmed **60** (was 25) — end-state already present in HEAD `b6aa0bb` + deployed copy; verified, no separate commit needed.
+
+**Commit hashes:** aws `d36f8ba` · pike-agents `d393fe3` · capabilities-registry `abc1f08`.
+
+**Deferred to later Forge phases (tracked in ADR-007, NOT this phase):**
+- **Phase 2 — tool boundaries:** harden managers to the target tool posture (default-to-delegate → tool-removal once spawn path proven); CTO → pure-orchestrator array (decision 5). **Awaits separate authorization.**
+- `project-layout.yaml` **v1.2.0**: fix "AGENTS.md = mirror of CLAUDE.md" line per R2; fold in contract R1–R10; reconcile ADF specs.
+- **R7 ownership rubric** re-derives PM assignments (only `Krypton → personal-context` locked); **R3/R6 enforcement** wiring; **R8 PMO-agent** decision; **pilot** on 2–3 projects before standard edit (R10).
+
+**Not mine, left untouched (flagged):** aws working tree has an uncommitted `scripts/il-classifier.sh` modification + untracked `docs/active/.vellum-cache/` — not from this Phase 1 session; left for their owner. (`.vellum-cache/` is a generated cache dir; candidate for gitignore.)
