@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agent Org Charter</title>
+<style>
+  :root{
+    --ink:#1a1c20; --muted:#5c636e; --line:#e3e6ea; --bg:#fbfcfd;
+    --mgr:#1f6feb; --mgr-bg:#eaf2ff; --op:#b5650a; --op-bg:#fff3e3;
+    --fn:#6f42c1; --fn-bg:#f3eeff;
+    --ok:#1a7f4b; --ok-bg:#e8f6ee; --card:#fff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-text-size-adjust:100%}
+  .wrap{max-width:860px;margin:0 auto;padding:32px 22px 96px}
+  header.doc{border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:8px}
+  h1{font-size:30px;margin:0 0 6px;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:14.5px}
+  .status{display:inline-block;margin-top:12px;padding:7px 12px;border-radius:8px;
+    background:var(--ok-bg);color:var(--ok);font-size:13.5px;font-weight:600;
+    border:1px solid #bfe6cf}
+  h2{font-size:21px;margin:38px 0 12px;padding-top:10px;border-top:1px solid var(--line)}
+  h3{font-size:16.5px;margin:22px 0 6px}
+  p{margin:10px 0}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px;background:var(--card)}
+  th,td{text-align:left;padding:9px 11px;border:1px solid var(--line);vertical-align:top}
+  th{background:#f3f5f8;font-weight:650}
+  code{background:#eef1f4;padding:1.5px 5px;border-radius:5px;font-size:13.5px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:#0f1320;color:#d6deeb;padding:18px 20px;border-radius:10px;overflow:auto;
+    font:13px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre .role{color:#82aaff;font-weight:700}
+  pre .new{color:#7ee787;font-weight:700}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;
+    vertical-align:middle}
+  .pill.mgr{background:var(--mgr-bg);color:var(--mgr)} .pill.op{background:var(--op-bg);color:var(--op)}
+  .pill.fn{background:var(--fn-bg);color:var(--fn)} .pill.ok{background:var(--ok-bg);color:var(--ok)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:15px 17px;margin:13px 0;
+    border-left:4px solid var(--mgr)}
+  .card .meta{font-size:13px;color:var(--muted);margin:2px 0}
+  .card h3{margin-top:0}
+  .card .lbl{font-weight:700;color:var(--ink)}
+  ol.resolved{counter-reset:o;list-style:none;padding:0}
+  ol.resolved li{background:var(--card);border:1px solid #bfe6cf;border-left:4px solid var(--ok);
+    border-radius:9px;padding:11px 14px 11px 46px;margin:9px 0;position:relative;font-size:14.5px}
+  ol.resolved li::before{counter-increment:o;content:"✓";position:absolute;left:12px;top:10px;
+    width:24px;height:24px;background:var(--ok);color:#fff;border-radius:50%;text-align:center;
+    font-size:14px;font-weight:700;line-height:24px}
+  .boundary{background:var(--ok-bg);border:1px solid #bfe6cf;border-radius:11px;padding:14px 17px;margin:14px 0}
+  .stillopen{background:#fffbe9;border:1px solid #f0e2a8;border-radius:10px;padding:12px 15px;margin:14px 0;font-size:14px}
+  hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+  .foot{margin-top:40px;color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="doc">
+  <h1>Agent Org Charter</h1>
+  <div class="sub">The single defining artifact for <strong>who the agents are, how they relate, and what each may do.</strong>
+  Owner: Krypton · AWS&nbsp;<code>docs/active/agent-org-charter.md</code></div>
+  <span class="status">✓ RATIFIED 2026-05-25 — all 7 open calls closed (Jesse, via Canvas decision-set). Forge implements next.</span>
+</header>
+
+<p style="margin-top:18px">This doc is the org chart + role descriptions. It is <strong>design/coordination</strong>
+(Krypton-authored, AWS-owned). The model is now settled; role/tool boundaries are not <em>live</em> until
+Forge encodes them into agent definitions + the ADR (§7).</p>
+
+<h2>1 · The core distinction — Manager vs Operator</h2>
+<p>The organizing primitive. Separating <strong>who decides</strong> from <strong>who does</strong> is both a
+flow decision and an AGF control — you can audit a decision apart from the action only if they're separate agents.</p>
+<table>
+  <tr><th></th><th><span class="pill mgr">Managers / Orchestrators</span></th><th><span class="pill op">Operators / Workers</span></th></tr>
+  <tr><td class="lbl">Count</td><td>Few</td><td>Many</td></tr>
+  <tr><td class="lbl">Lifespan</td><td>Persistent, stateful</td><td>Ephemeral, near-stateless</td></tr>
+  <tr><td class="lbl">Job</td><td>Oversee health · route · resolve · judgment · thought-partner</td><td>Execute a well-specified task, then terminate</td></tr>
+  <tr><td class="lbl">Continuity</td><td>Hold context across sessions</td><td>Fresh each spawn; direction supplied per task</td></tr>
+  <tr><td class="lbl">Tools (target)</td><td>Read + delegate + coordinate (Read, Grep, Glob, Task, Memory/KB). <strong>No</strong> Write/Edit/Bash-mutation</td><td>Execution tools (Write, Edit, Bash, …)</td></tr>
+  <tr><td class="lbl">Model</td><td>Opus/Sonnet (judgment)</td><td>Cheapest that fits (Haiku→Sonnet)</td></tr>
+  <tr><td class="lbl">Entry point?</td><td><strong>Yes</strong> — Jesse/Krypton talk to managers</td><td>No — spawned by a manager</td></tr>
+</table>
+<p><span class="lbl">Flow preserved:</span> Jesse still "calls up the CTO." The CTO is still his thought partner and
+oversees the build. What changes: after the conversation, the CTO <strong>spawns an operator</strong> (Codex or an
+ephemeral Claude implementer) with a spec and reviews the result — it does not implement in its own context.</p>
+<p><span class="lbl">Phasing the tool boundary:</span> default-to-delegate first; harden to actual tool-removal from
+managers once the spawn path is proven.</p>
+<p><span class="lbl">Trivial-change carve-out (ratified):</span> a manager may make a direct edit only if it is
+<strong>≤15 lines, a single existing file, no new files/deps/schema, fully reversible, and within its own
+domain.</strong> Anything larger → spawn an operator. Flagged as <em>monitored</em>.</p>
+
+<h2>2 · The org chart</h2>
+<pre><span class="role">Jesse</span> — Principal (owner, P&amp;L, final authority)
+  │
+  └── <span class="role">Krypton</span> — Chief of Staff / Continuity
+        (holds the whole picture · single point of contact for status · routes · never executes)
+        │
+        ├── <span class="role">MANAGERS / ORCHESTRATORS</span>   (persistent · judgment + routing · delegate execution)
+        │     ├── CTO    — product/technical architecture &amp; compute infra
+        │     ├── Forge  — dev-system owner   (peer to CTO)
+        │     ├── CFO · CPO · CRO · CISO · CMO — domain executives (portfolio advisory/oversight)
+        │
+        ├── <span class="role">FUNCTIONAL OWNERS</span>   (cross-cutting · health/route/resolve over a function)
+        │     ├── wm-agent   — OWNS the WM spine (deterministic runtime + latent owner face)
+        │     ├── <span class="new">jobs-agent</span>  — OWNS all scheduled jobs (health · route · resolve)
+        │     └── Nerve Center — observability/control PRODUCT that jobs-agent operates through
+        │
+        └── <span class="role">OPERATORS / WORKERS</span>   (ephemeral · execution · spec-driven · no continuity)
+              ├── Codex (GPT Pro) — primary implementer
+              ├── ephemeral Claude implementers (Task-spawned)
+              ├── Krypton gatherers (kb · memory · adf · wm) — read-only
+              └── Explore · Plan · general-purpose</pre>
+
+<h2>3 · Manager role cards</h2>
+
+<div class="card">
+  <h3>Krypton <span class="pill mgr">Chief of Staff / Continuity</span></h3>
+  <div class="meta"><span class="lbl">Remit:</span> cross-system intelligence + continuity across all sessions. The altitude layer. <strong>Owns the knowledge substrate</strong> — personal-context, KB, Memory <em>(decision 1)</em>.</div>
+  <div class="meta"><span class="lbl">JTBD:</span> (1) hold the whole picture; (2) be Jesse's single point of contact for "what's the status"; (3) route work to the right owner; (4) resolve + push next action + write it down so it recurs.</div>
+  <div class="meta"><span class="lbl">Constraints:</span> never executes — routes to owners. Writes only its own state file + AWS coordination/design docs + KB-on-approval.</div>
+</div>
+
+<div class="card">
+  <h3>CTO <span class="pill mgr">Technical Architecture &amp; Compute Infra</span> <span class="pill ok">pure orchestrator</span></h3>
+  <div class="meta"><span class="lbl">Remit:</span> product/technical architecture; system design; integration coherence; <strong>compute/runtime infra</strong> — hosts, environments, MCP-server ops, networking <em>(decision 1)</em>. Knowledge substrate is Krypton's, not CTO's.</div>
+  <div class="meta"><span class="lbl">JTBD:</span> thought-partner Jesse on builds · set architecture · oversee implementation · review.</div>
+  <div class="meta"><span class="lbl">Constraints (ratified):</span> <strong>no direct implementation tools</strong> — the tool boundary <em>is</em> the guardrail (CTO can't build out of convenience, must delegate, which frees it to oversee more). <strong>No separate Architect agent</strong> — architecture <em>thinking</em> is the CTO's job; <em>building</em> goes to operators. Revisit only if build volume demands it.</div>
+</div>
+
+<div class="card">
+  <h3>Forge <span class="pill mgr">Dev-System Owner</span> <span class="pill ok">peer to CTO</span></h3>
+  <div class="meta"><span class="lbl">Remit:</span> the dev system (skills, agents, standards, ADRs, hooks, configs, registry).</div>
+  <div class="meta"><span class="lbl">JTBD:</span> build/maintain the toolchain all other agents run on.</div>
+  <div class="meta"><span class="lbl">Position (ratified — decision 4):</span> a <strong>peer to CTO</strong>, owning the dev-system end-to-end — not subordinated. Resolves the blur like every manager: orchestrate, and <strong>spawn Codex/operators for heavy implementation.</strong> CTO owns product/technical architecture; Forge owns the toolchain.</div>
+</div>
+
+<div class="card">
+  <h3>CFO · CPO · CRO · CISO · CMO <span class="pill mgr">Domain Executives</span></h3>
+  <div class="meta"><span class="lbl">Remit:</span> portfolio-level finance / product / revenue / security / marketing.</div>
+  <div class="meta"><span class="lbl">JTBD:</span> advise + oversee + audit within domain; surface risks; produce strategy artifacts. Spawn operators for heavy analysis/build.</div>
+</div>
+
+<h2>4 · Functional owners</h2>
+<p>Cross-cutting concerns that span projects get <strong>one</strong> owner whose job is keep-it-healthy +
+route/resolve on failure (Jesse's "one agent owns all the jobs" pattern).</p>
+<table>
+  <tr><th>Function</th><th>Owner</th><th>Status</th></tr>
+  <tr><td><strong>WM spine</strong> — task routing / prioritization</td><td><strong>wm-agent</strong></td><td>exists. Owns the spine <em>(decision 2)</em>. Deterministic runtime face + a <strong>latent owner face</strong> (answers status, judgment calls). Krypton has stood in as that face; formalize into wm-agent.</td></tr>
+  <tr><td><strong>All scheduled jobs</strong> — health · route · resolve</td><td><span class="pill fn">jobs-agent</span></td><td><strong>NEW — Forge builds</strong> <em>(decision 3)</em>. Fires up, verifies job health, routes/resolves failures.</td></tr>
+  <tr><td>Observability / control surface</td><td><strong>Nerve Center</strong> <span style="color:var(--muted)">(product)</span></td><td>exists. The product <code>jobs-agent</code> operates <em>through</em> <em>(decision 3)</em>. Forge-maintained.</td></tr>
+</table>
+
+<h2>5 · Ownership model (continuity)</h2>
+<ul>
+  <li>Each <strong>project and each critical function</strong> has exactly <strong>one accountable owner</strong> — the single point of contact Krypton queries. Continuous <strong>design → operate</strong>.</li>
+  <li><strong>Phase changes contributors, not the owner.</strong> A security pass pulls in CISO; the accountable owner is unchanged.</li>
+  <li>Optional <strong>re-evaluation at Operate</strong> — transfer to a steady-state owner only if needs genuinely differ. Continuity is the default.</li>
+  <li><strong>Two entry points per project</strong> (the latent/deterministic split): the <strong>artifact</strong> (<code>AGENTS.md</code>/<code>CLAUDE.md</code>) = cached snapshot; the <strong>owner agent</strong> = live brain.</li>
+</ul>
+<p>Detailed assignments + rubric: <code>ownership-rubric.md</code>. Per-project contract: <code>per-project-contract-proposal.md</code>.</p>
+
+<h2>6 · Resolved calls <span class="pill ok">ratified 2026-05-25</span></h2>
+<p>All settled at Krypton's recommendation, via Canvas decision-set.</p>
+<ol class="resolved">
+  <li><strong>Infrastructure splits in two.</strong> Krypton owns the <strong>knowledge substrate</strong> (personal-context, KB, Memory); CTO owns <strong>compute/runtime infra</strong> (hosts, environments, MCP-server ops, networking).</li>
+  <li><strong>wm-agent owns the WM spine</strong> — deterministic runtime face + latent owner face.</li>
+  <li><strong>Create <code>jobs-agent</code></strong> as the functional owner of all scheduled jobs; <strong>Nerve Center is the observability/control <em>product</em></strong> it operates through (agent ≠ product).</li>
+  <li><strong>Forge is a peer to CTO</strong>, owning the dev-system end-to-end; delegates heavy implementation. Not under CTO.</li>
+  <li><strong>CTO is a pure orchestrator</strong> — no direct implementation tools; the tool boundary is the guardrail. No separate Architect agent for now.</li>
+  <li><strong>Trivial-change threshold:</strong> ≤15 lines / single existing file / no new artifacts / reversible / own-domain = direct edit OK; else delegate. <em>Monitored.</em></li>
+  <li><strong>Krypton owns this charter</strong> (design/map = coordination); Forge owns what it encodes (agent definitions, the ADR, <code>project-layout.yaml</code>).</li>
+</ol>
+<div class="stillopen"><strong>Still open (downstream, not blocking):</strong> canonical functional-owner definitions live in
+<code>pike-agents/&lt;agent&gt;/</code> (Forge-owned); this charter is the org <em>map</em> that indexes them (comment 3).
+Forge creates the <code>jobs-agent</code> definition + formalizes wm-agent's latent face.</div>
+
+<h2>7 · Ownership boundary + next step</h2>
+<div class="boundary">
+  <p style="margin-top:0"><span class="lbl">AWS-owned (Krypton):</span> this charter, the org model, assignments.</p>
+  <p><span class="lbl">Forge-owned (implementation):</span> the ratifying <strong>ADR</strong>; agent definitions in <code>pike-agents/</code>; <code>project-layout.yaml</code> v1.2.0; enforcement wiring; the new <code>jobs-agent</code>.</p>
+  <p style="margin-bottom:0"><span class="lbl">Path:</span> ✅ Jesse approved the model (2026-05-25) → <strong>next: Forge ADRs it → updates agent definitions (phased tool boundaries) + builds <code>jobs-agent</code> → encodes <code>project-layout.yaml</code> v1.2.0 → pilot on 2–3 projects.</strong></p>
+</div>
+
+<div class="foot">
+  Source of truth: <code>~/code/_shared/aws/docs/active/agent-org-charter.md</code> · This HTML is the read/comment surface.
+</div>
+
+</div>
+</body>
+</html>
