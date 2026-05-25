@@ -500,25 +500,35 @@ build_success_actions() {
   : > "$remove_file"
 
   # For each manifest entry with action kb/memory/discard, find the matching
-  # original line in candidates. Match by: source_file matches AND entry text
-  # is a substring of the candidate's entry text (handles Haiku truncation).
+  # original line in candidates. Match by: source_file matches AND a normalized
+  # prefix of the manifest entry text is a substring of the candidate entry text.
   # Entries with action "keep" are left in place.
   #
-  # NOTE: Haiku strips markdown markers (**, `) from the .entry field it returns,
-  # so a naive index($5, entry) against the full-markdown candidate text never
-  # matches (the stripped text is not a literal substring of the marked-up text).
-  # Normalize BOTH sides — strip * and ` — before the substring test. We still
-  # print $4 (the original, un-normalized line) so removal targets the real text.
+  # NOTE: Haiku does NOT return the entry verbatim. It strips markdown markers
+  # (**, `), rewrites em-dashes (—) and smart quotes, collapses whitespace, and
+  # frequently truncates or lightly rephrases the tail. The old matcher only
+  # stripped * and ` and required a full-substring match, so any of those other
+  # mangles broke the match — the line never got removed, was re-collected every
+  # sweep, and re-routed to KB/Memory forever (the documented token-burn loop).
+  #
+  # Robust normalization: lowercase + drop every non-alphanumeric char on BOTH
+  # sides (kills markdown, punctuation, em-dash, quote, and whitespace drift),
+  # then substring-test a bounded 50-char prefix of the manifest entry (tolerates
+  # tail truncation/rephrasing). The >=12-char floor avoids spurious short hits.
+  # We still print $4 (the original, un-normalized line) so removal targets the
+  # real text.
 
   while IFS=$'\t' read -r source action entry; do
     [[ "$action" == "keep" ]] && continue
 
     # Find matching candidate line — first match wins
     original_line="$(awk -F '\t' -v src="$source" -v entry="$entry" '
+      function norm(s) { s = tolower(s); gsub(/[^a-z0-9]/, "", s); return s }
       $1 == src && !found {
-        cand = $5; gsub(/[*`]/, "", cand)
-        want = entry; gsub(/[*`]/, "", want)
-        if (index(cand, want) > 0) {
+        cand = norm($5)
+        want = norm(entry)
+        if (length(want) > 50) { want = substr(want, 1, 50) }
+        if (length(want) >= 12 && index(cand, want) > 0) {
           print $4
           found = 1
         }
