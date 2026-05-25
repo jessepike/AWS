@@ -1,8 +1,8 @@
 ---
 type: "system-overview"
 description: "Canonical orientation doc for the Agentic Work System (AWS). Read this first to understand what AWS is, what it is NOT, how it relates to AGF / ADF / agent-harness, and where things live."
-version: "1.0.0"
-updated: "2026-04-09"
+version: "1.3.0"
+updated: "2026-05-25"
 owner: "forge"
 status: "canonical"
 audience: "all agents working in Jesse's environment"
@@ -130,8 +130,8 @@ Referenced from the AWS component registry but not contained.
 | Capabilities Registry | `_shared/capabilities-registry/` | Canonical catalog of skills, agents, plugins, tools |
 | Krypton | `_shared/krypton/` | Personal AI chief of staff — cross-cutting synthesis |
 | Link Triage | `_shared/link-triage/` | Content intake and routing |
-| Work Management | `_shared/work-management/` | Execution spine for all work |
-| Pike-agents | `_shared/pike-agents/` | Source for 9 exec/system agents (cfo, ciso, cmo, cpo, cro, cto, forge, krypton, tools) |
+| Work Management | `_shared/work-management/` | Designed execution/coordination spine — not yet operationalized (dormant) |
+| Pike-agents | `_shared/pike-agents/` | Source for 8 exec/system agents (cfo, ciso, cmo, cpo, cro, cto, forge, krypton) |
 | Agent-exec | `_shared/agent-exec/` | Per-agent context (merging into pike-agents — backlogged) |
 | Nerve Center | `_shared/nerve-center/` | Job runtime on macbook2014 |
 | Personal Wiki | `_shared/personal-wiki/` | Synthesized read-side of KB |
@@ -268,7 +268,7 @@ Forge operates in six modes: BUILD, OPTIMIZE, DESIGN, AUDIT, RESEARCH, SYNC. The
 | **ADF** | Agentic Development Framework — dev project stage specs. Lives inside AWS at `aws/docs/specs/adf/`. |
 | **Agent-harness** | Project pressure-testing AGF primitives. Lives at `tools/agent-harness/`. |
 | **ai-dev** | Skill workbench project. Lives at `tools/ai-dev/`. Planned rename to `aws-workbench`. |
-| **Pike-agents** | The 9 top-level exec/system agents (cfo, ciso, cmo, cpo, cro, cto, forge, krypton, tools). |
+| **Pike-agents** | The 8 top-level exec/system agents (cfo, ciso, cmo, cpo, cro, cto, forge, krypton). The former Tools agent was absorbed into Forge. |
 | **Forge** | The single agent with exclusive write authority on AWS components. The Change Advisory Board. |
 | **First-class artifact** | A file every project must have: intent, status, lessons, BACKLOG, CLAUDE.md. |
 | **Governance surface** | Any file or config that Forge exclusively writes to. |
@@ -309,6 +309,7 @@ This file is versioned in lockstep with AWS standards. Updates happen through Fo
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0 | 2026-04-09 | Initial canonical overview created during AWS governance activation sprint. |
+| 1.3.0 | 2026-05-25 | De-drift sweep: corrected dead work-management "execution spine" claim (now marked dormant); removed absorbed Tools agent from agent counts (9→8). AGF doctrine language held for ADR-005 ratification. |
 
 ---
 
