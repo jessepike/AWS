@@ -115,3 +115,45 @@ Krypton files here on "capture:" with no discussion; we triage later.
 **Not mine, left untouched (flagged):** aws working tree has an uncommitted `scripts/il-classifier.sh` modification + untracked `docs/active/.vellum-cache/` — not from this Phase 1 session; left for their owner. (`.vellum-cache/` is a generated cache dir; candidate for gitignore.)
 
 **Phase 1 hygiene cleanup (2026-05-25, follow-up):** Cleared the 4 flagged items. (1) il-classifier.sh diff committed — was a valid robustness hardening of the self-heal matcher (full normalize + bounded-prefix vs old strip-`*`/backtick-only), closes the re-classify token-burn loop → aws `5ed6d62`. (2) `.vellum-cache/` added to aws `.gitignore` (krypton already had it) → aws (next commit). (3) marketplace.json roster aligned: added forge + agf-architect, dropped archived `tools` (→ `_archived-tools`, merged into forge); jobs-agent already present → pike-agents `c14d2b5`. (4) `claude-jobs` launcher added to `~/.zshrc` (harness resolves generically; MCP config optional) — live next shell. No other agents' tool arrays touched (Phase 2 unauthorized). Local, NOT pushed.
+
+---
+
+## Phase 2a — Agent Org Charter encoding (2026-05-25)
+
+Executed by: Forge (headless, via Claude Sonnet 4.6 subagent on host laptop)
+Authorized by: ADR-007. Scope: additive instruction + standard encoding + pilot selection. No tool arrays modified (Phase 2b guard).
+
+**1. Default-to-delegate instruction — DONE.**
+Added `### Manager/Operator Default (ADR-007)` subsection to `## Subagent Delegation` in all 7 manager agent definitions:
+- `cto`, `cfo`, `cpo`, `cro`, `ciso`, `cmo`, `forge`
+Instruction: when asked to implement/build, spawn an operator (Codex or ephemeral Claude via Task tool) and review the result. Trivial-change carve-out: ≤15 lines, single existing file, no new files/deps/schema, reversible, own-domain.
+→ pike-agents commit `c529d79` (feat(agents): add ADR-007 manager/operator default-to-delegate instruction)
+Tool arrays: UNTOUCHED (Phase 2b guard preserved).
+
+**2. project-layout.yaml v1.2.0 — DONE.**
+Bumped 1.1.0 → 1.2.0 in `aws/docs/standards/project-layout.yaml`. Key changes:
+- AGENTS.md promoted to canonical required artifact (reverses "AGENTS.md = Codex mirror of CLAUDE.md")
+- CLAUDE.md updated: imports @AGENTS.md, owner: field required in frontmatter (R1+R2)
+- decisions.md: conditionally required for active system projects (R3)
+- README.md: conditionally required for human-facing/shared only (R4)
+- Minimum resolver entry schema added: 7 fields (R5)
+- Freshness threshold: 30 days for active system projects (R6)
+- Full R1-R10 per-project contract summary appended
+→ aws commit `0ac681d` (feat(standards): project-layout.yaml v1.2.0 + contract pilot plan)
+
+**3. Pilot selection — DONE (draft, awaiting Jesse approval).**
+Written to `aws/docs/active/contract-pilot-plan.md`. Recommended pilots:
+- **Pilot 1:** `capabilities-registry` (_shared component; Forge-owned; clean tree; no AGENTS.md yet)
+- **Pilot 2:** `krypton` (chief-of-staff; active agent use; validates cross-owner ownership declaration)
+- **Pilot 3:** `aws` (governance project; validates reflexivity; Forge+Krypton co-owned)
+Execution sequence: capabilities-registry → aws → krypton. Success criteria defined. No pilot projects modified yet.
+→ aws commit `0ac681d` (same commit as above)
+
+**Nothing pushed.** Both repos committed locally. Pilot execution pending Jesse approval of selection.
+
+**Deferred from Phase 2a (still tracked in ADR-007):**
+- Phase 2b: tool-array hardening (manager → pure-orchestrator tool postures) — NOT authorized
+- R7 ownership rubric + PM assignment re-derivation
+- R3/R6 enforcement wiring (project-doctor, ADF-audit, NC freshness jobs)
+- R8 PMO-agent decision
+- Actual pilot execution (awaiting Jesse green-light)
