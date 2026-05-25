@@ -210,3 +210,18 @@ Use this proposal to decide the smallest enforceable contract that answers:
 - how the portfolio map and local project files stay aligned.
 
 Do not convert this into a standard until Jesse chooses the owner-declaration mechanism and the canonical machine-context file policy.
+
+## 7. Decision status + responses to Jesse's inline edits (2026-05-25)
+
+**Locked (agreed):** R1, R3, R5, R9. **R2 DECIDED → AGENTS.md = source of truth; CLAUDE.md imports `@AGENTS.md` and carries Claude-specific rules** (Claude stays the primary coding model). Model: single PM across *groups* of projects = agreed.
+
+**Clarifications you asked for:**
+- **R4 — is CLAUDE.md the canonical source?** No — **AGENTS.md is canonical source**; CLAUDE.md imports it + adds Claude-specifics. The per-project orientation entry point is that canonical context file, acting as a **resolver/manifest** pointing to intent/status/BACKLOG/decisions/lessons/README/data + portfolio map. **Yes, this requires updating AWS `project-layout.yaml` (its "AGENTS.md = mirror of CLAUDE.md" line) and reconciling the ADF specs** — a Forge + ADR task.
+- **R10 — what's an "ADR-backed convention"?** Rather than editing the `project-layout.yaml` standard immediately, first record the decision as a numbered **ADR** (governed, dated, reversible). Pilot on 2-3 projects. Only after it's proven, fold into `project-layout.yaml` v1.2.0. ADR first = low-risk; standard-edit last = durable.
+
+**Open threads — picked up in parallel NOW (Codex):**
+- **R7 ownership rubric** — agreed my picks were ad-hoc. Codex is drafting an **ownership rubric** (dimensions: domain fit, who-consumes-it, ADF stage, write-authority) and re-deriving owners *by the rubric* for your review. **Locked per your note: Krypton → personal-context.** Everything else re-derived, not asserted.
+- **R3 + R6 enforcement** ("is the harness in place? how do we ensure freshness happens?") — Codex is **auditing existing tooling** (project-doctor, ADF-audit scripts, NC freshness/lint jobs) to map what already enforces the contract (owner field, decision ledger, staleness) vs the gaps + how to wire them. Execution/durability, not new design.
+- **R8 PMO agent** — you referenced "our current PMO agent." **Clarification: there is no PMO agent in the roster today** (CTO/CFO/CPO/CRO/CISO/CMO/Forge/Krypton/Tools). Options after the rubric: (a) stand up a dedicated PMO agent owning project-PM across groups; (b) PM as a *function* existing domain agents carry; (c) Krypton-as-PMO for coordination-layer projects. Decide after the rubric — it tells us whether one PMO can span all projects or PM must distribute.
+
+**Your Model question (harness vs project support for PMO-as-owner):** project level = `owner:` field names the PM; harness level = the PM agent's **state file carries an owned-projects index** it scans on orient (this doubles as the cross-session-visibility fix). The rubric thread firms this up.
