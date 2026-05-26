@@ -137,7 +137,8 @@ Output projects consume the AGF-governed stack. The `agf-applied` map classifies
 Structured per-project resolver entries with the 7-field R5 schema (path, owner,
 stage, canonical-context-file, status-file, portfolio-row, freshness-threshold).
 Seeded by the per-project contract pilots; added here as projects adopt the
-contract. (Forge addition, 2026-05-25 — Pilots 1 & 3; pending Krypton review.)
+contract. (Forge addition, 2026-05-25 — Pilots 1, 2 & 3 (capabilities-registry, aws, krypton);
+pending Krypton review.)
 Note: the R5 schema has no co-owner field; aws is Forge+Krypton co-owned (primary
 owner = forge, Krypton coordinates), recorded in prose in `aws/AGENTS.md`.
 
@@ -145,6 +146,7 @@ owner = forge, Krypton coordinates), recorded in prose in `aws/AGENTS.md`.
 |---|---|---|---|---|---|---|---|
 | Capabilities Registry | `/Users/jessepike/code/_shared/capabilities-registry` | forge | Develop | `AGENTS.md` | `status.md` | Part A → Layer 2 (Operating-Methodology) → "Capabilities Registry" | 30 days |
 | AWS (governance) | `/Users/jessepike/code/_shared/aws` | forge | Operate | `AGENTS.md` | `docs/status.md` | Part A → Layer 2 (Operating-Methodology) → "AWS" | 30 days |
+| Krypton | `/Users/jessepike/code/_shared/krypton` | krypton | Operate | `AGENTS.md` | `status.md` | Part A → Layer 1 (Substrate) → "Krypton" | 30 days |
 
 ## Part B — Confirmed workstreams
 
