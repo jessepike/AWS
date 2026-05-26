@@ -2,7 +2,7 @@
 type: "portfolio-map"
 title: "Portfolio Map — Agentic Work System Canonical Draft"
 scope: "Pike Holdings agentic portfolio"
-updated: "2026-05-24"
+updated: "2026-05-25"
 owner: "krypton"
 status: "draft-for-krypton-review"
 review-needed: "Krypton review on 2026-05-25"
@@ -131,6 +131,17 @@ Output projects consume the AGF-governed stack. The `agf-applied` map classifies
 | Agent Harnesses | Operating but unevenly catalogued | agent-harness, Krypton runtime, pike-agents, agent-exec, wm-agent | Tier 2 orchestration harness is missing; pike-agent trust tiers uncodified. |
 | Substrate / Environment | Real but not a formal AGF catalog layer | KB, Memory, CLS, Personal Wiki, Capabilities Registry | Open classification decision: Governance sublayer vs. new Environment/Substrate Governance layer. |
 | Boundary surfaces | Real but no catalog home | Slack, Telegram, BlueBubbles, Claude commands | Open classification decision: Security sub-concern vs. separate boundary-surfaces catalog. |
+
+## Resolver entries (ADR-007 R5)
+
+Structured per-project resolver entries with the 7-field R5 schema (path, owner,
+stage, canonical-context-file, status-file, portfolio-row, freshness-threshold).
+Seeded by the per-project contract pilots; added here as projects adopt the
+contract. (Forge addition, 2026-05-25 — Pilot 1; pending Krypton review.)
+
+| Project | path | owner | stage | canonical-context-file | status-file | portfolio-row | freshness-threshold |
+|---|---|---|---|---|---|---|---|
+| Capabilities Registry | `/Users/jessepike/code/_shared/capabilities-registry` | forge | Develop | `AGENTS.md` | `status.md` | Part A → Layer 2 (Operating-Methodology) → "Capabilities Registry" | 30 days |
 
 ## Part B — Confirmed workstreams
 
