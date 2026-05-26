@@ -4,12 +4,22 @@
 # /project-doctor (Day 2). Governed by Forge.
 
 standard: project-layout
-version: 1.2.0
+version: 1.2.1
 updated: 2026-05-25
 owner: forge
 adr: ADR-001, ADR-007
 
 # CHANGELOG
+# 1.2.1 (2026-05-25) — ADR-007 post-pilot fold-in (R10 complete; 3/3 pilots clean).
+#   Wording clarifications only — the ratified model and R1-R10 semantics are unchanged.
+#   - R3 restated SHAPE-AGNOSTICALLY: a decision ledger exists and is active —
+#     satisfied by root decisions.md, docs/decisions.md, OR docs/decisions/ (ADR dir).
+#     Added docs/decisions.md to alt_paths (krypton pilot used this shape). Broadens
+#     conformance only; no previously-conformant project is affected.
+#   - R2 multi-CLAUDE.md guidance added (aws pilot): when a project has multiple
+#     CLAUDE.md files, exactly ONE imports @AGENTS.md (primary overlay); the others
+#     are thin NON-importing pointers, to avoid double-loading canonical context.
+#   Pilots: capabilities-registry (de2cb06), aws (fe5ee38), krypton (4aef49d).
 # 1.2.0 (2026-05-25) — ADR-007 (Agent Org Charter) encoding
 #   - AGENTS.md is now the CANONICAL context source; CLAUDE.md imports @AGENTS.md
 #     and adds Claude-specific rules. Reverses the prior "AGENTS.md = mirror of CLAUDE.md"
@@ -46,6 +56,13 @@ required:
     required_frontmatter: [owner]
     max_lines: 40
     must_not_duplicate: ~/.claude/CLAUDE.md
+    multiple_claude_md: >
+      ADR-007 R2 (post-pilot clarification): when a project has more than one CLAUDE.md
+      memory file (e.g., a root CLAUDE.md AND a .claude/CLAUDE.md — Claude Code loads
+      both), exactly ONE imports @AGENTS.md (the primary overlay); the other(s) are
+      thin, NON-importing pointers to the importer. This avoids double-loading canonical
+      context into the model. Single-CLAUDE.md projects are the trivial case (that one
+      file is the importer).
     note: "ADR-007 R1+R2 — owner in frontmatter; imports AGENTS.md canonical context"
 
   - path: intent.md
@@ -80,11 +97,14 @@ required:
 conditionally_required:
   - path: decisions.md
     purpose: >
-      Append-only decision log — required for active system projects (the Memory-feed
-      convention; cheap per-project decision ledger). Optional for sandboxes/archives.
-    alt_paths: [docs/decisions/]
+      A decision ledger exists and is active — required for active system projects
+      (the Memory-feed convention; cheap per-project decision ledger). SHAPE-AGNOSTIC
+      (ADR-007 R3, post-pilot): satisfied by a root decisions.md, a docs/decisions.md
+      file, OR a docs/decisions/ directory of numbered ADRs. Do NOT mandate one shape.
+      Optional for sandboxes/archives.
+    alt_paths: [docs/decisions.md, docs/decisions/]
     condition: active_system_projects
-    note: "ADR-007 R3 — required for active system projects"
+    note: "ADR-007 R3 — shape-agnostic decision ledger; required for active system projects"
 
   - path: README.md
     purpose: Human-facing overview (verbose, HTML-renderable, for people not agents)
@@ -131,14 +151,16 @@ exit_criteria:
   - CLAUDE.md under max_lines (Claude-specific content only)
   - CLAUDE.md contains no duplicated global content
   - lessons.md entries ≤ 15
-  - decisions.md exists for active system projects
+  - a decision ledger exists for active system projects (decisions.md, docs/decisions.md, or docs/decisions/)
   - status.md updated within 30 days for active system projects
   - resolver entry present with all 7 required fields
 
 # Per-project contract summary (ADR-007 R1-R10)
 # R1:  owner declared in CLAUDE.md frontmatter (local truth) + resolver/portfolio-map (global index)
 # R2:  AGENTS.md canonical; CLAUDE.md imports @AGENTS.md + adds Claude-specific rules
-# R3:  decisions.md required for active system projects
+#      (multi-CLAUDE.md: exactly one importer, others are thin non-importing pointers)
+# R3:  decision ledger required for active system projects — shape-agnostic
+#      (root decisions.md, docs/decisions.md, or docs/decisions/ ADR dir)
 # R4:  README.md required only for human-facing/shared projects; optional for internal
 # R5:  minimum resolver entry schema: 7 fields above
 # R6:  freshness threshold 30 days for active system projects
