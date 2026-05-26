@@ -181,9 +181,11 @@ pointer-plus-overlay for Claude.
   - **Phase 2 — tool boundaries:** harden managers to the §A target tool posture
     (default-to-delegate → tool-removal) once the spawn path is proven. CTO →
     pure-orchestrator tool array (decision 5).
-  - `project-layout.yaml` **v1.2.0**: fix the "AGENTS.md = mirror of CLAUDE.md"
+  - ~~`project-layout.yaml` **v1.2.0**: fix the "AGENTS.md = mirror of CLAUDE.md"
     line per R2; fold in the per-project contract (R1–R10); reconcile the ADF
-    specs by reference.
+    specs by reference.~~ **SHIPPED** (v1.2.0, 2026-05-25; clarified to v1.2.1
+    post-pilot). The R10 pilot ran clean on 3 projects and the contract is live.
+    See the Addendum below.
   - **R7 ownership rubric** (`ownership-rubric.md`) re-derives PM assignments for
     Jesse's review; only `Krypton → personal-context` is locked here.
   - **R3/R6 enforcement** — audit existing tooling (project-doctor, ADF-audit, NC
@@ -203,3 +205,59 @@ Phase 1 encoding (jobs-agent, wm-agent latent face, forge maxTurns) is live with
 this ADR. Tool-boundary hardening, `project-layout.yaml` v1.2.0, the ownership
 rubric, enforcement wiring, and the pilot are gated to later Forge phases and are
 explicitly **not** authorized by this ADR.
+
+*(Superseded by the Addendum below for the items that have since shipped:
+`project-layout.yaml` v1.2.0/v1.2.1 and the R10 pilot are complete; the
+manager tool-boundary is recorded as a soft, monitored constraint.)*
+
+## Addendum — 2026-05-25 (post-pilot fold-in, R10)
+
+The R10 sequence (ADR-backed convention → pilot 2–3 projects → fold into the
+standard) is **complete**. Three pilots ran clean and are pushed:
+
+| Pilot | Project | Commit | Decision-ledger shape observed |
+|-------|---------|--------|--------------------------------|
+| #1 | capabilities-registry | `de2cb06` | root `decisions.md` (file, created) |
+| #2 | aws (reflexivity) | `fe5ee38` | `docs/decisions/` (numbered-ADR dir) |
+| #3 | krypton (cross-owner) | `4aef49d` | `docs/decisions.md` (file) + `docs/decisions/` sub-ledger |
+
+`project-layout.yaml` was bumped to **v1.2.1** to fold in two wording
+clarifications surfaced by the pilots. **The ratified model is unchanged** — the
+manager/operator distinction (§A), the seven org decisions (§B), and the R1–R10
+contract semantics all stand. The items below are clarifications + drift
+reconciliation + recording an already-ratified soft constraint — **not** new
+decisions.
+
+**1. R3 is shape-agnostic (surfaced in 2 of 3 pilots).** Three projects produced
+three legitimate decision-ledger shapes (table above). The original standard
+listed `decisions.md` (root) with `alt_paths: [docs/decisions/]`, which matched
+neither krypton's `docs/decisions.md` file nor cleanly described aws's ADR
+directory. **R3 is restated shape-agnostically: "a decision ledger exists and is
+active" — satisfied by a root `decisions.md`, a `docs/decisions.md` file, OR a
+`docs/decisions/` ADR directory.** No single shape is mandated; `docs/decisions.md`
+is added to `alt_paths`. This only **broadens** conformance (krypton now matches
+cleanly); no project that previously conformed is affected.
+
+**2. R2 multi-CLAUDE.md guidance (surfaced in the aws pilot).** R2 assumed a single
+`CLAUDE.md` per project; aws has both a root `CLAUDE.md` and a `.claude/CLAUDE.md`,
+and Claude Code loads both. **Guidance added: when a project has multiple CLAUDE.md
+memory files, exactly ONE imports `@AGENTS.md` (the primary overlay); the others
+are thin, NON-importing pointers — to avoid double-loading canonical context into
+the model.** Single-CLAUDE.md projects (cap-registry, krypton) are the trivial case
+(the one file is the importer). Not a contract defect — resolved without a
+workaround.
+
+**3. Drift reconciled — v1.2.0 shipped.** This ADR's Consequences originally listed
+`project-layout.yaml v1.2.0` under "Deferred to later Forge phases." It has since
+shipped (v1.2.0, 2026-05-25), is pilot-proven, and is live. The deferred bullet is
+struck in place above to record actual state.
+
+**4. Manager tool-boundary is a SOFT, monitored constraint (Phase 2b contingent).**
+The §A target tool posture ("Read + delegate + coordinate; no Write/Edit/Bash") is
+**not** enforced by tool-removal. Ratified (Jesse, 2026-05-25; charter amend
+`7bf3ef2`): managers **retain** Write/Edit/Bash, are **instructed** to delegate by
+default, and are **monitored**. **Phase 2 / 2b (hard tool-removal from managers) is
+downgraded to CONTINGENT** — revisited only if monitoring shows over-implementation.
+This resolves the apparent contradiction with the trivial-change carve-out (§A):
+the carve-out is the floor of allowed direct edits; the soft boundary is the
+default-to-delegate posture above it; **neither requires stripping tools.**
