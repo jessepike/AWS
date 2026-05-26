@@ -37,10 +37,10 @@
 - [x] ADR-007 — manager/operator model + 7 decisions + contract R1–R10
 - [x] Create jobs-agent; formalize wm-agent latent owner face
 - [x] Phase 2a — default-to-delegate instruction (all 7 managers) + `project-layout.yaml` v1.2.0 + pilot plan
-- [ ] **Run pilot #1: capabilities-registry** — add AGENTS.md + contract conformance (then aws, then krypton) — P1
+- [x] **Per-project contract pilot program COMPLETE (3/3)** — capabilities-registry (`de2cb06`), aws (`fe5ee38`), krypton (`4aef49d`); R5 rows `2c69e2a`/`4fa7710`. Findings folded into `project-layout.yaml` v1.2.1 (`3dff1f9`) + ADR-007 Addendum (`3522ea7`): R3 shape-agnostic, R2 multi-CLAUDE.md guidance. (2026-05-25)
 - [x] **Set remotes — substrate-4** — agent-exec, knowledge-base, wm-agent, pike-dashboard now private on GitHub + pushed (secret-scanned), 2026-05-25
 - [ ] **Set remotes — remaining no-origin** — knowledge-capture, sources, personal-wiki, clients/*, sandbox/*, projects/* (held pending review; privacy/secret check each) — P3
-- [ ] **ADR-007 soft-constraint footnote** — record manager tool-boundary is SOFT/monitored, 2b contingent — P2 (next Forge run)
+- [x] **ADR-007 soft-constraint footnote** — recorded in the ADR-007 Addendum (`3522ea7`): manager tool-boundary is SOFT/monitored, Phase 2b contingent; resolves the trivial-change carve-out contradiction. (2026-05-25)
 - [ ] Manager-overreach monitor hook — log manager Write/Edit/Bash beyond trivial threshold — P3 (optional, Forge)
 - [ ] Rebase + push `even-ground`, `vet-books` (pre-existing non-ff) — P3
 - [ ] v2-harness forces Opus on all agents regardless of frontmatter `model:` (jobs-agent runs Opus) — P2 Forge harness

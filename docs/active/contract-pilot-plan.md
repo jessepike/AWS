@@ -1,8 +1,9 @@
 ---
 title: Per-Project Contract Pilot Plan
 type: pilot-plan
-status: draft
+status: complete
 created: 2026-05-25
+completed: 2026-05-25
 owner: forge
 related:
   - docs/decisions/ADR-007-agent-org-charter-ratification.md
@@ -16,7 +17,27 @@ Pilot for ADR-007 R10: apply the full per-project contract (R1–R10) to 2-3 pro
 standardizing. This doc identifies the pilots, explains the selection rationale, and defines
 the pilot scope. Forge executes after Jesse approves the selection.
 
-> **Status: DRAFT — awaiting Jesse approval before modifying any pilot project.**
+> **Status: COMPLETE (2026-05-25) — all 3 pilots ran clean and are pushed; findings
+> folded into `project-layout.yaml` v1.2.1 via the ADR-007 Addendum.**
+
+## Outcome (2026-05-25)
+
+| Pilot | Project | Commit | Decision-ledger shape | Result |
+|-------|---------|--------|-----------------------|--------|
+| #1 | capabilities-registry | `de2cb06` | root `decisions.md` (created) | clean |
+| #2 | aws (reflexivity) | `fe5ee38` | `docs/decisions/` (ADR dir) | clean |
+| #3 | krypton (cross-owner) | `4aef49d` | `docs/decisions.md` file | clean |
+
+R5 resolver rows: cap-registry `2c69e2a`, krypton `4fa7710` (aws inline in `fe5ee38`).
+
+**Two findings folded into the standard (v1.2.1) + ADR-007 Addendum:**
+1. **R3 is shape-brittle** (surfaced in 2 of 3 pilots) — restated shape-agnostically; the
+   three projects produced three legitimate decision-ledger shapes. `docs/decisions.md`
+   added to `alt_paths`.
+2. **R2 assumed a single CLAUDE.md** (aws dual-CLAUDE pilot) — guidance added: exactly one
+   importer of `@AGENTS.md`, others are thin non-importing pointers.
+
+No regressions; the ratified model and R1–R10 semantics are unchanged.
 
 ---
 
@@ -136,4 +157,8 @@ After all three pilots, the contract is proven if:
 
 ## Next step
 
-Jesse approves or modifies pilot selection → Forge executes pilot 1 in its own session.
+~~Jesse approves or modifies pilot selection → Forge executes pilot 1 in its own session.~~
+**DONE.** All 3 pilots executed and pushed; findings folded into `project-layout.yaml`
+v1.2.1 (ADR-007 Addendum, 2026-05-25). The contract is live and pilot-proven across the
+standard. Remaining contract follow-ups (R7 ownership rubric, R3/R6 enforcement wiring,
+R8 PMO decision) are tracked separately in ADR-007's deferred list — not gated on this pilot.

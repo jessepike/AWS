@@ -5,6 +5,29 @@ stage: operate
 
 # Status: Agentic Work System
 
+## 2026-05-25 — Per-project contract pilot program COMPLETE + ADR-007 fold-in (R10)
+
+The R10 pilot program is **done**. All 3 pilots ran clean and are pushed:
+capabilities-registry (`de2cb06`), aws (`fe5ee38`), krypton (`4aef49d`); R5
+resolver rows published (`2c69e2a`, `4fa7710`, inline). Forge folded the proven
+findings into the standard and the decision ledger:
+
+- **ADR-007 amended** (`3522ea7`) with a post-pilot Addendum — R10 complete; records
+  the two clarifications, reconciles the v1.2.0 "deferred" drift (it had shipped), and
+  formally records the manager tool-boundary as **SOFT/monitored** (Phase 2b contingent),
+  resolving the trivial-change carve-out contradiction.
+- **`project-layout.yaml` → v1.2.1** (`3dff1f9`): (1) **R3 restated shape-agnostically** —
+  a decision ledger exists and is active, satisfied by root `decisions.md`,
+  `docs/decisions.md`, OR `docs/decisions/` (the 3 pilots produced all 3 shapes);
+  `docs/decisions.md` added to `alt_paths`. (2) **R2 multi-CLAUDE.md guidance** — when
+  >1 CLAUDE.md, exactly one imports `@AGENTS.md`, others are thin non-importing pointers.
+- **contract-pilot-plan.md → COMPLETE** with the outcome table.
+
+**Ratified model unchanged** — manager/operator, the 7 org decisions, and R1–R10
+semantics all stand. These were wording clarifications + drift reconciliation only.
+Conformance only broadened (krypton's `docs/decisions.md` now matches cleanly); no
+previously-conformant project regressed.
+
 ## 2026-05-25 — Per-project contract Pilot #3 (aws — reflexivity test)
 
 Forge applied the ADR-007 per-project contract to aws itself (the governance
