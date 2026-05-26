@@ -5,6 +5,23 @@ stage: operate
 
 # Status: Agentic Work System
 
+## Handoff — 2026-05-25
+**From:** Krypton (Opus) — org-model design + foundation session
+**To:** Krypton (fresh) — pilot execution
+**Context:** Agent org model ratified (ADR-007); Phase 1 + 2a landed + pushed; substrate-4 repos on GitHub private. Manager tool-boundary is SOFT/monitored, Phase 2b contingent. All trees clean, all session work pushed.
+**Next actions:**
+1. Confirm the 3 pilots (capabilities-registry → aws → krypton); run **pilot #1** — add AGENTS.md + contract conformance to capabilities-registry (dispatch headless Forge).
+2. Optional Forge: ADR-007 soft-constraint footnote + manager-overreach monitor hook.
+3. Remaining no-origin repos (knowledge-capture, sources, personal-wiki, clients/*, sandbox/*) — set remotes only after per-repo privacy/secret review.
+**Key files:**
+- `docs/active/agent-org-charter.md` (+ `.html`) — the ratified org model
+- `docs/decisions/ADR-007*` — model + 7 decisions + contract R1–R10
+- `docs/active/contract-pilot-plan.md` — pilot sequence
+- `~/.claude/state/krypton.md` — Krypton continuity state
+**Model recommendation:** `claude-krypton` (Opus) to orchestrate + dispatch headless Forge for the pilot. **Fresh, not fork** — this session's context is exhausted; artifacts carry it.
+
+---
+
 ## 2026-05-25 — Agent Org Model ratified + foundation landed
 
 **Shipped (all committed; aws + pike-agents + capabilities-registry + krypton + nerve-center pushed to remote):**
