@@ -5,6 +5,18 @@ stage: operate
 
 # Status: Agentic Work System
 
+## 2026-05-25 — Per-project contract Pilot #3 (aws — reflexivity test)
+
+Forge applied the ADR-007 per-project contract to aws itself (the governance
+project consuming its own standard). Shipped: `AGENTS.md` (canonical context
+source), both `CLAUDE.md` files converted to `owner: forge` + thin overlays,
+R5 resolver entry in `docs/active/portfolio-map.md`. Two interpretation calls
+(recorded in `AGENTS.md` § Contract conformance): (1) `docs/decisions/` satisfies
+R3 — no root `decisions.md` added; (2) dual `CLAUDE.md` resolved as root=importer,
+`.claude/`=non-importing pointer, to avoid double-loading `AGENTS.md`. Contract
+described aws cleanly; one MINOR brittleness flagged (R2 assumes a single
+`CLAUDE.md`). status.md was already fresh; no content refresh needed.
+
 ## Handoff — 2026-05-25
 **From:** Krypton (Opus) — org-model design + foundation session
 **To:** Krypton (fresh) — pilot execution

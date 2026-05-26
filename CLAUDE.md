@@ -1,22 +1,21 @@
-# aws
+---
+owner: forge
+---
 
-Meta-project governing the Agentic Work System — integration, governance standards, and component health across all shared tools.
+@AGENTS.md
 
-## Key Locations
+# Claude-specific notes
 
-- **Standards YAMLs:** `docs/standards/` (project-layout, claude-md, artifact-frontmatter, session-lifecycle)
-- **Active work:** `docs/active/`
-- **Decisions:** `docs/decisions/`
-- **Component registry:** `docs/component-registry.md`
-- **Architecture:** `docs/architecture.md`
-- **North Star / re-grounding source:** `docs/intent.md` — read here to re-ground; all active work should trace back to it (ADR-006)
+Canonical project context lives in `AGENTS.md` (imported above). Only
+Claude-specific rules belong here.
 
-## Project Constraints
-
-- Standards YAMLs are canonical — do not modify without explicit approval and an ADR entry
-- This is a governance/workflow project: it produces docs, standards, and coordination artifacts — not software
-- All 11 Forge-owned projects must conform to standards defined here
-
-## Workflow Notes
-
-Forge agent owns this project. Changes to standards flow through ADR process in `docs/decisions/`.
+- **Hard constraints:** see `.claude/rules/` (`archive.md`, `constraints.md`) —
+  archive-never-delete, no edits to `.claude/rules/` or `docs/intent.md` without
+  approval, confirm before destructive operations, read `docs/status.md` at
+  session start and update it at session end.
+- **Dev-system ownership:** aws is Forge-owned governance. Other agents are
+  read-only; route standards/spec/ADR changes through Forge
+  (`~/.claude/rules/dev-system-ownership.md`).
+- This root `CLAUDE.md` is the primary Claude overlay and the **importer** of
+  canonical context; `.claude/CLAUDE.md` is a thin pointer that does not re-import
+  (avoids double-loading `AGENTS.md`).
