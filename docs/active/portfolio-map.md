@@ -2,10 +2,10 @@
 type: "portfolio-map"
 title: "Portfolio Map — Agentic Work System Canonical Draft"
 scope: "Pike Holdings agentic portfolio"
-updated: "2026-05-25"
+updated: "2026-05-27"
 owner: "krypton"
 status: "draft-for-krypton-review"
-review-needed: "Krypton review on 2026-05-25"
+review-needed: "Krypton review — incl. 2026-05-27 R7 resolver/PM updates from Forge (held for Krypton push)"
 supersedes:
   - "/Users/jessepike/code/clients/risk/agf-applied/portfolio-map.md (2026-05-22 source; do not delete)"
   - "/Users/jessepike/code/_shared/aws/docs/active/portfolio-map.md (2026-05-24 filesystem sweep)"
@@ -74,16 +74,16 @@ Substrate is the knowledge, memory, context, capture, observability, and operati
 
 | Project | Path | What it is | ADF stage | PM / owning agent | Freshness | Working tree | AGF layer / classification | Current state |
 |---|---|---|---|---|---|---|---|---|
-| Knowledge Base | `/Users/jessepike/code/_shared/knowledge-base` | Optimized knowledge store | Operate | unknown; likely needed under KB owner | 2026-04-13 | clean | Substrate / P#19 | Operating substrate; ownership unclear. |
-| Knowledge Capture | `/Users/jessepike/code/_shared/knowledge-capture` | Capture pipeline into knowledge stores | Operate | unknown; likely KB-adjacent | 2026-04-11 | clean | Substrate / P#19 | Operating capture path; owner unclear. |
+| Knowledge Base | `/Users/jessepike/code/_shared/knowledge-base` | Optimized knowledge store | Operate | Krypton (ratified D, 2026-05-27) | 2026-04-13 | clean | Substrate / P#19 | Operating substrate. |
+| Knowledge Capture | `/Users/jessepike/code/_shared/knowledge-capture` | Capture pipeline into knowledge stores | Operate | Krypton (ratified D, 2026-05-27) | 2026-04-11 | clean | Substrate / P#19 | Operating capture path. |
 | Krypton | `/Users/jessepike/code/_shared/krypton` | Chief-of-staff runtime and gateway | Operate | Krypton | 2026-05-24 | clean | Agent Harness + Security + Governance | Operating runtime/gateway; personal-agent capabilities are priority #7. |
 | Link Triage Pipeline | `/Users/jessepike/code/_shared/link-triage-pipeline` | Link capture and triage pipeline | Develop | unknown | 2026-04-12 | clean | Substrate / P#19-adjacent | Operating or near-operating capture feeder; owner unclear. |
-| Memory | `/Users/jessepike/code/_shared/memory` | Durable memory layer | Deliver | unknown | 2026-04-12 | clean | Decision Intelligence substrate / P#12 + P#19 | Operating substrate; DI synthesis is not built. |
-| Nerve Center | `/Users/jessepike/code/_shared/nerve-center` | Observability and findings infrastructure | Operate | no PM; infrastructure consumed by Krypton | 2026-05-24 | clean | Observability | Operating; most mature AGF-applied layer. |
+| Memory | `/Users/jessepike/code/_shared/memory` | Durable memory layer | Deliver | Krypton (ratified D, 2026-05-27) | 2026-04-12 | clean | Decision Intelligence substrate / P#12 + P#19 | Operating substrate; DI synthesis is not built. |
+| Nerve Center | `/Users/jessepike/code/_shared/nerve-center` | Observability and findings infrastructure | Operate | CTO (ratified B, 2026-05-27) | 2026-05-24 | clean | Observability | Operating; most mature AGF-applied layer. |
 | Personal Wiki | `/Users/jessepike/code/_shared/personal-wiki` | Generated personal knowledge wiki | Operate | unknown; should fall under KB owner | 2026-04-08 | dirty | Substrate / P#19 | May be live but not operationally used; puntable P1/P2. |
-| Pike Dashboard | `/Users/jessepike/code/_shared/pike-dashboard` | Production cockpit for local services | Operate | unknown | 2026-05-24 | clean | Observability / operator cockpit | Operating; local service cockpit. |
-| Work Management Agent | `/Users/jessepike/code/_shared/wm-agent` | Work dispatcher into Krypton | unknown | Krypton?; PM model unresolved | 2026-05-10 | clean | Agent Harness / work spine | `wm-agent` itself was previously paused; broader WM/task spine is active priority work. |
-| Work Management | `/Users/jessepike/code/_shared/work-management` | Todoist-backed work management | Develop | CTO + Forge + Krypton + Jesse pieces; no single PM yet | 2026-04-12 | clean | Governance + work/task spine | Active priority project; defines capture, routing, visibility, auditability, and dashboard spine. |
+| Pike Dashboard | `/Users/jessepike/code/_shared/pike-dashboard` | Production cockpit for local services | Operate | CTO (ratified B, 2026-05-27) | 2026-05-24 | clean | Observability / operator cockpit | Operating; local service cockpit. |
+| Work Management Agent | `/Users/jessepike/code/_shared/wm-agent` | Work dispatcher into Krypton | unknown | Krypton (functional owner = wm-agent; PM follows WM ratified C) | 2026-05-10 | clean | Agent Harness / work spine | `wm-agent` itself was previously paused; broader WM/task spine is active priority work. |
+| Work Management | `/Users/jessepike/code/_shared/work-management` | Todoist-backed work management | Develop | Krypton (ratified C, 2026-05-27) | 2026-04-12 | clean | Governance + work/task spine | Active priority project; defines capture, routing, visibility, auditability, and dashboard spine. |
 | Personal Context | `/Users/jessepike/personal-context` | Durable personal context substrate | Operate | Jesse; agents propose only; PM not assigned | 2026-05-15 | dirty | Substrate / P#19 | Active, with Phase 1 threads not yet pulled together. |
 | Context Lifecycle Substrate | `/Users/jessepike/context` | Scoped context activation substrate | Operate / dogfood | unknown | 2026-05-10 | dirty | Explicit AGF productization arc / P#19 | Active but new; CLS router dogfood not yet implemented. |
 | Hermes Deploy | `/Users/jessepike/code/_shared/hermes-deploy` | Deprecated Hermes runtime deploy | deprecated | superseded by Krypton | unknown | clean | Legacy boundary/runtime | Deprecated; decommission after Krypton proves wired-channel workload. |
@@ -94,7 +94,7 @@ Operating-Methodology holds AWS/ADF, standards, capability registry, project gov
 
 | Project | Path | What it is | ADF stage | PM / owning agent | Freshness | Working tree | AGF layer / classification | Current state |
 |---|---|---|---|---|---|---|---|---|
-| AWS | `/Users/jessepike/code/_shared/aws` | Agentic work system governance | Operate | Krypton + Forge | 2026-05-24 | dirty | Governance / P6 | Active canonical operating map; governance refresh in flight. |
+| AWS | `/Users/jessepike/code/_shared/aws` | Agentic work system governance | Operate | Krypton (owner); Forge (write_authority) — ratified F, 2026-05-27 | 2026-05-24 | dirty | Governance / P6 | Active canonical operating map; governance refresh in flight. |
 | ADF | `/Users/jessepike/code/_shared/adf` | ADF specs symlink | unknown | Forge? | 2026-05-24 | dirty via AWS | Governance / P6 | Symlink alias; cleanup pending through Forge. |
 | Agentic Work System Alias | `/Users/jessepike/code/_shared/agentic-work-system` | Old AWS symlink alias | unknown | Forge | 2026-05-24 | dirty via AWS | Governance / migration artifact | Temporary alias; cleanup pending after token reset window. |
 | Capabilities Registry | `/Users/jessepike/code/_shared/capabilities-registry` | Skills/plugins/tool registry | Develop | Forge; domain agents own entries | 2026-05-23 | clean | Substrate / P#19 capabilities layer | Operating registry; one of the core substrate components to keep healthy. |
@@ -118,7 +118,7 @@ Output projects consume the AGF-governed stack. The `agf-applied` map classifies
 
 | Project | Path | What it is | ADF stage | PM / owning agent | Freshness | Working tree | AGF layer / classification | Current state |
 |---|---|---|---|---|---|---|---|---|
-| Diagram Forge | `/Users/jessepike/code/_shared/diagram-forge` | Shipped diagram MCP product | Develop -> approaching OSS launch | Forge + CTO? | 2026-05-06 | dirty | Output consumer; cross-cutting tooling | Real workstream but not core right now; P1 launch cleanup. |
+| Diagram Forge | `/Users/jessepike/code/_shared/diagram-forge` | Shipped diagram MCP product | Develop -> approaching OSS launch | Forge (ratified E, 2026-05-27) | 2026-05-06 | dirty | Output consumer; cross-cutting tooling | Real workstream but not core right now; P1 launch cleanup. |
 
 ### AGF layer summary
 
@@ -139,13 +139,16 @@ stage, canonical-context-file, status-file, portfolio-row, freshness-threshold).
 Seeded by the per-project contract pilots; added here as projects adopt the
 contract. (Forge addition, 2026-05-25 — Pilots 1, 2 & 3 (capabilities-registry, aws, krypton);
 pending Krypton review.)
-Note: the R5 schema has no co-owner field; aws is Forge+Krypton co-owned (primary
-owner = forge, Krypton coordinates), recorded in prose in `aws/AGENTS.md`.
+Note: the R5 schema has no co-owner field. Per ownership-rubric decision F
+(ratified 2026-05-27), **aws owner = krypton, write_authority = forge** — single
+owner field + write-authority axis. (This inverts the earlier "primary owner =
+forge, Krypton coordinates" prose still in `aws/AGENTS.md`, which is flagged for
+reconciliation.)
 
 | Project | path | owner | stage | canonical-context-file | status-file | portfolio-row | freshness-threshold |
 |---|---|---|---|---|---|---|---|
 | Capabilities Registry | `/Users/jessepike/code/_shared/capabilities-registry` | forge | Develop | `AGENTS.md` | `status.md` | Part A → Layer 2 (Operating-Methodology) → "Capabilities Registry" | 30 days |
-| AWS (governance) | `/Users/jessepike/code/_shared/aws` | forge | Operate | `AGENTS.md` | `docs/status.md` | Part A → Layer 2 (Operating-Methodology) → "AWS" | 30 days |
+| AWS (governance) | `/Users/jessepike/code/_shared/aws` | krypton (write_authority: forge) | Operate | `AGENTS.md` | `docs/status.md` | Part A → Layer 2 (Operating-Methodology) → "AWS" | 30 days |
 | Krypton | `/Users/jessepike/code/_shared/krypton` | krypton | Operate | `AGENTS.md` | `status.md` | Part A → Layer 1 (Substrate) → "Krypton" | 30 days |
 
 ## Part B — Confirmed workstreams
@@ -169,12 +172,13 @@ These are the real workstreams from Jesse's confirmed brief. "Owner" means curre
 
 ### Projects still lacking assigned PM/owner
 
-- Knowledge Base
-- Knowledge Capture
+Reduced 2026-05-27 by the ownership-rubric ratification — Knowledge Base,
+Knowledge Capture, Memory, and Work Management are now assigned to Krypton
+(decisions C/D); Nerve Center + Pike Dashboard to CTO (B); Diagram Forge to
+Forge (E). Remaining unassigned:
+
 - Link Triage Pipeline
-- Memory
 - Personal Wiki / wiki operationalization
-- Work Management / WM spine single PM
 - Personal Context Phase 1
 - Context Lifecycle Substrate / CLS dogfood
 - Agent Exec / pike-agents structural cleanup
