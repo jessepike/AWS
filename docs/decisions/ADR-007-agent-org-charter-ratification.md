@@ -261,3 +261,43 @@ downgraded to CONTINGENT** — revisited only if monitoring shows over-implement
 This resolves the apparent contradiction with the trivial-change carve-out (§A):
 the carve-out is the floor of allowed direct edits; the soft boundary is the
 default-to-delegate posture above it; **neither requires stripping tools.**
+
+## Addendum — 2026-05-27 (R7 ratified · R8 decided)
+
+Jesse ratified the **ownership rubric (R7)** and the **PMO question (R8)** via
+agent-canvas on 2026-05-27 (interaction `ownership-rubric-r7-2026-05-27-b`). All
+seven decisions returned on the recommended path. This closes the two largest
+remaining "Deferred to later Forge phases" items from the Consequences section.
+
+**R7 — ownership rubric ratified.** `docs/active/ownership-rubric.md` moves
+`draft-for-jesse-krypton-review → ratified`. The PM **model** is ratified as
+**distributed PM by rubric** (no universal owner): Krypton owns the
+operating-context / intelligence substrate, Forge owns dev-system / tooling, CTO
+owns infrastructure-architecture surfaces. The previously-open assignment calls
+are settled: **Nerve Center + Pike Dashboard → CTO**; **Work Management → Krypton**;
+**Knowledge Base + Memory + Knowledge Capture → Krypton**; **Diagram Forge → Forge**;
+**AWS → owner Krypton, write_authority Forge** (single-owner field + write-authority
+axis — fits the 7-field R5 schema with no schema change). `Krypton → personal-context`
+remains the locked assignment from R7. Owners-of-record now live in the rubric +
+the portfolio-map **resolver index** (R5); per-project `owner:` frontmatter is
+**not** stamped by this ratification — it rolls into individual repos as each
+adopts the per-project contract (R10 rollout, a separate effort).
+
+**R8 — PMO decided = B + A.** PMO is a **function held inside Krypton** (portfolio
+owner index, freshness cadence, cross-owner review); project PMs stay **distributed
+per rubric**. **No new PMO agent**, no universal project owner. This is the "PMO-agent
+vs PM-as-function vs Krypton-as-PMO" decision the original Consequences gated to
+"after the rubric."
+
+**Resolver / drift note (flagged, not changed here).** Decision F sets the AWS
+R5 owner-of-record to **krypton** (write_authority forge). The portfolio-map
+resolver row + prose note are updated to match (held for Krypton review). The
+`aws/AGENTS.md` ownership prose still reads "Resolver `owner` = forge" (primary
+owner forge, Krypton coordinates) — that line now **inverts** under decision F and
+should be reconciled to "owner = krypton, write_authority = forge." Flagged for
+backlog rather than changed in this run, per the ratification's scope guard (no
+per-repo `owner:` edits here).
+
+**Unchanged.** The manager/operator model (§A), the seven org decisions (§B), and
+the R1–R10 contract semantics all stand. This addendum records two ratifications
+and one flagged drift item — no new decisions and no standard edit.
