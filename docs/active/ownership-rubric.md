@@ -1,9 +1,11 @@
 ---
 type: "ownership-rubric"
 title: "Project Ownership Rubric — Agentic Work System"
-status: "draft-for-jesse-krypton-review"
-updated: "2026-05-25"
-owner: "unassigned"
+status: "ratified"
+updated: "2026-05-27"
+owner: "krypton"
+write_authority: "forge"
+ratified: "2026-05-27 — Jesse via agent-canvas (interaction ownership-rubric-r7-2026-05-27-b)"
 reviewers:
   - "jesse"
   - "krypton"
@@ -14,9 +16,25 @@ source_context:
   - "/Users/jessepike/code/_shared/agent-exec/"
 ---
 
-# Project Ownership Rubric — Draft
+# Project Ownership Rubric
 
-Draft for Jesse + Krypton review. This is not a decision record and should not be stamped into project files until reviewed.
+**Status: RATIFIED 2026-05-27** (Jesse, via agent-canvas — interaction `ownership-rubric-r7-2026-05-27-b`). This document is now the owner-of-record rationale for the AWS portfolio PM model. See the **Ratified** section directly below for the authoritative decisions; the rubric, tie-breaks, and applied-assignment analysis that follow are the *derivation* that produced them. Per-project `owner:` frontmatter is **not** stamped by this ratification — owner-of-record lives in this rubric + the portfolio-map resolver index, and rolls into individual repos as each adopts the per-project contract (ADR-007 R10).
+
+## Ratified — 2026-05-27
+
+Jesse ratified the ownership model and the open assignment calls via agent-canvas on 2026-05-27. All seven decisions came back on the RECOMMENDED path:
+
+| # | Decision | Ratified outcome |
+|---|----------|------------------|
+| MODEL | PM model | **APPROVED — distributed PM by rubric.** No universal owner. Krypton = operating-context / intelligence substrate; Forge = dev-system / tooling; CTO = infrastructure-architecture surfaces. |
+| A / PMO | PMO shape (settles ADR-007 R8) | **B + A — PMO is a FUNCTION held inside Krypton** (portfolio owner index, freshness cadence, cross-owner review). Project PMs stay distributed per rubric. **No new PMO agent.** |
+| B | Nerve Center + Pike Dashboard | **CTO** (both) — observability/infrastructure architecture is the binding concern. |
+| C | Work Management | **Krypton** (now). |
+| D | Knowledge Base + Memory + Knowledge Capture | **Krypton** (now). |
+| E | Diagram Forge | **Forge.** |
+| F | AWS owner field | **single owner = Krypton, write_authority = Forge** — fits the current 7-field R5 resolver schema (no schema change). |
+
+**Effect on the Applied Assignment below.** The ratified picks collapse the corresponding "option:" hedges to a single owner: **Nerve Center → CTO**, **Pike Dashboard → CTO**, **Work Management → Krypton**, **Knowledge Base / Memory / Knowledge Capture → Krypton**, **Diagram Forge → Forge**, **AWS → owner Krypton + write_authority Forge**. Rows **not** named in the seven decisions (e.g. Personal Wiki, Link Triage Pipeline, Context Lifecycle Substrate, Hermes Deploy, Work Management Agent) remain rubric-*proposed* and are confirmed as each project adopts the per-project contract; the MODEL decision ratifies the distributed-by-rubric framework that governs them, not each individual seat. `Krypton → Personal Context` remains locked (ADR-007 R7).
 
 ## Purpose
 
@@ -87,16 +105,16 @@ Scoring notes:
 
 | Project | Proposed PM/owner | Confidence | Rubric rationale |
 |---|---|---:|---|
-| Knowledge Base | Krypton, option: CTO | Medium | Krypton has the strongest consumer dependency because briefings, focus, digest, and status synthesis depend on KB; CTO has technical domain fit for KB architecture, but not the operating-state consumer pull. |
-| Knowledge Capture | Krypton, option: CTO | Medium | Capture is a feeder into Krypton's intelligence layer; CTO is plausible for pipeline architecture, but ongoing PM should sit with the agent that needs captured signal to stay useful. |
+| Knowledge Base | Krypton | Ratified (D) | Krypton has the strongest consumer dependency because briefings, focus, digest, and status synthesis depend on KB; CTO has technical domain fit for KB architecture, but not the operating-state consumer pull. |
+| Knowledge Capture | Krypton | Ratified (D) | Capture is a feeder into Krypton's intelligence layer; CTO is plausible for pipeline architecture, but ongoing PM should sit with the agent that needs captured signal to stay useful. |
 | Krypton | Krypton | High | Self-owned chief-of-staff runtime; domain fit and consumer dependency both max out. |
 | Link Triage Pipeline | Krypton, option: CMO | Medium | The pipeline feeds attention and knowledge routing, so Krypton wins consumer dependency; CMO becomes plausible if the pipeline is reframed as market/content intelligence rather than operating context. |
-| Memory | Krypton, option: CTO | Medium | Krypton consumes Memory for cross-session continuity and synthesis; CTO is a strong architecture owner for the memory layer, but not the best operating PM unless the work is primarily redesign. |
-| Nerve Center | CTO, option: Krypton | Low-Medium | CTO fits observability architecture and operational failure modes; Krypton consumes findings and status. If NC becomes primarily the portfolio "what matters" feed, Krypton should own; if it remains observability infrastructure, CTO should own. |
+| Memory | Krypton | Ratified (D) | Krypton consumes Memory for cross-session continuity and synthesis; CTO is a strong architecture owner for the memory layer, but not the best operating PM unless the work is primarily redesign. |
+| Nerve Center | CTO | Ratified (B) | CTO fits observability architecture and operational failure modes; Krypton consumes findings and status. Ratified to CTO: the binding concern is observability infrastructure, not portfolio synthesis. |
 | Personal Wiki | Krypton, option: CMO | Low-Medium | Wiki is personal/knowledge synthesis substrate, so Krypton is the natural consumer; CMO only fits if the wiki becomes a publishing/narrative surface. |
-| Pike Dashboard | CTO, option: Krypton | Low-Medium | Dashboard is an operator cockpit and observability surface; CTO fits system architecture, Krypton fits synthesis consumption. Decide based on whether it is a technical cockpit or Jesse-facing command surface. |
+| Pike Dashboard | CTO | Ratified (B) | Dashboard is an operator cockpit and observability surface; CTO fits system architecture, Krypton fits synthesis consumption. Ratified to CTO alongside Nerve Center. |
 | Work Management Agent | Krypton, option: CTO | Medium | The agent spec says wm-agent is deterministic workflow state while Krypton owns reasoning and composition; Krypton is the strongest consumer, CTO is plausible for execution-spine architecture. |
-| Work Management | Krypton, option: CTO | Low-Medium | Active WM spine exists to preserve cross-project continuity for Krypton/Jesse; Krypton wins coordination and consumer dependency, CTO wins architecture. This is a real tie if the next phase is mostly system design. |
+| Work Management | Krypton | Ratified (C) | Active WM spine exists to preserve cross-project continuity for Krypton/Jesse; Krypton wins coordination and consumer dependency, CTO wins architecture. Ratified to Krypton now. |
 | Personal Context | Krypton | Locked | Locked by Jesse. Also matches personal-agent context, synthesis, and chief-of-staff continuity. |
 | Context Lifecycle Substrate | Krypton, option: CTO | Medium | CLS activation/cache/audit exists to make Krypton context-aware; CTO is plausible for substrate architecture, but Krypton has higher consumer dependency. |
 | Hermes Deploy | Krypton | Medium | Deprecated runtime is superseded by Krypton, so ownership is decommissioning/transition under the successor system rather than new technical build. |
@@ -105,7 +123,7 @@ Scoring notes:
 
 | Project | Proposed PM/owner | Confidence | Rubric rationale |
 |---|---|---:|---|
-| AWS | Krypton + Forge split; proposed PM: Krypton, write authority: Forge | Medium | AWS is coordination/governance state consumed by Krypton, while updates to standards, specs, and dev-system surfaces route through Forge. If one field is required, Krypton owns direction and Forge owns implementation authority. |
+| AWS | owner: Krypton, write_authority: Forge | Ratified (F) | AWS is coordination/governance state consumed by Krypton, while updates to standards, specs, and dev-system surfaces route through Forge. Ratified to single owner Krypton + write_authority Forge — fits the 7-field R5 schema with no schema change. |
 | ADF | Forge, option: CTO | Medium | ADF specs and project-layout rules are Forge's charter; CTO is advisory for architectural coherence but not the best PM for spec maintenance. |
 | Agentic Work System Alias | Forge | High | Symlink/migration artifact inside the dev-system/governance surface; write-authority and domain fit both point to Forge. |
 | Capabilities Registry | Forge | High | Explicit Forge domain: capabilities registry, skills/tools catalog, deployment and discoverability. Domain fit and write authority both max out. |
@@ -125,7 +143,7 @@ Scoring notes:
 
 | Project | Proposed PM/owner | Confidence | Rubric rationale |
 |---|---|---:|---|
-| Diagram Forge | Forge, option: CTO or CPO | Low-Medium | As an MCP/plugin/tooling product, Forge has the strongest write-authority and tooling fit; CTO is plausible for architecture/productization quality; CPO becomes relevant only if OSS launch/product strategy is the binding work. |
+| Diagram Forge | Forge | Ratified (E) | As an MCP/plugin/tooling product, Forge has the strongest write-authority and tooling fit; CTO is plausible for architecture/productization quality; CPO becomes relevant only if OSS launch/product strategy is the binding work. Ratified to Forge. |
 
 ## Assignment Spread
 
@@ -162,12 +180,14 @@ Realistic options:
 | C. New PMO agent | PMO owns owner index, review cadence, stale-status sweeps, and escalation, while domain agents own project direction. | Clear governance role if ownership audits become heavy. | No current roster seat; risks becoming a coordination layer that duplicates Krypton without domain authority. |
 | D. PMO owns all projects | One agent is operating PM for every system project. | Simple on paper. | Rubric evidence argues against it: dev-system write authority, technical architecture ownership, and personal-context/Krypton continuity pull in different directions. |
 
-Draft recommendation for review: **Option B first, Option A at the project level.** Treat PMO as a Krypton-held portfolio function, not a new PM agent and not a universal project owner. Revisit a dedicated PMO only if the owner index, freshness cadence, and escalation workflow become too heavy for Krypton.
+**RATIFIED (decision A, 2026-05-27): Option B + Option A.** PMO is a **function held inside Krypton** (portfolio owner index, freshness cadence, cross-owner review); project PMs stay **distributed per rubric**. No new PMO agent, no universal project owner. This also settles ADR-007 R8. Revisit a dedicated PMO only if the owner index, freshness cadence, and escalation workflow become too heavy for Krypton.
 
-## Open Decisions
+## Open Decisions — RESOLVED 2026-05-27
 
-1. Does Jesse want `Nerve Center` and `Pike Dashboard` owned by CTO because they are observability infrastructure, or Krypton because they are consumed as command/synthesis surfaces?
-2. Does `Work Management` become Krypton-owned because its purpose is continuity, or CTO-owned during the architecture-heavy rebuild phase with transfer to Krypton at Operate?
-3. Should `Knowledge Base`, `Memory`, and `Knowledge Capture` be grouped under Krypton now, or temporarily CTO-owned until substrate architecture is stabilized?
-4. Does `Diagram Forge` currently need Forge ownership for plugin/tooling launch cleanup, or CPO/CTO ownership for OSS product launch strategy?
-5. Should AWS owner be recorded as one field (`Krypton`) plus `write_authority: Forge`, or as a split owner field (`Krypton + Forge`) until the standard supports separate axes?
+All five questions below were ratified by Jesse via agent-canvas on 2026-05-27. See the **Ratified** section at the top for the authoritative table; resolutions summarized here:
+
+1. ~~Nerve Center / Pike Dashboard — CTO or Krypton?~~ → **CTO (both)** — decision B. Observability infrastructure is the binding concern.
+2. ~~Work Management — Krypton or CTO during rebuild?~~ → **Krypton (now)** — decision C.
+3. ~~Knowledge Base / Memory / Knowledge Capture — Krypton now or CTO until stable?~~ → **Krypton (now)** — decision D.
+4. ~~Diagram Forge — Forge or CPO/CTO?~~ → **Forge** — decision E.
+5. ~~AWS owner — one field or split?~~ → **single owner = Krypton, write_authority = Forge** — decision F. Fits the 7-field R5 schema; no schema change.
