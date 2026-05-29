@@ -46,6 +46,16 @@
 - [ ] v2-harness forces Opus on all agents regardless of frontmatter `model:` (jobs-agent runs Opus) — P2 Forge harness
 - [~] Phase 2b (manager tool-removal) — **CONTINGENT**, not scheduled; only if monitoring shows over-implementation
 
+## R7 / Canvas — 2026-05-27
+
+- [x] **ADR-007 R7 — ownership rubric ratified** via canvas decision-set; all 7 decisions on recommended path (`c0d5621` rubric · `7ce983f` ADR-007 Addendum · `aebd86f` portfolio-map)
+- [x] **ADR-007 R8 — PMO decision settled** — B+A (Krypton-held function; no new agent). Recorded in the R7 Addendum.
+- [x] **Agent-Canvas Collaboration Convention encoded** — `~/.claude/rules/agent-canvas-collab.md` + lean global CLAUDE.md pointer + shared HTML template (`bb3f7d7`) + `~/.codex/AGENTS.md` cross-runtime pointer. Dogfooded on its own proposal (2026-05-26).
+- [x] Phantom-shim/overclaim caught from crashed Forge run; rule rewritten to truth (`f78b83a`): *"retry once, then fall back; no auto-reconnect layer."*
+- [ ] **FORGE-P2-CANVAS-HARDEN** — agent-canvas MCP auto-reconnect + `initialize` replay shim (filed in `~/.claude/state/forge-backlog.md`). Owner: **Tools**. Includes root-cause diagnosis of the 3 drops in 2026-05-27 session. — P2
+- [ ] **FORGE-P2-CANVAS-POLLER** — unattended-pickup poller (jobs-agent/NC surfaces pending canvas responses when no manager is live). — P3
+- [ ] **ADR-007 R3/R6 enforcement wiring** — audit project-doctor / ADF-audit / NC freshness jobs; wire owner-field + decision-ledger + staleness coverage gaps. Independent / ready to build (resolver entries exist to read). — P2
+
 ## Active Items
 
 | ID | Item | Type | Pri | Why |

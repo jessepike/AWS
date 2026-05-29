@@ -1,9 +1,23 @@
 ---
-updated: 2026-05-25
+updated: 2026-05-27
 stage: operate
 ---
 
 # Status: Agentic Work System
+
+## 2026-05-27 — R7 ratified + Agent-Canvas convention live
+
+Two parallel arcs closed in one session.
+
+**Agent-Canvas Collaboration Convention** — encoded and live for every Claude-side session. Review-gated artifacts (ADRs, designs, plans, ratifications) go to agent-canvas as HTML + decision-set; agent ends turn after dispatch; manager picks up `get_user_messages`/`get_comments` on next invocation (headless operators never block). Ships as `~/.claude/rules/agent-canvas-collab.md` (auto-loads) + lean "Review Surfaces" pointer in global `CLAUDE.md` + shared HTML template `capabilities-registry/templates/agent-canvas-review.html` (`bb3f7d7`) + cross-runtime awareness pointer in `~/.codex/AGENTS.md`. Dogfooded on its own proposal as the first artifact through the pipe (Jesse-approved via decision-set 2026-05-26).
+
+**ADR-007 R7 ratified** via canvas decision-set (`ownership-rubric-r7-2026-05-27-b`). All 7 decisions on the recommended path: distributed-PM model approved (Krypton = operating substrate, Forge = dev-system, CTO = infra); **PMO = B+A** (Krypton-held function, no new agent → also settles R8); **NC + Pike Dashboard → CTO**; **Work Management → Krypton**; **KB + Memory + Knowledge Capture → Krypton**; **Diagram Forge → Forge**; **AWS owner = Krypton + write_authority = Forge**. Recorded: rubric `ratified` (`c0d5621`), ADR-007 second Addendum (`7ce983f`), portfolio-map resolver + Part A rows updated (`aebd86f`, Krypton-pushed per cross-owner protocol).
+
+**Self-inflicted wrinkle — caught + corrected.** The R7 Forge run hit `API ConnectionRefused` at the end (after the aws commits landed). Forge had also drafted a pike-agents CHANGELOG entry asserting that a canvas-MCP self-healing shim shipped — verification showed no shim file was ever modified (phantom claim), and the live rule briefly leaned on the false premise. Corrective Forge run (`f78b83a`) rewrote the rule's fallback to truth (*"retry once, then fall back; there is currently no auto-reconnect layer — nothing self-heals a dropped connection"*) and backlogged the real shim work as **FORGE-P2-CANVAS-HARDEN** (owner Tools). Trees clean.
+
+**Carrying:** canvas-MCP reliability diagnosis → Tools (3 drops in-session); shim auto-reconnect → FORGE-P2-CANVAS-HARDEN; R3/R6 enforcement wiring still independent / ready to build; Phase 2b parked; v2-harness model-forcing (P2) still open.
+
+---
 
 ## 2026-05-25 — Per-project contract pilot program COMPLETE + ADR-007 fold-in (R10)
 
