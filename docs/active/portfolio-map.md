@@ -1,11 +1,11 @@
 ---
 type: "portfolio-map"
-title: "Portfolio Map — Agentic Work System Canonical Draft"
+title: "Portfolio Map — Agentic Work System Canonical"
 scope: "Pike Holdings agentic portfolio"
-updated: "2026-05-27"
+updated: "2026-05-30"
 owner: "krypton"
-status: "draft-for-krypton-review"
-review-needed: "Krypton review — incl. 2026-05-27 R7 resolver/PM updates from Forge (held for Krypton push)"
+status: "accepted"
+reviewed: "Krypton accepted 2026-05-30 — R7 PM/resolver updates folded + confirmed; ADR-005 (AGF alignment) ratified; genuinely-open items isolated in § Still open for Jesse."
 supersedes:
   - "/Users/jessepike/code/clients/risk/agf-applied/portfolio-map.md (2026-05-22 source; do not delete)"
   - "/Users/jessepike/code/_shared/aws/docs/active/portfolio-map.md (2026-05-24 filesystem sweep)"
@@ -26,7 +26,9 @@ This is the reconciled canonical draft for the agentic portfolio map. It merges:
 
 Jesse's workstream brief wins for owners, active/in-flight status, workstream reality, and priority stack. Filesystem state from the 2026-05-24 sweep wins for freshness, working-tree state, and project rows. The 2026-05-22 `agf-applied` map remains valuable source material but is superseded by this active map for portfolio operating use.
 
-## Reconciliation notes — Krypton review needed
+## Reconciliation notes — Krypton review (ACCEPTED 2026-05-30)
+
+> **Krypton review disposition — 2026-05-30.** Accepted as the canonical portfolio map (out of draft limbo). The 2026-05-27 R7 resolver/PM updates are folded and confirmed: Krypton owns WM / KB / Memory / Knowledge-Capture; CTO owns NC / Pike-Dashboard; Forge owns Diagram-Forge; AWS owner = Krypton, write_authority = Forge. **ADR-005 (AGF alignment) ratified 2026-05-30** — so portfolio-gap #6 ("AGF alignment is mostly implicit") is now ratified doctrine, and the AGF-layer classification below is the live discipline (core-first scope: CTO/Krypton/Forge first, then expand). The owner conflicts listed below are RESOLVED by R7 (kept for provenance). Genuinely-open items — unowned PMs on non-core substrate, and the two AGF catalog-layer classification calls — are isolated under "§ Still open for Jesse"; they need Jesse or a dedicated /agf-think, not a map edit. First-read canonical; update in place on material change.
 
 ### What was merged
 
@@ -47,7 +49,7 @@ Jesse's workstream brief wins for owners, active/in-flight status, workstream re
 - **Symlink cleanup timing conflict:** inferred next move was immediate verification/removal; Jesse clarified Forge should do it, but after 11pm Sunday 2026-05-24 when weekly token allotment resets.
 - **PM model conflict:** inferred owners are inconsistent across projects; Jesse clarified each project needs a single PM-style lead, and several projects do not yet have one.
 
-### Unresolved / uncertain
+### Still open for Jesse (genuinely unresolved — need Jesse or a dedicated /agf-think, not a map edit)
 
 - Several substrate projects still lack a confirmed PM/owner: Knowledge Base, Knowledge Capture, Link Triage Pipeline, Memory, Personal Wiki, Work Management, Personal Context, Context Lifecycle Substrate.
 - Context substrate reconciliation lacks a final owner. Jesse suggested the owner might be declared in a repo-root artifact such as `CLAUDE.md`, but this is not settled.
@@ -212,9 +214,11 @@ Forge (E). Remaining unassigned:
 3. **Substrate is fragmented.** `personal-context`, `context`, KB, Memory, Wiki, Krypton, and capture paths need a declared boundary model.
 4. **Dirty-tree drift clusters around strategic areas.** AWS, agent-exec, diagram-forge, personal-wiki, personal-context, and context were dirty in the sweep.
 5. **Symlink aliases remain unresolved migration debt.** `_shared/adf` and `_shared/agentic-work-system` still exist as aliases.
-6. **AGF alignment is mostly implicit.** AWS and CLS are explicit; many other rows need documented alignment or intentional exclusion.
+6. **AGF alignment — now ratified doctrine (ADR-005, 2026-05-30), no longer implicit.** Each AWS component classifies against an AGF layer or files a gap; scope is core-first (CTO/Krypton/Forge) per the ratification. Remaining rows get documented alignment/exclusion as the discipline expands outward. The logged-boundary evidence schema (8-field `agf` overlay) is the spine's logging contract once it ships.
 
 ## Next moves for Krypton review
+
+> **Status (2026-05-30 accept pass):** #1 done (validated + accepted). #4 addressed by R7 + per-project contract (AGENTS.md canonical). #6 KB owner = Krypton (R7 D); wiki-op P1/P2 still open. #5 symlink cleanup → Forge backlog. #2/#3 (operating sequence from the priority stack) fold into the spine build (B95). #7 (substrate as AGF catalog layer) + #8 (Agent Canvas app) remain open → § Still open for Jesse / dedicated /agf-think.
 
 1. Validate this reconciliation against Jesse's intent and correct owner/PM gaps.
 2. Decide which workstreams need immediate Forge routing versus Krypton-owned planning.
