@@ -135,6 +135,7 @@ Referenced from the AWS component registry but not contained.
 | Agent-exec | `_shared/agent-exec/` | Per-agent context (merging into pike-agents — backlogged) |
 | Nerve Center | `_shared/nerve-center/` | Job runtime on macbook2014 |
 | Personal Wiki | `_shared/personal-wiki/` | Synthesized read-side of KB |
+| Dotfiles Governance | `_shared/dotfiles-governance/` | Version-controlled canonical copies of global AI-agent governance files (`~/.claude/CLAUDE.md`, `~/.claude/rules/`, `settings.json`, hooks; `~/.codex/AGENTS.md`, `rules/`). Sync via `scripts/sync.sh`. Forge-owned. Agent defs stay canonical in pike-agents; not duplicated here. |
 
 ### Governed projects (live at various paths)
 
