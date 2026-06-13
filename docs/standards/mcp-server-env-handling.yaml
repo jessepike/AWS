@@ -145,15 +145,37 @@ compliance:
       All 6 requirements met. Belt-and-suspenders backup: User MCP entry
       in ~/.claude.json with `uv run --env-file` retained for redundancy.
   knowledge-base:
-    status: needs-audit
+    status: compliant-in-practice
+    as_of: 2026-06-13
+    audited_by: forge (FORGE-P2-13)
     notes: |
-      Per memory ID 6a983b5a: "AGRC reads via env var OPENAI_API_KEY at
-      runtime; never committed." Need to verify load_dotenv pattern is in
-      place. File a Forge backlog item.
+      Audit 2026-06-13. Reads OPENAI_API_KEY (kb_core/config.py:99) for
+      embeddings, so the pattern applies. Effective key resolution is correct:
+      load_dotenv() runs (config.py:80) BEFORE the key read (config.py:99), and
+      the walrus-if (`if openai_key := os.getenv(...)`) already treats an empty
+      string as unset, so CC's empty-string override cannot clobber a
+      config-file key. python-dotenv is an explicit dep (pyproject.toml).
+      Two letter-of-standard hardening follow-ups (minor, non-blocking),
+      routed to the kb owner:
+        1. Add a root .env.example documenting OPENAI_API_KEY (doc gap).
+        2. Optional: hoist load_dotenv() to package-init (kb_core/__init__.py)
+           so it runs regardless of entry path; add an explicit empty-string
+           strip for symmetry. Current in-function placement works because the
+           MCP server loads config at startup.
   memory:
-    status: needs-audit
+    status: not-applicable
+    as_of: 2026-06-13
+    audited_by: forge (FORGE-P2-13)
     notes: |
-      Local-only MCP. Should still follow the pattern for consistency.
+      Audit 2026-06-13. memory MCP reads NO environment variables and uses NO
+      API keys (src/memory_core/** has zero os.getenv/os.environ for secrets;
+      only a one-off PWD fallback in scripts/extract_episodes.py). Local SQLite
+      store. The standard exists to harden API-key resolution against CC's
+      empty-string env override — with no keys/env to resolve,
+      load_dotenv()/.env.example/python-dotenv would be cruft (anti-cruft
+      principle). Marked N/A, superseding the earlier "follow for consistency"
+      note. If memory ever adds a key/env dependency, the full pattern applies
+      and this flips to needs-audit.
 
 # === Related ============================================================
 references:
