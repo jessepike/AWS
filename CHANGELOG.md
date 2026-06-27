@@ -4,6 +4,30 @@ All notable changes to the Agentic Work System governance layer are
 logged here. Versioning follows semver. Every change routes through
 Forge and references an ADR.
 
+## [1.4.0] — 2026-06-27
+
+### Changed
+- ADR-005 `status: proposed → accepted`. Ratified 2026-05-31 by Krypton, Jesse,
+  and agf-architect via agent-canvas decision-set `adr005-ratify-2026-05-30`.
+- ADR-005 title amended (Amendment A): "the dogfooding reference implementation"
+  → "a dogfooding instance / first reference implementation." Applied to
+  frontmatter `title:`, H1 heading, and decision prose.
+- ADR-005 Decision amended (Amendment B): evidence scoped to the v1 schema record
+  shape, not "every log line."
+- ADR-005 Consequences amended (Amendment C): quarterly floor on
+  invalidation/improvement signals — "0 this quarter" must be explicit, not silence.
+- ADR-005 open ratification questions resolved in-ADR: Q1 (v1 evidence schema
+  embedded), Q2 (core-first scope), Q3 (AWS emits → agf-architect promotes),
+  Q4 (portfolio-map done). Emission authority recorded: invalidation is
+  agf-architect-confirmed-only.
+- `docs/overview.md` v1.3.0 → v1.4.0: reversed AGF inspiration-only doctrine to
+  the ratified stance — AGF alignment is ratified; AWS is a dogfooding instance /
+  first reference implementation of AGF. Updated TL;DR, AGF relationship block,
+  governance diagram, and critical-distinctions table.
+
+### Decision log
+- ADR-005: AGF alignment doctrine (accepted + 3 amendments + v1 evidence schema)
+
 ## [1.3.0] — 2026-05-22
 
 ### Added

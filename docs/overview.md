@@ -1,8 +1,8 @@
 ---
 type: "system-overview"
 description: "Canonical orientation doc for the Agentic Work System (AWS). Read this first to understand what AWS is, what it is NOT, how it relates to AGF / ADF / agent-harness, and where things live."
-version: "1.3.0"
-updated: "2026-05-25"
+version: "1.4.0"
+updated: "2026-06-27"
 owner: "forge"
 status: "canonical"
 audience: "all agents working in Jesse's environment"
@@ -18,7 +18,7 @@ audience: "all agents working in Jesse's environment"
 
 **AWS (Agentic Work System)** is Jesse's personal operating system for all daily work. It governs how every project is structured, what artifacts they must have, and how changes flow through the system. **Forge is the only agent with write authority on AWS components.**
 
-AWS is **NOT** the Agentic Governance Framework (AGF). AGF is a separate commercial client project at `~/code/clients/risk/AGF/`. AWS *borrows concepts* from AGF but is implemented at solo-dev velocity, not enterprise scale.
+AWS is **NOT** the Agentic Governance Framework (AGF). AGF is a separate commercial client project at `~/code/clients/risk/AGF/`. **AGF alignment is ratified (ADR-005): AWS is a dogfooding instance / first reference implementation of AGF**, operated at solo-dev velocity and single-operator topology.
 
 If you need to modify anything in AWS — standards, specs, skills, agent definitions, capabilities registry entries, governance sections of CLAUDE.md — delegate to Forge. Do not edit directly.
 
@@ -46,7 +46,7 @@ Four distinct things share adjacent vocabulary and sometimes get conflated. Keep
 - **Scope:** Playbook, community products (reference implementations, event schemas, policy-as-code libraries), thought leadership (white papers, conference talks, NIST RFI responses).
 - **Key concepts:** 19 agentic primitives, Rings Model (Execution / Verification / Governance / Learning), 3-level security architecture (Fabric / Governance / Intelligence), Trust Ladders, Belief Layer, zero trust overlay.
 - **Status:** Active client work. Has its own intent, lifecycle, and governance — itself a project governed by AWS like any other.
-- **Relationship to AWS:** **Not a parent, not an ancestor, not inherited.** AWS borrows selected conceptual patterns (rings, observability, governance gates) as inspiration only. AWS is solo-dev scale; AGF is enterprise scale. They share DNA, not implementation.
+- **Relationship to AWS:** **AGF alignment is ratified (ADR-005).** AWS is a dogfooding instance / first reference implementation of AGF — validating, invalidating, and improving AGF through real operational evidence. AGF is vendor-neutral; AWS is one topology (single-host, single-operator). They share DNA and now a deliberate alignment relationship.
 
 ### 3. ADF — Agentic Development Framework *(subsystem of AWS)*
 
@@ -81,7 +81,7 @@ AWS (personal operating system — governs daily work)
  ├──► grants pipeline
  └──► ...all other projects
 
-AWS *borrows concepts* from AGF (inspiration only).
+AWS is a dogfooding instance / first reference implementation of AGF (alignment ratified — ADR-005).
 AWS *contains* ADF (folded in as pure docs).
 AWS *governs* agent-harness like any other project.
 ```
@@ -90,7 +90,7 @@ Critical distinctions to avoid conflation:
 
 | ≠ | Because |
 |---|---|
-| AWS is NOT a subset of AGF | Independent systems with shared DNA |
+| AWS is NOT a subset of AGF | Distinct systems — AWS is a dogfooding instance of AGF; AGF is vendor-neutral |
 | AWS is NOT an enterprise framework | Solo-dev operating system |
 | AGF is NOT deployed in AWS | AGF is a project AWS governs |
 | ADF is NOT separate from AWS anymore | Folded in as `aws/docs/specs/adf/` |
@@ -311,6 +311,7 @@ This file is versioned in lockstep with AWS standards. Updates happen through Fo
 |---|---|---|
 | 1.0.0 | 2026-04-09 | Initial canonical overview created during AWS governance activation sprint. |
 | 1.3.0 | 2026-05-25 | De-drift sweep: corrected dead work-management "execution spine" claim (now marked dormant); removed absorbed Tools agent from agent counts (9→8). AGF doctrine language held for ADR-005 ratification. |
+| 1.4.0 | 2026-06-27 | Encode ratified ADR-005: reversed AGF inspiration-only doctrine → AGF alignment ratified; AWS is a dogfooding instance / first reference implementation of AGF. Updated TL;DR, AGF relationship, governance diagram, and distinctions table. |
 
 ---
 
