@@ -158,9 +158,16 @@ Append entries now. Format: '- YYYY-MM-DD: <content>'"
 
 ### 3.5 Async Classifier
 
-**Purpose:** Read hot buffer files, classify each entry, route to the correct cold store, remove processed entries.
+**Purpose:** Read hot buffer files, classify each entry, route to the correct cold store, and stamp a promotion receipt on each handled entry. Entries are never silently deleted — the receipt is the system's durable memory of what was handled.
 
-**Implementation:** Single-pass design. One `claude -p` call (NOT `--bare` — bare skips auth and loses MCP access) with MCP tool access. MCP access comes from **global settings** (`~/.claude.json`) where KB and Memory servers are configured as stdio transports — this means `claude -p` launched from any directory can reach both stores without per-project `.mcp.json`. The prompt includes all hot buffer contents and instructs the LLM to: (1) classify each entry, (2) call `send_to_kb` or `write_memory` directly for entries that should promote, (3) output a JSON manifest of actions taken. The script parses the manifest to know which entries were routed, then updates the hot buffer files and commits.
+> **Amended 2026-07-10 (F2 receipts redesign, owner-ratified).** The original removal-after-write semantics caused two incident classes: corruption of append-only `decisions.md` files (P0, closed by the append-only guard) and a re-promotion runaway once that guard removed the classifier's only memory of what it had handled. This section now describes the as-built receipt architecture (aws `fa4be87` / `df7ca3f` / `c44e6d0`).
+
+**Implementation:** Deterministic passes around a single classification-only LLM call, orchestrated by `scripts/il-classifier.sh`:
+
+1. **Collect (deterministic)** — `scripts/il-entries.py` parses hot buffers with a structural whole-entry grammar: an entry is a `^- ` line plus its indented continuation lines. Entries carrying a terminal marker (`[promoted:…]`, `[discarded:…]`, `[failed]`) are excluded from collection; `[pending:n]` entries are retried.
+2. **Classify (LLM)** — one `claude -p` Haiku call, classification ONLY: no MCP tools, no store writes. Output is a JSON manifest (`kb` / `memory` / `discard` / `keep` per entry).
+3. **Route (deterministic)** — `scripts/il-router.py` writes promotions through each store's own storage API (subprocess into the store's venv — no MCP, no LLM), captures the store id per entry, and stamps provenance: `captured_by="il-classifier:<project>"`, `writer_id="il-classifier"`, `writer_type="system"`.
+4. **Receipt (deterministic)** — `il-entries.py apply` rewrites each handled entry's first line in place with its marker. For append-only `decisions.md`, the receipt goes to a tracked `.il-receipts` sidecar (TSV: content sha256 / state / date) and the file itself is NEVER opened for writing.
 
 **Classifier output schema:**
 ```json
@@ -172,7 +179,7 @@ Append entries now. Format: '- YYYY-MM-DD: <content>'"
 ]
 ```
 
-The LLM both classifies AND routes in a single pass — no two-phase call. The JSON manifest is the receipt: the script uses it to know which lines to remove from which files.
+The LLM classifies only; routing is deterministic — a store write needs no judgment once classified (de-latent doctrine). The durable receipt is the in-place marker or sidecar row, not the manifest.
 
 **Trigger:** Two paths (belt + suspenders):
 1. **Session-end hook** — processes staging on clean session close. Fast path — captures from this session are routed before the next session starts. Uses `claude -p` with Haiku.
@@ -193,41 +200,43 @@ For each unprocessed entry in captures.md:
   2. Is this a fact, preference, or decision about how we work?
      → write_memory (namespace: global, type: inferred)
   3. Is this project-specific only?
-     → Leave in hot buffer (stays in captures.md for project context)
+     → Keep — left unmarked in the hot buffer (re-evaluated on later runs)
   4. Is this low-signal noise?
-     → Remove (don't promote)
+     → Mark [discarded:<date>] in place (never silently deleted; GC'd after 14 days)
 
-For each entry in lessons.md over the 15-entry cap:
+For each entry in lessons.md:
   1. Does it have cross-project value?
-     → send_to_kb, then remove from lessons.md
-  2. Is it project-specific only?
-     → Remove (already served its purpose as session context)
+     → Route to KB, then mark [promoted:kb:<id8>:<date>] in place
+  2. Project-specific or low-signal → keep, or [discarded:<date>] as above
+  (The 15-entry unmarked-trim is RETIRED — the machine never deletes an unmarked line.)
 
 For each entry in decisions.md:
   1. Route to Memory (type: decision, namespace: project or global)
-  2. Remove from decisions.md after successful write
+  2. Record the receipt in the tracked .il-receipts sidecar (sha256 / state / date).
+     decisions.md is append-only and is never written by the classifier.
 ```
 
-**Idempotency — snapshot-and-mark pattern:** To prevent duplicates and handle partial failures:
+**Idempotency — receipts, not removal:** To prevent duplicates and handle partial failures:
 
-1. **Snapshot:** Read all unmarked entries from hot buffer files into memory. This is the batch to process.
-2. **Route:** The single-pass `claude -p` call receives the snapshot contents, classifies each entry, and writes to KB/Memory via MCP tools. Returns JSON manifest of actions taken.
-3. **Mark done:** For each successfully routed entry (per manifest), remove it from the hot buffer file. For entries that failed to route (MCP error, timeout), mark them with a `[pending]` prefix: `- [pending] 2026-04-10: content`. Commit all file changes.
+1. **Collect:** Parse every entry without a terminal marker (plus `[pending:n]` retries) into the batch.
+2. **Route:** Classify via the manifest, then write each promotion deterministically via `il-router.py`, capturing the store id per entry.
+3. **Receipt:** Rewrite each handled entry's first line in place with its marker; decisions.md receipts go to the sidecar. Commit. Acceptance property: an immediate second run collects nothing and writes nothing.
+4. **GC:** Marked lines are deleted only once their marker date is ≥14 days old — marked-only, an unmarked line is never machine-deleted.
 
 **On next run:**
 - Unmarked entries: process normally (new entries since last run).
-- `[pending]` entries: retry routing. If retry succeeds, remove. If a `[pending]` entry fails 3 consecutive runs, mark it `[failed]` and skip — operator reviews manually.
-- `[failed]` entries: skip (operator must unmark to retry or delete).
+- `[pending:n]` entries: retry routing. If retry succeeds, mark `[promoted:…]`. After 3 consecutive failures, mark `[failed]` and skip — operator reviews manually.
+- `[failed]` / `[promoted:…]` / `[discarded:…]` entries: terminal — never re-collected.
 
 **Failure modes:**
 - Crash before route: Nothing changed on disk. Next run processes the same snapshot. No duplicates.
-- Crash during route (some entries written, some not): Manifest not returned. NO entries removed from file. Next run reprocesses all. Cold stores may receive duplicates for entries that succeeded before crash — acceptable at personal scale (KB and Memory dedup thresholds catch near-duplicates, and lint sweep detects exact duplicates weekly).
-- Crash after route, before mark: Same as above — reprocess, dedup catches it.
-- Clean completion: All routed entries removed, failed entries marked `[pending]`.
+- Crash during route (some entries written to stores, receipts not yet applied): next run re-collects the batch and the stores may receive duplicates for the entries that succeeded before the crash — same tolerance as before; the weekly lint sweep is the cleanup. The window is route-to-receipt, much smaller than the old route-to-removal window.
+- Crash after receipts committed: next run is a no-op for that batch.
+- Clean completion: all routed entries carry receipts; failures carry `[pending:n]`.
 
 **Concurrency control:** A per-project lockfile (`/tmp/il-classifier-{project-hash}.lock`) prevents the session-end hook and scheduled sweep from racing on the same project. If the lock exists, the second invocation skips that project (the first will handle it). Stale locks (>30 minutes old) are automatically removed.
 
-**Git commit scoping:** The classifier stages ONLY the hot buffer files it modified (`git add captures.md lessons.md decisions.md`) — never `git add .` or `git add -A`. If the index has unrelated staged work, the classifier's commit only includes its own files. If the hot buffer files themselves have merge conflicts (rare — only if two sessions modified the same file), the classifier logs an error and skips that project.
+**Git commit scoping:** The classifier stages ONLY the files it writes (`captures.md`, `lessons.md`, `.il-receipts`) — never `decisions.md` (once the script stops writing a file, any diff it carries is by construction someone else's work), and never `git add .` / `-A`. It commits only on the repo's default branch (resolution: `origin/HEAD` → local `main` → `master` → refuse) under the distinct identity `il-classifier <il-classifier@localhost>`. If the hot buffer files have merge conflicts, the classifier logs an error and skips that project.
 
 **KB duplicate caveat:** KB deduplicates by `canonical_url` only (designed for pipeline ingestion of web content). It has no content-similarity dedup on `send_to_kb`. If a crash recovery causes the classifier to re-route an entry, KB stores a duplicate. Memory has 0.92 similarity threshold dedup, so it's safer. Mitigation: the lint sweep (weekly) detects and flags KB duplicates. At personal scale, occasional crash-induced duplicates are tolerable — the lint sweep is the cleanup mechanism, not prevention.
 
