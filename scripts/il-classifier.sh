@@ -654,10 +654,16 @@ commit_hot_buffers() {
     return 1
   fi
 
-  status_output="$(git -C "$project_dir" status --porcelain -- captures.md lessons.md decisions.md)"
+  # decisions.md is deliberately absent below. This script no longer mutates it (see the
+  # append-only guard in apply_transformations), so ANY diff it carries is someone else's
+  # uncommitted work. Staging it here made `git commit --only -- decisions.md` sweep a human's
+  # in-flight edits into a machine-authored "chore(il)" commit -- observed as ciso-advisory
+  # 052cbd6, which captured that agent's hand-repair of damage this very script had caused.
+  # Never stage a file you did not write.
+  status_output="$(git -C "$project_dir" status --porcelain -- captures.md lessons.md)"
   [[ -n "$status_output" ]] || return 0
 
-  for path in captures.md lessons.md decisions.md; do
+  for path in captures.md lessons.md; do
     if [[ -e "${project_dir}/${path}" ]]; then
       staged_paths+=("$path")
     fi
