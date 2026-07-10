@@ -639,13 +639,62 @@ trim_lessons_file() {
   rm -f "$trim_file"
 }
 
+# Echo the repo's default branch name, or return 1 if it genuinely cannot be determined.
+# stderr is suppressed on the probes below because ABSENCE is an expected, explicitly-handled
+# outcome here (no remote / no origin/HEAD symref) -- not a diagnostic path being silenced.
+# Repos in this fleet differ: pike-agents uses `master`, most others use `main`. Never hardcode.
+resolve_default_branch() {
+  local project_dir="$1" ref b
+
+  # A remote can exist WITHOUT origin/HEAD being set (fresh clones, or `set-head` never run),
+  # so a failure here does not imply "no remote" -- fall through to the local probe.
+  if ref="$(git -C "$project_dir" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null)"; then
+    printf '%s\n' "${ref#origin/}"
+    return 0
+  fi
+
+  for b in main master; do
+    if git -C "$project_dir" show-ref --verify --quiet "refs/heads/${b}"; then
+      printf '%s\n' "$b"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 commit_hot_buffers() {
   local project_dir="$1"
   local staged_paths=()
   local path status_output
+  local default_branch current_branch
 
   if [[ ! -d "${project_dir}/.git" ]] && ! git -C "$project_dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     log "Not a git repository, skipping commit: $project_dir"
+    return 0
+  fi
+
+  # --- BRANCH GUARD (2026-07-10, P1 forge-20260709-il-classifier-decisions-corruption)
+  # This script is fired by a Claude Code `Stop` hook -- i.e. at the end of EVERY assistant turn,
+  # in whatever repo the session happens to be in. With no branch check it committed onto users'
+  # feature branches, and worse: a human reverted its damage at 18:36 and it re-applied the same
+  # change at 18:39, because the next turn ended. A human cannot win a revert war against a process
+  # triggered by their own keystrokes. Refuse to commit anywhere but the default branch, and leave
+  # the tree exactly as found. This check MUST stay above `git add` -- a skipped project must have
+  # zero git side effects.
+  if ! default_branch="$(resolve_default_branch "$project_dir")"; then
+    log "SKIP commit: cannot resolve default branch (no origin/HEAD symref, no local main/master), leaving tree untouched: $project_dir"
+    return 0
+  fi
+
+  current_branch="$(git -C "$project_dir" branch --show-current)"
+  if [[ -z "$current_branch" ]]; then
+    log "SKIP commit: detached HEAD, leaving tree untouched: $project_dir"
+    return 0
+  fi
+
+  if [[ "$current_branch" != "$default_branch" ]]; then
+    log "SKIP commit: HEAD is on '${current_branch}', not default branch '${default_branch}' — leaving tree untouched: $project_dir"
     return 0
   fi
 
@@ -677,7 +726,11 @@ commit_hot_buffers() {
     return 0
   fi
 
-  git -C "$project_dir" commit --only -m "$COMMIT_MESSAGE" -- "${staged_paths[@]}" >/dev/null 2>&1 || {
+  # Distinct committer identity: machine writes must be greppable in `git log`. Previously these
+  # commits were authored as the human, so nothing distinguished them. Per-invocation `-c` flags
+  # only -- never mutate the repo's stored git config.
+  git -C "$project_dir" -c user.name='il-classifier' -c user.email='il-classifier@localhost' \
+    commit --only -m "$COMMIT_MESSAGE" -- "${staged_paths[@]}" >/dev/null 2>&1 || {
     log "Commit failed for project: $project_dir"
     return 1
   }
