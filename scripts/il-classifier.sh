@@ -10,6 +10,18 @@ ROOTS=(
   "$HOME/code/clients"
 )
 
+# F2 (2026-07-10): entry collection/matching/marking/GC moved to il-entries.py
+# and the deterministic store-write pass moved to il-router.py, both alongside
+# this script. Both are pure-stdlib and take no dependency on this repo beyond
+# stdlib python3. See their module docstrings for the full design. This file
+# stays the orchestrator: lock, branch guard, git plumbing, and the PASS-1
+# classification prompt/call are unchanged in spirit from the pre-F2 script.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENTRIES_PY="${SCRIPT_DIR}/il-entries.py"
+ROUTER_PY="${SCRIPT_DIR}/il-router.py"
+PYTHON_BIN="python3"
+SIDECAR_FILE=".il-receipts"
+
 log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*" >&2
 }
@@ -27,77 +39,6 @@ cleanup_lock() {
 }
 
 trap cleanup_lock EXIT
-
-is_pending_line() {
-  [[ "$1" =~ ^-\ \[pending(:[0-9]+)?\]\  ]]
-}
-
-is_failed_line() {
-  [[ "$1" =~ ^-\ \[failed\]\  ]]
-}
-
-is_unmarked_line() {
-  [[ "$1" =~ ^-\  ]] && ! is_pending_line "$1" && ! is_failed_line "$1"
-}
-
-extract_entry_text() {
-  local line="$1"
-
-  if [[ "$line" =~ ^-\ \[pending\]\ (.*)$ ]]; then
-    printf '%s\n' "${BASH_REMATCH[1]}"
-    return 0
-  fi
-
-  if [[ "$line" =~ ^-\ \[pending:([0-9]+)\]\ (.*)$ ]]; then
-    printf '%s\n' "${BASH_REMATCH[2]}"
-    return 0
-  fi
-
-  if [[ "$line" =~ ^-\ \[failed\]\ (.*)$ ]]; then
-    printf '%s\n' "${BASH_REMATCH[1]}"
-    return 0
-  fi
-
-  printf '%s\n' "${line#- }"
-}
-
-extract_pending_attempts() {
-  local line="$1"
-
-  if [[ "$line" =~ ^-\ \[pending:([0-9]+)\]\  ]]; then
-    printf '%s\n' "${BASH_REMATCH[1]}"
-    return 0
-  fi
-
-  if [[ "$line" =~ ^-\ \[pending\]\  ]]; then
-    printf '1\n'
-    return 0
-  fi
-
-  printf '0\n'
-}
-
-pending_label() {
-  local attempt="$1"
-
-  if [[ "$attempt" -le 1 ]]; then
-    printf '[pending]'
-  else
-    printf '[pending:%s]' "$attempt"
-  fi
-}
-
-mark_failed_or_pending() {
-  local suffix="$1"
-  local current_attempt="$2"
-  local next_attempt=$((current_attempt + 1))
-
-  if [[ "$next_attempt" -ge 3 ]]; then
-    printf -- '- [failed] %s\n' "$suffix"
-  else
-    printf -- '- %s %s\n' "$(pending_label "$next_attempt")" "$suffix"
-  fi
-}
 
 md5_hash() {
   # macOS md5 is at /sbin/md5 — not in default launchd PATH
@@ -175,64 +116,34 @@ discover_projects() {
   done | sort -u
 }
 
-collect_candidates() {
-  local project_dir="$1"
-  local candidates_file="$2"
-  local snapshot_file="$3"
-  local file_path file line source_file entry attempts kind
-
-  : > "$candidates_file"
-  : > "$snapshot_file"
-
-  # --- COLLECTION PAUSE: decisions.md (2026-07-10, F2 interim — Forge)
-  # The append-only guard in apply_transformations (correctly) forbids mutating decisions.md,
-  # but collection had no memory of what was already routed. Result: every firing re-classified
-  # and re-routed the SAME decisions entries to KB and Memory — observed live 2026-07-10
-  # (context-registry: identical titles captured 4x in 33 minutes), at 2 haiku calls + duplicate
-  # store writes per firing, in every repo with a bulleted decisions.md. Collection without
-  # idempotency is a runaway; decisions.md is paused until promotion receipts land (F2 design:
-  # sidecar receipts for append-only files). Do not re-add decisions.md here without receipts.
-  for source_file in captures.md lessons.md; do
-    file_path="${project_dir}/${source_file}"
-    [[ -f "$file_path" ]] || continue
-
-    while IFS= read -r line || [[ -n "$line" ]]; do
-      if is_unmarked_line "$line"; then
-        entry="$(extract_entry_text "$line")"
-        printf '%s\tnew\t0\t%s\t%s\n' "$source_file" "$line" "$entry" >> "$candidates_file"
-        printf '%s\t%s\n' "$source_file" "$entry" >> "$snapshot_file"
-      elif is_pending_line "$line"; then
-        entry="$(extract_entry_text "$line")"
-        attempts="$(extract_pending_attempts "$line")"
-        printf '%s\tpending\t%s\t%s\t%s\n' "$source_file" "$attempts" "$line" "$entry" >> "$candidates_file"
-        printf '%s\t%s\n' "$source_file" "$entry" >> "$snapshot_file"
-      fi
-    done < "$file_path"
-  done
-}
-
-render_entries_for_prompt() {
-  local snapshot_file="$1"
+render_candidates_for_prompt() {
+  local candidates_json="$1"
   local source_file="$2"
+  local out
 
-  awk -F '\t' -v source="$source_file" '
-    $1 == source { print "- " $2; found = 1 }
-    END {
-      if (!found) {
-        print "(none)"
-      }
-    }
-  ' "$snapshot_file"
+  out="$(jq -r --arg src "$source_file" '.candidates[] | select(.source_file == $src) | "- " + .flat' "$candidates_json")"
+  if [[ -z "$out" ]]; then
+    printf '(none)\n'
+  else
+    printf '%s\n' "$out"
+  fi
 }
 
-build_prompt() {
+# decisions.md collection RESUMES here (F2, 2026-07-10) after the 9cbb5f3
+# interim pause. What made the pause necessary — collection with no memory of
+# what was already routed, causing infinite re-promotion — is now closed by
+# the `.il-receipts` sidecar (il-entries.py: collect skips any decisions.md
+# entry whose content-hash has a terminal sidecar row; finalize/apply write
+# the sidecar, never the file). decisions.md itself is still never opened for
+# writing anywhere in this pipeline — see the note in commit_hot_buffers.
+build_prompt_from_candidates() {
   local project_name="$1"
-  local snapshot_file="$2"
+  local candidates_json="$2"
   local captures_content lessons_content decisions_content
 
-  captures_content="$(render_entries_for_prompt "$snapshot_file" "captures.md")"
-  lessons_content="$(render_entries_for_prompt "$snapshot_file" "lessons.md")"
-  decisions_content="$(render_entries_for_prompt "$snapshot_file" "decisions.md")"
+  captures_content="$(render_candidates_for_prompt "$candidates_json" "captures.md")"
+  lessons_content="$(render_candidates_for_prompt "$candidates_json" "lessons.md")"
+  decisions_content="$(render_candidates_for_prompt "$candidates_json" "decisions.md")"
 
   cat <<EOF
 You are a knowledge classifier for the Agentic Work System. Your job is to route entries from session hot buffers to the correct permanent store.
@@ -358,6 +269,19 @@ run_classifier() {
     return 0
   fi
 
+  # Test seam (R7, F2): copy a canned manifest instead of calling claude.
+  # Inert unless IL_TEST_MANIFEST is explicitly set — production path below
+  # is untouched.
+  if [[ -n "${IL_TEST_MANIFEST:-}" ]]; then
+    if [[ ! -f "$IL_TEST_MANIFEST" ]]; then
+      log "IL_TEST_MANIFEST set but file not found: $IL_TEST_MANIFEST"
+      return 1
+    fi
+    cp "$IL_TEST_MANIFEST" "$output_file"
+    log "Test seam: classifier output from IL_TEST_MANIFEST (no claude call)"
+    return 0
+  fi
+
   if ! command -v claude >/dev/null 2>&1; then
     log "claude command not found"
     return 1
@@ -385,83 +309,8 @@ run_classifier() {
   rm -f "$raw_output"
 }
 
-route_entries() {
-  # PASS 2: Route classified entries to KB/Memory via MCP tool calls
-  local output_file="$1"
-  local kb_count memory_count
-
-  kb_count="$(jq '[.[] | select(.action == "kb")] | length' "$output_file")"
-  memory_count="$(jq '[.[] | select(.action == "memory")] | length' "$output_file")"
-
-  if [[ "$((kb_count + memory_count))" -eq 0 ]]; then
-    log "No entries to route (all keep/discard)"
-    return 0
-  fi
-
-  log "Routing ${kb_count} to KB, ${memory_count} to Memory"
-
-  # Build routing prompt with explicit tool call instructions
-  local route_prompt="${output_file}.route-prompt"
-  local route_raw="${output_file}.route-raw"
-
-  python3 - "$output_file" > "$route_prompt" << 'PYEOF'
-import sys, json
-
-with open(sys.argv[1]) as f:
-    entries = json.load(f)
-
-print("You MUST call the tools below. Do NOT skip any. Do NOT just describe them — actually call them.\n")
-
-idx = 0
-for e in entries:
-    if e["action"] == "kb":
-        idx += 1
-        content = e["entry"]
-        kb_type = e.get("kb_type", "learning")
-        domain = e.get("domain", "general")
-        print(f"CALL {idx}: Use send_to_kb tool with:")
-        print(f'  content: "{content}"')
-        print(f'  content_type: "{kb_type}"')
-        print(f'  domain: "{domain}"')
-        print(f'  source_type: "session_capture"')
-        print()
-    elif e["action"] == "memory":
-        idx += 1
-        content = e["entry"]
-        mem_type = e.get("memory_type", "observation")
-        namespace = e.get("namespace", "global")
-        print(f"CALL {idx}: Use write_memory tool with:")
-        print(f'  content: "{content}"')
-        print(f'  memory_type: "{mem_type}"')
-        print(f'  namespace: "{namespace}"')
-        print(f'  writer_id: "il-classifier"')
-        print(f'  writer_type: "automation"')
-        print()
-
-print(f"\nYou must make exactly {idx} tool calls. After all calls, say 'ROUTING COMPLETE'.")
-PYEOF
-
-  if ! claude -p \
-    --model haiku \
-    --output-format json \
-    --allowedTools "mcp__knowledge-base__send_to_kb,mcp__memory__write_memory" \
-    < "$route_prompt" > "$route_raw" 2>/dev/null; then
-    log "Routing pass failed"
-    rm -f "$route_prompt" "$route_raw"
-    return 1
-  fi
-
-  local num_turns
-  num_turns="$(jq -r '.num_turns // 0' "$route_raw" 2>/dev/null)"
-  log "Routing complete: ${num_turns} turns (expected ~$((kb_count + memory_count)) tool calls)"
-
-  rm -f "$route_prompt" "$route_raw"
-  return 0
-}
-
 validate_manifest() {
-  local candidates_file="$1"
-  local output_file="$2"
+  local output_file="$1"
 
   # Structural validation only — don't require exact entry text matching.
   # Haiku may truncate, skip entries, or slightly rephrase. Unmatched entries
@@ -483,168 +332,6 @@ validate_manifest() {
   fi
 
   return 0
-}
-
-build_failure_replacements() {
-  local candidates_file="$1"
-  local replace_file="$2"
-  local source kind attempts original entry suffix replacement
-
-  : > "$replace_file"
-
-  while IFS=$'\t' read -r source kind attempts original entry; do
-    suffix="$(extract_entry_text "$original")"
-    replacement="$(mark_failed_or_pending "$suffix" "$attempts")"
-    printf '%s\t%s\n' "$original" "$replacement" >> "$replace_file"
-  done < "$candidates_file"
-}
-
-build_success_actions() {
-  local candidates_file="$1"
-  local output_file="$2"
-  local remove_file="$3"
-  local source action entry original_line
-
-  : > "$remove_file"
-
-  # For each manifest entry with action kb/memory/discard, find the matching
-  # original line in candidates. Match by: source_file matches AND a normalized
-  # prefix of the manifest entry text is a substring of the candidate entry text.
-  # Entries with action "keep" are left in place.
-  #
-  # NOTE: Haiku does NOT return the entry verbatim. It strips markdown markers
-  # (**, `), rewrites em-dashes (—) and smart quotes, collapses whitespace, and
-  # frequently truncates or lightly rephrases the tail. The old matcher only
-  # stripped * and ` and required a full-substring match, so any of those other
-  # mangles broke the match — the line never got removed, was re-collected every
-  # sweep, and re-routed to KB/Memory forever (the documented token-burn loop).
-  #
-  # Robust normalization: lowercase + drop every non-alphanumeric char on BOTH
-  # sides (kills markdown, punctuation, em-dash, quote, and whitespace drift),
-  # then substring-test a bounded 50-char prefix of the manifest entry (tolerates
-  # tail truncation/rephrasing). The >=12-char floor avoids spurious short hits.
-  # We still print $4 (the original, un-normalized line) so removal targets the
-  # real text.
-
-  while IFS=$'\t' read -r source action entry; do
-    [[ "$action" == "keep" ]] && continue
-
-    # Find matching candidate line — first match wins
-    original_line="$(awk -F '\t' -v src="$source" -v entry="$entry" '
-      function norm(s) { s = tolower(s); gsub(/[^a-z0-9]/, "", s); return s }
-      $1 == src && !found {
-        cand = norm($5)
-        want = norm(entry)
-        if (length(want) > 50) { want = substr(want, 1, 50) }
-        if (length(want) >= 12 && index(cand, want) > 0) {
-          print $4
-          found = 1
-        }
-      }
-    ' "$candidates_file")"
-
-    if [[ -n "$original_line" ]]; then
-      printf '%s\n' "$original_line" >> "$remove_file"
-    else
-      log "Manifest entry not found in candidates: ${source}:${entry:0:60}"
-    fi
-  done < <(jq -r '.[] | [.source_file, .action, .entry] | @tsv' "$output_file")
-}
-
-apply_transformations() {
-  local file_path="$1"
-  local remove_file="$2"
-  local replace_file="$3"
-  local tmp_file
-
-  [[ -f "$file_path" ]] || return 0
-
-  # --- APPEND-ONLY GUARD (2026-07-10, P0 forge-20260709-il-classifier-decisions-corruption)
-  # decisions.md is APPEND-ONLY per global CLAUDE.md ("decisions.md (append-only → Memory)").
-  # This function is line-oriented and its entry detector (is_unmarked_line) is purely lexical:
-  # any line starting with "- " is an "entry". Decision records are multi-line bullets, so it
-  # deleted the FIRST line of a bullet and orphaned the indented continuation lines -- leaving a
-  # record that still reads as authoritative while missing the evidence that justified it.
-  # Observed corrupting real records in eplus-pipeline (ded3b7f) and ciso-advisory (b14dd48,
-  # 752ac2e). READ + PROMOTE from decisions.md is fine; MUTATION is not. Do not remove this guard
-  # without first making the entry model structural (consume whole bullets) rather than lexical.
-  if [[ "$(basename "$file_path")" == "decisions.md" ]]; then
-    log "SKIP mutation: ${file_path} is append-only (promotion still runs; see append-only guard)"
-    return 0
-  fi
-
-  tmp_file="$(mktemp)"
-
-  awk -v remove_file="$remove_file" -v replace_file="$replace_file" '
-    BEGIN {
-      while ((getline line < remove_file) > 0) {
-        remove_count[line]++
-      }
-      close(remove_file)
-
-      while ((getline line < replace_file) > 0) {
-        split(line, parts, "\t")
-        replace_count[parts[1]]++
-        replace_value[parts[1], replace_count[parts[1]]] = parts[2]
-      }
-      close(replace_file)
-    }
-    {
-      if (replaced[$0] < replace_count[$0]) {
-        idx = replaced[$0] + 1
-        print replace_value[$0, idx]
-        replaced[$0] = idx
-        next
-      }
-      if (remove_count[$0] > 0) {
-        remove_count[$0]--
-        next
-      }
-      print
-    }
-  ' "$file_path" > "$tmp_file"
-
-  if ! cmp -s "$file_path" "$tmp_file"; then
-    mv "$tmp_file" "$file_path"
-  else
-    rm -f "$tmp_file"
-  fi
-}
-
-trim_lessons_file() {
-  local lessons_file="$1"
-  local active_count excess trim_file
-
-  [[ -f "$lessons_file" ]] || return 0
-
-  active_count="$(awk '
-    /^- / {
-      if ($0 !~ /^- \[pending(:[0-9]+)?\] / && $0 !~ /^- \[failed\] /) {
-        count++
-      }
-    }
-    END { print count + 0 }
-  ' "$lessons_file")"
-
-  if [[ "$active_count" -le 15 ]]; then
-    return 0
-  fi
-
-  excess=$((active_count - 15))
-  trim_file="$(mktemp)"
-
-  awk -v limit="$excess" '
-    /^- / && $0 !~ /^- \[pending(:[0-9]+)?\] / && $0 !~ /^- \[failed\] / {
-      if (count < limit) {
-        print $0
-        count++
-      }
-    }
-  ' "$lessons_file" > "$trim_file"
-
-  apply_transformations "$lessons_file" "$trim_file" /dev/null
-
-  rm -f "$trim_file"
 }
 
 # Echo the repo's default branch name, or return 1 if it genuinely cannot be determined.
@@ -711,16 +398,21 @@ commit_hot_buffers() {
     return 1
   fi
 
-  # decisions.md is deliberately absent below. This script no longer mutates it (see the
-  # append-only guard in apply_transformations), so ANY diff it carries is someone else's
-  # uncommitted work. Staging it here made `git commit --only -- decisions.md` sweep a human's
-  # in-flight edits into a machine-authored "chore(il)" commit -- observed as ciso-advisory
-  # 052cbd6, which captured that agent's hand-repair of damage this very script had caused.
-  # Never stage a file you did not write.
-  status_output="$(git -C "$project_dir" status --porcelain -- captures.md lessons.md)"
+  # decisions.md is deliberately absent below, and always will be: no code path in this
+  # pipeline ever opens it for writing (il-entries.py's collect/apply/gc all treat it as
+  # read-only; state for its entries lives entirely in the `.il-receipts` sidecar). ANY
+  # diff decisions.md carries is by construction someone else's uncommitted work. Staging
+  # it here made `git commit --only -- decisions.md` sweep a human's in-flight edits into
+  # a machine-authored "chore(il)" commit -- observed as ciso-advisory 052cbd6, which
+  # captured that agent's hand-repair of corruption this very script had caused.
+  #
+  # `.il-receipts` (F2, 2026-07-10) IS staged below, unlike decisions.md -- because unlike
+  # decisions.md, this script is the sidecar's only writer. Never stage a file you did not
+  # write; the sidecar is the one addition to that rule's file set, not an exception to it.
+  status_output="$(git -C "$project_dir" status --porcelain -- captures.md lessons.md "$SIDECAR_FILE")"
   [[ -n "$status_output" ]] || return 0
 
-  for path in captures.md lessons.md; do
+  for path in captures.md lessons.md "$SIDECAR_FILE"; do
     if [[ -e "${project_dir}/${path}" ]]; then
       staged_paths+=("$path")
     fi
@@ -747,9 +439,40 @@ commit_hot_buffers() {
   return 0
 }
 
+# GC (D2): remove only machine-marked [promoted:...]/[discarded:...] entries older than
+# 14 days. Unmarked entries are never machine-deleted, regardless of count -- this
+# replaces trim_lessons_file's unmarked-trim entirely. Deliberately independent of
+# whether THIS sweep found any new/pending candidates: a project whose lessons.md holds
+# only aged terminal markers has zero candidates (by design, terminal states are never
+# collected) and would never reach GC if it were gated behind "had something to classify".
+# IL_TEST_NOW (test-only, inert unless set) lets the harness pin "today" so aged-fixture
+# GC assertions are deterministic without sleeping or faking mtimes.
+run_gc() {
+  local project_dir="$1"
+  local tmp_dir="$2"
+  local gc_now_args=()
+
+  [[ -n "${IL_TEST_NOW:-}" ]] && gc_now_args=(--now "$IL_TEST_NOW")
+  # NOTE: expanding a zero-element array as "${arr[@]}" under `set -u` throws
+  # "unbound variable" on macOS's system /bin/bash (3.2 -- GNU bash 4.4+ does
+  # not have this quirk, but this script must not assume a newer bash is on
+  # PATH). Worse than a cosmetic warning: on 3.2 that error aborts the ENTIRE
+  # script, not just this statement -- silently skipping every commit from
+  # this point forward on every invocation. "${arr[@]+"${arr[@]}"}" is the
+  # portable idiom that expands to nothing (not an error) when arr is empty
+  # and to the normal element list otherwise. Verified against this host's
+  # actual /bin/bash 3.2.57 before relying on it here.
+  "$PYTHON_BIN" "$ENTRIES_PY" gc --project-dir "$project_dir" --files captures.md,lessons.md \
+    --max-age-days 14 "${gc_now_args[@]+"${gc_now_args[@]}"}" > "${tmp_dir}/gc-summary.json" 2>"${tmp_dir}/gc.err"
+  log "GC ($project_dir): $(cat "${tmp_dir}/gc-summary.json" 2>/dev/null)"
+  [[ -s "${tmp_dir}/gc.err" ]] && cat "${tmp_dir}/gc.err" >&2
+}
+
 process_project() {
   local project_dir="$1"
-  local project_name tmp_dir candidates_file snapshot_file prompt_file output_file remove_file replace_file
+  local project_name tmp_dir
+  local candidates_json prompt_file output_file matched_json route_input_json route_output_json results_json
+  local candidate_count route_count
 
   if [[ -f "${project_dir}/.il-exclude" ]]; then
     log "Skipping excluded project: $project_dir"
@@ -761,31 +484,38 @@ process_project() {
   fi
 
   tmp_dir="$(mktemp -d)"
-  candidates_file="${tmp_dir}/candidates.tsv"
-  snapshot_file="${tmp_dir}/snapshot.tsv"
+  candidates_json="${tmp_dir}/candidates.json"
   prompt_file="${tmp_dir}/prompt.txt"
   output_file="${tmp_dir}/classifier.json"
-  remove_file="${tmp_dir}/remove.txt"
-  replace_file="${tmp_dir}/replace.tsv"
+  matched_json="${tmp_dir}/matched.json"
+  route_input_json="${tmp_dir}/route-input.json"
+  route_output_json="${tmp_dir}/route-output.json"
+  results_json="${tmp_dir}/results.json"
 
-  collect_candidates "$project_dir" "$candidates_file" "$snapshot_file"
+  if ! "$PYTHON_BIN" "$ENTRIES_PY" collect --project-dir "$project_dir" > "$candidates_json" 2>"${tmp_dir}/collect.err"; then
+    log "collect failed for $project_dir: $(tail -5 "${tmp_dir}/collect.err" 2>/dev/null)"
+    rm -rf "$tmp_dir"
+    release_lock
+    return 0
+  fi
 
-  if [[ ! -s "$candidates_file" ]]; then
+  candidate_count="$(jq '.candidates | length' "$candidates_json" 2>/dev/null || printf '0')"
+  if [[ "$candidate_count" -eq 0 ]]; then
     log "No entries to process: $project_dir"
+    run_gc "$project_dir" "$tmp_dir"
+    commit_hot_buffers "$project_dir" || true
     rm -rf "$tmp_dir"
     release_lock
     return 0
   fi
 
   project_name="$(basename "$project_dir")"
-  build_prompt "$project_name" "$snapshot_file" > "$prompt_file"
+  build_prompt_from_candidates "$project_name" "$candidates_json" > "$prompt_file"
 
   if ! run_classifier "$prompt_file" "$output_file"; then
-    build_failure_replacements "$candidates_file" "$replace_file"
-    : > "$remove_file"
-    apply_transformations "${project_dir}/captures.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/lessons.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/decisions.md" "$remove_file" "$replace_file"
+    "$PYTHON_BIN" "$ENTRIES_PY" finalize --candidates "$candidates_json" --batch-fail > "$results_json"
+    "$PYTHON_BIN" "$ENTRIES_PY" apply --project-dir "$project_dir" --candidates "$candidates_json" --results "$results_json" >/dev/null
+    run_gc "$project_dir" "$tmp_dir"
     commit_hot_buffers "$project_dir" || true
     rm -rf "$tmp_dir"
     release_lock
@@ -798,39 +528,62 @@ process_project() {
     return 0
   fi
 
-  if ! validate_manifest "$candidates_file" "$output_file"; then
-    build_failure_replacements "$candidates_file" "$replace_file"
-    : > "$remove_file"
-    apply_transformations "${project_dir}/captures.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/lessons.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/decisions.md" "$remove_file" "$replace_file"
+  if ! validate_manifest "$output_file"; then
+    "$PYTHON_BIN" "$ENTRIES_PY" finalize --candidates "$candidates_json" --batch-fail > "$results_json"
+    "$PYTHON_BIN" "$ENTRIES_PY" apply --project-dir "$project_dir" --candidates "$candidates_json" --results "$results_json" >/dev/null
+    run_gc "$project_dir" "$tmp_dir"
     commit_hot_buffers "$project_dir" || true
     rm -rf "$tmp_dir"
     release_lock
     return 0
   fi
 
-  # PASS 2: Route entries to KB/Memory via MCP tools
-  if ! route_entries "$output_file"; then
-    log "Routing failed — marking entries as pending (will retry next run)"
-    build_failure_replacements "$candidates_file" "$replace_file"
-    : > "$remove_file"
-    apply_transformations "${project_dir}/captures.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/lessons.md" "$remove_file" "$replace_file"
-    apply_transformations "${project_dir}/decisions.md" "$remove_file" "$replace_file"
+  if ! "$PYTHON_BIN" "$ENTRIES_PY" match --candidates "$candidates_json" --manifest "$output_file" > "$matched_json" 2>"${tmp_dir}/match.err"; then
+    log "match failed for $project_dir: $(tail -5 "${tmp_dir}/match.err" 2>/dev/null) -- leaving hot buffers untouched this sweep"
+    run_gc "$project_dir" "$tmp_dir"
     commit_hot_buffers "$project_dir" || true
     rm -rf "$tmp_dir"
     release_lock
     return 0
   fi
+  # Unmatched-manifest-entry warnings (haiku returned an entry we couldn't map back to a
+  # candidate) are expected/benign and logged by `match` itself -- surface them same as before.
+  [[ -s "${tmp_dir}/match.err" ]] && cat "${tmp_dir}/match.err" >&2
 
-  build_success_actions "$candidates_file" "$output_file" "$remove_file"
-  : > "$replace_file"
+  # PASS 2: deterministic routing (il-router.py) — kb/memory actions only.
+  # discard/keep never touch a store and are resolved entirely by `finalize`/`apply`.
+  jq -c --arg proj "$project_name" \
+    '[.matched[] | select(.action == "kb" or .action == "memory") | {
+        rid: .cid,
+        store: (if .action == "kb" then "kb" else "memory" end),
+        content: .text,
+        content_type: .kb_type,
+        memory_type: .memory_type,
+        namespace: .namespace,
+        source_project: $proj
+      }]' \
+    "$matched_json" > "$route_input_json"
 
-  apply_transformations "${project_dir}/captures.md" "$remove_file" "$replace_file"
-  apply_transformations "${project_dir}/lessons.md" "$remove_file" "$replace_file"
-  apply_transformations "${project_dir}/decisions.md" "$remove_file" "$replace_file"
-  trim_lessons_file "${project_dir}/lessons.md"
+  route_count="$(jq 'length' "$route_input_json" 2>/dev/null || printf '0')"
+  if [[ "$route_count" -gt 0 ]]; then
+    log "Routing ${route_count} entries via il-router.py"
+    if ! "$PYTHON_BIN" "$ROUTER_PY" route < "$route_input_json" > "$route_output_json" 2>"${tmp_dir}/route.err"; then
+      log "router crashed for $project_dir (all routed entries in this sweep will retry as pending): $(tail -8 "${tmp_dir}/route.err" 2>/dev/null)"
+      printf '[]' > "$route_output_json"
+    elif [[ -s "${tmp_dir}/route.err" ]]; then
+      # Non-fatal per-entry diagnostics (e.g. swallowed KB embed failures) land here.
+      cat "${tmp_dir}/route.err" >&2
+    fi
+  else
+    printf '[]' > "$route_output_json"
+  fi
+
+  "$PYTHON_BIN" "$ENTRIES_PY" finalize --candidates "$candidates_json" --matched "$matched_json" --router-results "$route_output_json" > "$results_json"
+
+  "$PYTHON_BIN" "$ENTRIES_PY" apply --project-dir "$project_dir" --candidates "$candidates_json" --results "$results_json" > "${tmp_dir}/apply-summary.json"
+  log "Applied ($project_dir): $(cat "${tmp_dir}/apply-summary.json")"
+
+  run_gc "$project_dir" "$tmp_dir"
   commit_hot_buffers "$project_dir" || true
 
   rm -rf "$tmp_dir"
