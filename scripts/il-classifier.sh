@@ -184,7 +184,15 @@ collect_candidates() {
   : > "$candidates_file"
   : > "$snapshot_file"
 
-  for source_file in captures.md lessons.md decisions.md; do
+  # --- COLLECTION PAUSE: decisions.md (2026-07-10, F2 interim — Forge)
+  # The append-only guard in apply_transformations (correctly) forbids mutating decisions.md,
+  # but collection had no memory of what was already routed. Result: every firing re-classified
+  # and re-routed the SAME decisions entries to KB and Memory — observed live 2026-07-10
+  # (context-registry: identical titles captured 4x in 33 minutes), at 2 haiku calls + duplicate
+  # store writes per firing, in every repo with a bulleted decisions.md. Collection without
+  # idempotency is a runaway; decisions.md is paused until promotion receipts land (F2 design:
+  # sidecar receipts for append-only files). Do not re-add decisions.md here without receipts.
+  for source_file in captures.md lessons.md; do
     file_path="${project_dir}/${source_file}"
     [[ -f "$file_path" ]] || continue
 
