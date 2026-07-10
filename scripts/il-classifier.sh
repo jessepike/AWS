@@ -551,6 +551,20 @@ apply_transformations() {
 
   [[ -f "$file_path" ]] || return 0
 
+  # --- APPEND-ONLY GUARD (2026-07-10, P0 forge-20260709-il-classifier-decisions-corruption)
+  # decisions.md is APPEND-ONLY per global CLAUDE.md ("decisions.md (append-only → Memory)").
+  # This function is line-oriented and its entry detector (is_unmarked_line) is purely lexical:
+  # any line starting with "- " is an "entry". Decision records are multi-line bullets, so it
+  # deleted the FIRST line of a bullet and orphaned the indented continuation lines -- leaving a
+  # record that still reads as authoritative while missing the evidence that justified it.
+  # Observed corrupting real records in eplus-pipeline (ded3b7f) and ciso-advisory (b14dd48,
+  # 752ac2e). READ + PROMOTE from decisions.md is fine; MUTATION is not. Do not remove this guard
+  # without first making the entry model structural (consume whole bullets) rather than lexical.
+  if [[ "$(basename "$file_path")" == "decisions.md" ]]; then
+    log "SKIP mutation: ${file_path} is append-only (promotion still runs; see append-only guard)"
+    return 0
+  fi
+
   tmp_file="$(mktemp)"
 
   awk -v remove_file="$remove_file" -v replace_file="$replace_file" '
